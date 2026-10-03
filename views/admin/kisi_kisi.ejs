@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisi-Kisi Soal - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+    <style>
+        /* Top action buttons matching Image 1 */
+        .kisi-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-kisi-ai {
+            background-color: #1e5631 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-kisi-ai:hover {
+            background-color: #143d22 !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-soal-ai {
+            background-color: #f59e0b !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-soal-ai:hover {
+            background-color: #d97706 !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-cetak {
+            background-color: #64748b !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-cetak:hover {
+            background-color: #475569 !important;
+            transform: translateY(-1px);
+        }
+
+        /* Dropdown Cetak */
+        .dropdown-cetak {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu-cetak {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 6px;
+            background: #ffffff;
+            min-width: 260px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            z-index: 1050;
+            overflow: hidden;
+        }
+
+        .dropdown-menu-cetak.show {
+            display: block;
+        }
+
+        .dropdown-item-cetak {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: #1e293b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dropdown-item-cetak:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item-cetak:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+
+        /* Selector row */
+        .kisi-selector-box {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 18px 0 20px 0;
+        }
+
+        .kisi-selector-label {
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+
+        .kisi-selector-select {
+            flex: 1;
+            padding: 9px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #ffffff;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        /* 5 Metric Summary Cards matching Image 1 */
+        .kisi-stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .kisi-stat-card {
+            padding: 14px 10px;
+            text-align: center;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .kisi-stat-card:last-child {
+            border-right: none;
+        }
+
+        .kisi-stat-num {
+            font-size: 1.85rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .kisi-stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 12px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            padding: 24px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .kisi-stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .kisi-stat-card {
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .kisi-header-actions {
+                width: 100%;
+                margin-top: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Matriks Kisi-Kisi Soal</h1>
+                <p class="subtitle"><%= adminNama %> (<%= adminRole.toUpperCase() %>)</p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/kisi_kisi', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Kisi-Kisi</span>
+            </nav>
+
+            <!-- Top Row matching Image 1 -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 14px;">
+                <div>
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #1e293b;">
+                        <i class="fas fa-table" style="color: #1e5631;"></i> Kisi-Kisi Soal
+                    </h2>
+                    <p style="color: #64748b; margin: 4px 0 0 0; font-size: 0.95rem;">
+                        Buat atau tampilkan kisi-kisi berdasarkan ujian
+                    </p>
+                </div>
+
+                <!-- 3 Action Buttons in RED BOX of Image 1 -->
+                <div class="kisi-header-actions">
+                    <button type="button" class="btn-kisi-ai" onclick="openGenKisiModal()">
+                        <i class="fas fa-pen"></i> Generate Kisi-Kisi AI
+                    </button>
+
+                    <button type="button" class="btn-soal-ai" onclick="openGenSoalModal()">
+                        <i class="fas fa-bolt"></i> Generate Soal dari Kisi-Kisi
+                    </button>
+
+                    <div class="dropdown-cetak">
+                        <button type="button" class="btn-cetak" onclick="toggleCetakMenu(event)">
+                            <i class="fas fa-print"></i> Cetak <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu-cetak" id="cetakDropdown">
+                            <a href="/admin/kisi_kisi/export_pdf?ujian_id=<%= selectedUjianId %>" target="_blank" class="dropdown-item-cetak">
+                                <i class="fas fa-file-pdf" style="color: #dc2626; font-size: 1.1rem;"></i>
+                                <div>
+                                    <strong>Cetak Naskah Soal (PDF)</strong>
+                                    <div style="font-size: 0.75rem; color: #64748b;">Format resmi Universitas Hamzanwadi</div>
+                                </div>
+                            </a>
+                            <a href="/admin/kisi_kisi/export_word?ujian_id=<%= selectedUjianId %>" class="dropdown-item-cetak">
+                                <i class="fas fa-file-word" style="color: #2563eb; font-size: 1.1rem;"></i>
+                                <div>
+                                    <strong>Unduh Naskah Soal (.docx)</strong>
+                                    <div style="font-size: 0.75rem; color: #64748b;">Dapat diedit di Microsoft Word</div>
+                                </div>
+                            </a>
+                            <a href="/admin/kisi_kisi/export_matrix_word?ujian_id=<%= selectedUjianId %>" class="dropdown-item-cetak">
+                                <i class="fas fa-table" style="color: #10b981; font-size: 1.1rem;"></i>
+                                <div>
+                                    <strong>Unduh Matriks Kisi-Kisi (.docx)</strong>
+                                    <div style="font-size: 0.75rem; color: #64748b;">Tabel matriks sebaran indikator</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Selector matching Image 1 -->
+            <div class="kisi-selector-box">
+                <label class="kisi-selector-label">
+                    <i class="fas fa-file-alt" style="color: #1e5631;"></i> Pilih Ujian:
+                </label>
+                <select class="kisi-selector-select" onchange="window.location.href='/admin/kisi_kisi?ujian_id=' + this.value">
+                    <% ujianList.forEach(function(u) { %>
+                        <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>>
+                            <%= u.judul_ujian %>
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <!-- 5 Metric Summary Cards matching Image 1 (25, 100, 8, 14, 3) -->
+            <% 
+                const totalSoalCount = soalList.length;
+                const totalPoinCount = soalList.reduce((acc, s) => acc + (s.poin || 0), 0);
+                const mudahCount = soalList.filter(s => (s.tingkat_kesulitan || '').toLowerCase() === 'mudah').length;
+                const sedangCount = soalList.filter(s => (s.tingkat_kesulitan || '').toLowerCase() === 'sedang').length;
+                const sulitCount = soalList.filter(s => (s.tingkat_kesulitan || '').toLowerCase() === 'sulit').length;
+            %>
+            <div class="kisi-stats-row">
+                <div class="kisi-stat-card">
+                    <div class="kisi-stat-num" style="color: #1e5631;"><%= totalSoalCount %></div>
+                    <div class="kisi-stat-label">Total Soal</div>
+                </div>
+                <div class="kisi-stat-card">
+                    <div class="kisi-stat-num" style="color: #0d9488;"><%= totalPoinCount %></div>
+                    <div class="kisi-stat-label">Total Poin</div>
+                </div>
+                <div class="kisi-stat-card">
+                    <div class="kisi-stat-num" style="color: #15803d;"><%= mudahCount %></div>
+                    <div class="kisi-stat-label">Mudah</div>
+                </div>
+                <div class="kisi-stat-card">
+                    <div class="kisi-stat-num" style="color: #b45309;"><%= sedangCount %></div>
+                    <div class="kisi-stat-label">Sedang</div>
+                </div>
+                <div class="kisi-stat-card">
+                    <div class="kisi-stat-num" style="color: #b91c1c;"><%= sulitCount %></div>
+                    <div class="kisi-stat-label">Sulit</div>
+                </div>
+            </div>
+
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="alert alert-success" style="margin-bottom: 20px;">
+                    <i class="fas fa-check-circle"></i> <%= message %>
+                </div>
+            <% } %>
+
+            <!-- Matriks Sebaran Soal Table -->
+            <div class="card" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;">
+                        <i class="fas fa-list-check" style="color: #1e5631;"></i> Matriks Sebaran & Rincian Butir Soal
+                    </h3>
+                    <span class="badge badge-info" style="font-size: 0.85rem; padding: 6px 12px;">
+                        <%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Ujian Terpilih' %>
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">No</th>
+                                <th style="width: 20%;">CPMK / Kompetensi</th>
+                                <th style="width: 18%;">Materi Pokok</th>
+                                <th style="width: 25%;">Indikator Soal</th>
+                                <th style="width: 10%;">Bentuk</th>
+                                <th style="width: 8%;">Level</th>
+                                <th style="width: 9%;">Kesulitan</th>
+                                <th style="width: 6%;">Bobot</th>
+                                <th style="width: 70px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (soalList.length === 0) { %>
+                                <tr>
+                                    <td colspan="9" class="text-center" style="padding: 36px; color: #64748b;">
+                                        <i class="fas fa-folder-open" style="font-size: 2.2rem; display: block; margin-bottom: 10px; color: #cbd5e1;"></i>
+                                        Belum ada butir soal atau kisi-kisi pada ujian ini.<br>
+                                        Klik tombol <strong>Generate Kisi-Kisi AI</strong> di atas untuk membuat matriks otomatis.
+                                    </td>
+                                </tr>
+                            <% } else { %>
+                                <% soalList.forEach(function(s, idx) { %>
+                                    <tr>
+                                        <td><strong><%= idx + 1 %></strong></td>
+                                        <td><div style="font-size: 0.9rem; font-weight: 600; color: #0f172a;"><%= s.cpmk || 'Capaian Pembelajaran MK' %></div></td>
+                                        <td><span style="color: #475569; font-size: 0.85rem;"><%= s.materi_pokok || '-' %></span></td>
+                                        <td><div style="font-size: 0.85rem; color: #334155;"><%= s.indikator || (s.pertanyaan ? s.pertanyaan.replace(/<[^>]*>?/gm, '').substring(0, 80) + '...' : '-') %></div></td>
+                                        <td>
+                                            <span class="badge badge-secondary" style="font-size: 0.75rem;">
+                                                <%= s.jenis_soal ? s.jenis_soal.toUpperCase() : 'PG' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-info" style="font-size: 0.75rem;">
+                                                <%= s.level_kognitif || 'C2' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <% 
+                                                const diff = (s.tingkat_kesulitan || '').toLowerCase();
+                                                let badgeClass = 'badge-warning';
+                                                if (diff === 'mudah') badgeClass = 'badge-success';
+                                                else if (diff === 'sulit') badgeClass = 'badge-danger';
+                                            %>
+                                            <span class="badge <%= badgeClass %>" style="font-size: 0.75rem;">
+                                                <%= diff %>
+                                            </span>
+                                        </td>
+                                        <td><strong><%= s.poin || 4 %></strong></td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewSoalDetail(<%= s.id %>)" title="Lihat Pertanyaan Lengkap">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: GENERATE KISI-KISI AI -->
+    <div class="modal-overlay" id="modalGenKisi">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; color: #1e5631;">
+                    <i class="fas fa-robot"></i> Generator Kisi-Kisi Berbasis AI
+                </h3>
+                <button type="button" onclick="closeModal('modalGenKisi')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 18px;">
+                AI akan merancang matriks kisi-kisi akademik komprehensif (CPMK, materi pokok, indikator soal, taksonomi Bloom, dan tingkat kesulitan) untuk ujian: <strong><%= currentUjian ? currentUjian.judul_ujian : '' %></strong>.
+            </p>
+
+            <form id="formGenKisi" onsubmit="handleGenerateKisi(event)">
+                <input type="hidden" name="ujian_id" value="<%= selectedUjianId %>">
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.9rem;">Mata Kuliah / Topik Materi</label>
+                    <input type="text" id="kisi_topik" class="form-control" required value="<%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Pengembangan Media Pembelajaran' %>">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.9rem;">Capaian Pembelajaran (CPMK / Standar Kompetensi)</label>
+                    <textarea id="kisi_cpmk" class="form-control" rows="2" placeholder="Contoh: Menguasai prinsip multimedia, analisis taksonomi media, dan evaluasi kelayakan bahan ajar digital.">Menganalisis prinsip desain instruksional multimedia, klasifikasi media pembelajaran, dan evaluasi efektivitas media.</textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.9rem;">Jumlah Indikator / Butir</label>
+                        <input type="number" id="kisi_jumlah" class="form-control" value="10" min="3" max="30">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.9rem;">Komposisi Kesulitan</label>
+                        <select id="kisi_kesulitan" class="form-select">
+                            <option value="proporsional">Proporsional (30% Mudah, 50% Sedang, 20% Sulit)</option>
+                            <option value="sedang">Dominan Sedang (Aplikasi C3)</option>
+                            <option value="hots">Dominan HOTS (Analisis C4 - Evaluasi C5)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="kisiAiLoading" style="display: none; padding: 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 16px; text-align: center; color: #166534;">
+                    <div class="loading-spinner" style="border-top-color: #166534; border-color: rgba(22,101,52,0.2); vertical-align: middle; margin-right: 8px;"></div>
+                    <span>AI sedang menyusun matriks kisi-kisi... Mohon tunggu sebentar.</span>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalGenKisi')">Batal</button>
+                    <button type="submit" id="btnSubmitKisi" class="btn btn-kisi-ai">
+                        <i class="fas fa-magic"></i> Mulai Generate Kisi-Kisi AI
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: GENERATE SOAL DARI KISI-KISI -->
+    <div class="modal-overlay" id="modalGenSoal">
+        <div class="modal-content" style="max-width: 750px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; color: #d97706;">
+                    <i class="fas fa-bolt"></i> Generate Butir Soal dari Matriks Kisi-Kisi
+                </h3>
+                <button type="button" onclick="closeModal('modalGenSoal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 18px;">
+                Sistem AI akan membaca indikator dan taksonomi Bloom pada kisi-kisi saat ini, lalu menyusun naskah soal lengkap dengan pilihan ganda A-E, kunci jawaban, dan pembahasan edukatif.
+            </p>
+
+            <form id="formGenSoal" onsubmit="handleGenerateSoal(event)">
+                <input type="hidden" name="ujian_id" value="<%= selectedUjianId %>">
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.9rem;">Ujian Target</label>
+                    <input type="text" class="form-control" value="<%= currentUjian ? currentUjian.judul_ujian : '' %>" readonly style="background: #f8fafc;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.9rem;">Jumlah Butir Soal Baru</label>
+                        <input type="number" id="soal_jumlah" class="form-control" value="5" min="1" max="25">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.9rem;">Poin per Butir Soal</label>
+                        <input type="number" id="soal_poin" class="form-control" value="4" min="1" max="50">
+                    </div>
+                </div>
+
+                <div id="soalAiLoading" style="display: none; padding: 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 16px; text-align: center; color: #b45309;">
+                    <div class="loading-spinner" style="border-top-color: #b45309; border-color: rgba(180,83,9,0.2); vertical-align: middle; margin-right: 8px;"></div>
+                    <span>AI sedang menyusun butir soal dan opsi jawaban... Mohon tunggu.</span>
+                </div>
+
+                <div id="previewGeneratedSoal" style="display: none; max-height: 250px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;"></div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalGenSoal')">Batal</button>
+                    <button type="submit" id="btnSubmitSoal" class="btn btn-soal-ai">
+                        <i class="fas fa-sparkles"></i> Generate & Tambahkan ke Ujian
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: VIEW DETAIL SOAL -->
+    <div class="modal-overlay" id="modalViewSoal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="margin: 0; color: #1e293b;" id="modalSoalTitle">Detail Butir Soal</h3>
+                <button type="button" onclick="closeModal('modalViewSoal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+            <div id="modalSoalBody" style="font-size: 0.95rem; line-height: 1.5; color: #334155;"></div>
+            <div style="text-align: right; margin-top: 18px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalViewSoal')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const soalListDb = <%- JSON.stringify(soalList) %>;
+
+        // Toggle Cetak Dropdown
+        function toggleCetakMenu(e) {
+            e.stopPropagation();
+            const d = document.getElementById('cetakDropdown');
+            d.classList.toggle('show');
+        }
+
+        window.addEventListener('click', function(e) {
+            const d = document.getElementById('cetakDropdown');
+            if (d && !e.target.closest('.dropdown-cetak')) {
+                d.classList.remove('show');
+            }
+        });
+
+        // Modals control
+        function openGenKisiModal() {
+            document.getElementById('modalGenKisi').style.display = 'flex';
+        }
+
+        function openGenSoalModal() {
+            document.getElementById('modalGenSoal').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function viewSoalDetail(soalId) {
+            const s = soalListDb.find(item => item.id === soalId);
+            if (!s) return;
+
+            document.getElementById('modalSoalTitle').innerText = 'Butir Soal #' + (soalListDb.indexOf(s) + 1) + ' (' + (s.poin || 4) + ' Poin)';
+            let html = '<div style="margin-bottom: 12px; font-weight: 500;">' + s.pertanyaan + '</div>';
+
+            if (s.gambar_soal) {
+                html += '<div style="margin-bottom: 12px;"><img src="' + s.gambar_soal + '" style="max-width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;"></div>';
+            }
+
+            if (s.opsi && s.opsi.length > 0) {
+                html += '<div style="margin-bottom: 12px; font-weight: 600; font-size: 0.85rem; color: #64748b;">PILIHAN JAWABAN:</div><ul style="padding-left: 20px; list-style-type: lower-alpha;">';
+                s.opsi.forEach(o => {
+                    const isKey = o.benar ? '<span style="color: #16a34a; font-weight: 600; margin-left: 8px;">(Kunci Benar)</span>' : '';
+                    html += '<li style="margin-bottom: 4px;' + (o.benar ? 'font-weight: 600; color: #15803d;' : '') + '">' + o.teks + isKey + '</li>';
+                });
+                html += '</ul>';
+            }
+
+            if (s.pembahasan) {
+                html += '<div style="background: #f8fafc; border-left: 3px solid #3b82f6; padding: 10px; margin-top: 14px; font-size: 0.85rem;"><strong>Pembahasan:</strong> ' + s.pembahasan + '</div>';
+            }
+
+            document.getElementById('modalSoalBody').innerHTML = html;
+            document.getElementById('modalViewSoal').style.display = 'flex';
+        }
+
+        // Handle AI generation for Kisi-Kisi
+        async function handleGenerateKisi(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitKisi');
+            const loading = document.getElementById('kisiAiLoading');
+            btn.disabled = true;
+            loading.style.display = 'block';
+
+            const payload = {
+                ujian_id: <%= selectedUjianId %>,
+                topik: document.getElementById('kisi_topik').value,
+                cpmk: document.getElementById('kisi_cpmk').value,
+                jumlah: parseInt(document.getElementById('kisi_jumlah').value, 10) || 5,
+                kesulitan: document.getElementById('kisi_kesulitan').value
+            };
+
+            try {
+                const res = await fetch('/admin/api/generate_kisi_kisi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Berhasil membuat kisi-kisi AI sebanyak ' + (data.count || payload.jumlah) + ' butir!');
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Gagal menghasilkan kisi-kisi');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan saat memproses AI: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Handle AI generation for questions from Kisi-Kisi
+        async function handleGenerateSoal(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitSoal');
+            const loading = document.getElementById('soalAiLoading');
+            btn.disabled = true;
+            loading.style.display = 'block';
+
+            const payload = {
+                ujian_id: <%= selectedUjianId %>,
+                jumlah: parseInt(document.getElementById('soal_jumlah').value, 10) || 5,
+                poin: parseInt(document.getElementById('soal_poin').value, 10) || 4
+            };
+
+            try {
+                const res = await fetch('/admin/api/generate_soal_kisi_kisi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Berhasil menghasilkan ' + (data.count || payload.jumlah) + ' butir soal baru dan disimpan ke bank soal!');
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Gagal membuat soal');
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan saat memproses soal AI: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

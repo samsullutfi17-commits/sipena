@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Pengguna & Monitor Sesi - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+    <style>
+        .users-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .users-page-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1e5631;
+            font-size: 1.65rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .users-page-title i {
+            font-size: 1.7rem;
+        }
+
+        .users-top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-tambah-user {
+            background-color: #1e5631 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        .btn-tambah-user:hover {
+            background-color: #143d22 !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-import-xlsx {
+            background-color: #ea580c !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        .btn-import-xlsx:hover {
+            background-color: #c2410c !important;
+            transform: translateY(-1px);
+        }
+
+        /* Tabs matching Screenshot */
+        .users-tab-container {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 22px;
+            background: transparent;
+        }
+
+        .tab-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            padding: 10px 22px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .tab-btn:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .tab-btn:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-left: none;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: #1e5631;
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* Filter Box matching Screenshot */
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.3fr 1.3fr;
+            gap: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .filter-control {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #1e293b;
+            background-color: #ffffff;
+            outline: none;
+            transition: border-color 0.15s;
+            font-family: inherit;
+        }
+
+        .filter-control:focus {
+            border-color: #1e5631;
+            box-shadow: 0 0 0 2px rgba(30, 86, 49, 0.15);
+        }
+
+        /* Table Card */
+        .table-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        .users-table thead {
+            background-color: #ffffff;
+            border-bottom: 1.5px solid #f1f5f9;
+        }
+
+        .users-table th {
+            padding: 14px 18px;
+            font-weight: 600;
+            color: #0f172a;
+            white-space: nowrap;
+        }
+
+        .users-table tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s;
+        }
+
+        .users-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .users-table td {
+            padding: 14px 18px;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        /* Role Badges */
+        .role-badge-dosen {
+            display: inline-block;
+            background-color: #fef3c7;
+            color: #b45309;
+            border-radius: 999px;
+            padding: 3px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .role-text-peserta {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.88rem;
+        }
+
+        .role-badge-admin {
+            display: inline-block;
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border-radius: 999px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .role-badge-pengawas {
+            display: inline-block;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-radius: 999px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .btn-action-edit {
+            background-color: #1e5631;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-action-edit:hover {
+            background-color: #143d22;
+        }
+
+        .btn-action-reset {
+            background-color: #15803d;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-action-reset:hover {
+            background-color: #166534;
+        }
+
+        .btn-action-hapus {
+            background-color: #ef4444;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-action-hapus:hover {
+            background-color: #dc2626;
+        }
+
+        /* Realtime Monitor Badges & Indicators */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: livePulse 1.8s infinite;
+        }
+
+        @keyframes livePulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .badge-sedang-login {
+            background-color: #0284c7;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-dikerjakan {
+            background-color: #f59e0b;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+        }
+
+        .badge-selesai {
+            background-color: #16a34a;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-timeout {
+            background-color: #64748b;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-belum {
+            background-color: #e2e8f0;
+            color: #64748b;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .status-chip-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(2px);
+            z-index: 1200;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 12px;
+            max-width: 540px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            padding: 24px 28px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #0f172a;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #475569;
+        }
+
+        .form-row {
+            margin-bottom: 14px;
+        }
+
+        .form-row label {
+            display: block;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        /* Toast notification */
+        #toastNotification {
+            display: none;
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.92rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+            .users-header-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .users-top-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Notification -->
+    <div id="toastNotification"></div>
+
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Manajemen Pengguna & Monitor Sesi</h1>
+                <p class="subtitle"><%= adminNama %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/users', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb" style="margin-bottom: 14px;">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Pengguna & Sesi Ujian</span>
+            </nav>
+
+            <!-- Title & Top Right Action Buttons -->
+            <div class="users-header-row">
+                <h2 class="users-page-title">
+                    <i class="fas fa-users-gear"></i> Pengguna & Sesi Peserta
+                </h2>
+
+                <div class="users-top-actions">
+                    <button type="button" class="btn-tambah-user" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i> Tambah Pengguna
+                    </button>
+                    <button type="button" class="btn-import-xlsx" onclick="openImportModal()">
+                        <i class="fas fa-file-excel"></i> Import XLSX
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Container -->
+            <div class="users-tab-container">
+                <button type="button" class="tab-btn <%= activeTab !== 'status' ? 'active' : '' %>" id="tabDaftarBtn" onclick="switchTab('daftar')">
+                    <i class="fas fa-list"></i> Daftar User
+                </button>
+                <button type="button" class="tab-btn <%= activeTab === 'status' ? 'active' : '' %>" id="tabStatusBtn" onclick="switchTab('status')">
+                    <i class="fas fa-chart-line"></i> Monitor Aktivitas & Sesi Peserta
+                </button>
+            </div>
+
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="alert alert-success" style="margin-bottom: 18px;">
+                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i> <%= message %>
+                </div>
+            <% } %>
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger" style="margin-bottom: 18px;">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> <%= error %>
+                </div>
+            <% } %>
+
+            <!-- ========================================== -->
+            <!-- TAB 1: DAFTAR USER                         -->
+            <!-- ========================================== -->
+            <div id="sectionDaftarUser" style="<%= activeTab === 'status' ? 'display: none;' : '' %>">
+                <!-- Filter Box -->
+                <div class="filter-card">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label class="filter-label" for="searchInput">Cari (Username / Nama)</label>
+                            <input type="text" id="searchInput" class="filter-control" placeholder="Ketikkan username atau nama..." oninput="filterUserTable()">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label" for="roleFilter">Filter Role</label>
+                            <select id="roleFilter" class="filter-control" onchange="filterUserTable()">
+                                <option value="">-- Semua Role --</option>
+                                <option value="dosen">Dosen</option>
+                                <option value="peserta">Peserta</option>
+                                <option value="pengawas">Pengawas</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label" for="kelasFilter">Filter Kelas</label>
+                            <select id="kelasFilter" class="filter-control" onchange="filterUserTable()">
+                                <option value="">-- Semua Kelas --</option>
+                                <% kelasList.forEach(function(k) { %>
+                                    <option value="<%= k.id %>"><%= k.nama_kelas %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="table-card">
+                    <div style="overflow-x: auto;">
+                        <table class="users-table" id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">Username</th>
+                                    <th style="width: 30%;">Nama Lengkap</th>
+                                    <th style="width: 15%;">Role</th>
+                                    <th style="width: 15%;">Dibuat</th>
+                                    <th style="width: 20%;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% usersList.forEach(function(u) { %>
+                                    <%
+                                        const d = u.created_at ? new Date(u.created_at) : new Date();
+                                        const day = String(d.getDate()).padStart(2, '0');
+                                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                                        const year = d.getFullYear();
+                                        const formattedDate = `${day}/${month}/${year}`;
+                                    %>
+                                    <tr data-username="<%= (u.username || '').toLowerCase() %>" 
+                                        data-nama="<%= (u.nama_lengkap || '').toLowerCase() %>" 
+                                        data-role="<%= (u.role || '').toLowerCase() %>"
+                                        data-kelas="<%= u.id_kelas || '' %>">
+                                        <td>
+                                            <strong style="font-weight: 500;"><%= u.username %></strong>
+                                        </td>
+                                        <td>
+                                            <div style="font-weight: 500;"><%= u.nama_lengkap %></div>
+                                            <% if (u.nim) { %>
+                                                <small style="color: #64748b; font-size: 0.78rem;">NIM: <%= u.nim %></small>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (u.role === 'dosen') { %>
+                                                <span class="role-badge-dosen">Dosen</span>
+                                            <% } else if (u.role === 'peserta') { %>
+                                                <span class="role-text-peserta">Peserta</span>
+                                            <% } else if (u.role === 'pengawas') { %>
+                                                <span class="role-badge-pengawas">Pengawas</span>
+                                            <% } else { %>
+                                                <span class="role-badge-admin">Admin</span>
+                                            <% } %>
+                                        </td>
+                                        <td style="color: #475569;">
+                                            <%= formattedDate %>
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                                <button type="button" class="btn-action-edit" onclick="openEditModal(<%= JSON.stringify(u) %>)">
+                                                    Edit
+                                                </button>
+
+                                                <button type="button" class="btn-action-reset" onclick="openResetModal(<%= u.id %>, '<%= u.username %>', '<%= (u.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                    Reset PW
+                                                </button>
+
+                                                <% if (u.username !== 'admin' && u.username !== 'samsul') { %>
+                                                    <button type="button" class="btn-action-hapus" onclick="openDeleteModal(<%= u.id %>, '<%= u.username %>', '<%= (u.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                        Hapus
+                                                    </button>
+                                                <% } %>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- TAB 2: MONITOR AKTIVITAS & SESI UJIAN PESERTA -->
+            <!-- ========================================== -->
+            <div id="sectionStatusPeserta" style="<%= activeTab !== 'status' ? 'display: none;' : '' %>">
+                <!-- Real-time Control Header Bar -->
+                <div class="filter-card" style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h3 style="margin: 0; font-size: 1.15rem; color: #1e5631;">
+                                    <i class="fas fa-desktop"></i> Monitor Aktivitas & Sesi Ujian Peserta
+                                </h3>
+                                <div class="live-indicator">
+                                    <div class="live-dot"></div>
+                                    <span>Realtime Aktif</span>
+                                </div>
+                            </div>
+                            <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.85rem;">
+                                Pantau otomatis kehadiran peserta, jalannya pengerjaan ujian, serta kontrol sesi (paksa keluar, akhiri sesi, reset sesi).
+                            </p>
+                        </div>
+
+                        <!-- Realtime Controls -->
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 5px 10px; border-radius: 6px;">
+                                <span style="font-size: 0.8rem; color: #64748b;">Update:</span>
+                                <span id="realtimeTimestamp" style="color: #0f172a; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;">
+                                    <strong style="font-family: monospace; font-size: 0.88rem;">--:--:--</strong>
+                                </span>
+                                <span id="syncPulse" style="display: none; font-size: 0.72rem; color: #16a34a; font-weight: 700; background: #ecfdf5; padding: 1px 6px; border-radius: 4px; border: 1px solid #bbf7d0;">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </div>
+
+                            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: #334155; cursor: pointer; user-select: none; background: #f1f5f9; padding: 6px 12px; border-radius: 6px;">
+                                <input type="checkbox" id="autoRefreshToggle" checked onchange="toggleAutoRefresh(this.checked)">
+                                <span>Auto-Refresh (3s)</span>
+                            </label>
+
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="btnManualRefresh" onclick="fetchStatusPesertaRealtime(true)" style="padding: 6px 12px; font-size: 0.82rem; font-weight: 600;">
+                                <i class="fas fa-arrows-rotate" id="refreshIcon"></i> Segarkan Sekarang
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary Chips -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 16px;">
+                        <div class="status-chip-card">
+                            <span style="font-size: 0.82rem; color: #64748b; font-weight: 600;">Total Peserta</span>
+                            <strong style="font-size: 1.15rem; color: #0f172a;" id="chipTotalPeserta"><%= statusPesertaList.length %></strong>
+                        </div>
+                        <div class="status-chip-card" style="border-left: 4px solid #0284c7;">
+                            <span style="font-size: 0.82rem; color: #0369a1; font-weight: 600;">Sedang Login</span>
+                            <strong style="font-size: 1.15rem; color: #0284c7;" id="chipLoginPeserta">0</strong>
+                        </div>
+                        <div class="status-chip-card" style="border-left: 4px solid #f59e0b;">
+                            <span style="font-size: 0.82rem; color: #b45309; font-weight: 600;">Sedang Dikerjakan</span>
+                            <strong style="font-size: 1.15rem; color: #d97706;" id="chipActivePeserta">0</strong>
+                        </div>
+                        <div class="status-chip-card" style="border-left: 4px solid #16a34a;">
+                            <span style="font-size: 0.82rem; color: #166534; font-weight: 600;">Test Selesai</span>
+                            <strong style="font-size: 1.15rem; color: #15803d;" id="chipSelesaiPeserta">0</strong>
+                        </div>
+                    </div>
+
+                    <!-- Search & Status Filters for Table -->
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 16px;">
+                        <input type="text" id="statusSearchInput" class="filter-control" placeholder="Cari peserta ujian (NIM / Nama / Kelas)..." oninput="filterStatusPesertaTable()">
+                        <select id="statusFilterSelect" class="filter-control" onchange="filterStatusPesertaTable()">
+                            <option value="">-- Semua Status Sesi --</option>
+                            <option value="sedang_login">Sedang Login</option>
+                            <option value="berlangsung">Test Sedang Dikerjakan</option>
+                            <option value="selesai">Test Selesai</option>
+                            <option value="timeout">Waktu Habis</option>
+                            <option value="belum">Belum Ujian</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Real-time Monitor Table matching user requirements -->
+                <div class="table-card">
+                    <div style="overflow-x: auto;">
+                        <table class="users-table" id="statusPesertaTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px;">No</th>
+                                    <th style="width: 110px;">NIM</th>
+                                    <th>Nama Peserta</th>
+                                    <th style="width: 90px;">Kelas</th>
+                                    <th style="width: 160px;">Status Ujian</th>
+                                    <th style="width: 130px;">Waktu Mulai</th>
+                                    <th style="width: 130px;">Waktu Selesai</th>
+                                    <th style="width: 140px;">Waktu Pengerjaan</th>
+                                    <th style="width: 75px;">Nilai</th>
+                                    <th style="width: 180px;">Aksi Sesi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statusPesertaTableBody">
+                                <% if (statusPesertaList.length === 0) { %>
+                                    <tr>
+                                        <td colspan="10" style="text-align: center; padding: 32px; color: #64748b;">
+                                            Belum ada data aktivitas ujian mahasiswa.
+                                        </td>
+                                    </tr>
+                                <% } else { %>
+                                    <% statusPesertaList.forEach(function(sp, idx) { %>
+                                        <tr data-nim="<%= (sp.nim || '').toLowerCase() %>" 
+                                            data-nama="<%= (sp.nama_lengkap || '').toLowerCase() %>" 
+                                            data-kelas="<%= (sp.nama_kelas || '').toLowerCase() %>" 
+                                            data-status="<%= sp.status %>">
+                                            <td><strong><%= idx + 1 %></strong></td>
+                                            <td><code><%= sp.nim %></code></td>
+                                            <td>
+                                                <strong><%= sp.nama_lengkap %></strong>
+                                                <% if (sp.judul_ujian && sp.judul_ujian !== '-') { %>
+                                                    <div style="font-size: 0.76rem; color: #64748b;"><%= sp.judul_ujian %></div>
+                                                <% } %>
+                                            </td>
+                                            <td><%= sp.nama_kelas || '-' %></td>
+                                            <td>
+                                                <% if (sp.status === 'sedang_login') { %>
+                                                    <span class="badge-sedang-login">
+                                                        <i class="fas fa-user-check"></i> Sedang Login
+                                                    </span>
+                                                <% } else if (sp.status === 'berlangsung') { %>
+                                                    <span class="badge-dikerjakan">
+                                                        <i class="fas fa-spinner fa-spin"></i> Sedang Mengerjakan
+                                                    </span>
+                                                <% } else if (sp.status === 'selesai') { %>
+                                                    <span class="badge-selesai">
+                                                        <i class="fas fa-check-circle"></i> Test Selesai
+                                                    </span>
+                                                <% } else if (sp.status === 'timeout') { %>
+                                                    <span class="badge-timeout">
+                                                        <i class="fas fa-clock"></i> Waktu Habis
+                                                    </span>
+                                                <% } else { %>
+                                                    <span class="badge-belum">Belum Ujian</span>
+                                                <% } %>
+                                            </td>
+                                            <td style="font-size: 0.82rem; color: #475569;">
+                                                <%= sp.waktu_mulai || '-' %>
+                                            </td>
+                                            <td style="font-size: 0.82rem; color: #475569;">
+                                                <%= sp.waktu_selesai || '-' %>
+                                            </td>
+                                            <td style="font-size: 0.82rem; font-weight: 500; color: <%= sp.status === 'berlangsung' ? '#b45309' : '#334155' %>;">
+                                                <%= sp.durasi_pengerjaan || '-' %>
+                                            </td>
+                                            <td>
+                                                <strong><%= sp.nilai_total !== null ? sp.nilai_total : '-' %></strong>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">
+                                                    <% if (sp.status === 'sedang_login' && sp.user_id) { %>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openPaksaKeluarModal(<%= sp.user_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-right-from-bracket"></i> Paksa Keluar
+                                                        </button>
+                                                    <% } else if (sp.status === 'berlangsung' && sp.sesi_id) { %>
+                                                        <button type="button" class="btn btn-sm" style="background: #dc2626; color: #fff; font-size: 0.78rem; padding: 4px 8px; border: none; border-radius: 4px;" onclick="openAkhiriSesiModal(<%= sp.sesi_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-flag-checkered"></i> Akhiri Sesi
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-warning" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openResetSesiModal(<%= sp.sesi_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-rotate-left"></i> Reset
+                                                        </button>
+                                                    <% } else if (sp.status === 'selesai' && sp.sesi_id) { %>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openResetSesiModal(<%= sp.sesi_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-rotate-left"></i> Ujian Ulang
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-success" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openTandaiAktifModal(<%= sp.sesi_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-play"></i> Buka Sesi
+                                                        </button>
+                                                    <% } else if (sp.status === 'timeout' && sp.sesi_id) { %>
+                                                        <button type="button" class="btn btn-sm btn-outline-success" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openTandaiAktifModal(<%= sp.sesi_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-play"></i> Aktifkan Lagi
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-warning" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openResetSesiModal(<%= sp.sesi_id %>, '<%= (sp.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
+                                                            <i class="fas fa-rotate-left"></i> Reset
+                                                        </button>
+                                                    <% } else { %>
+                                                        <span style="color: #94a3b8; font-size: 0.85rem;">-</span>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: TAMBAH PENGGUNA -->
+    <div class="modal-overlay" id="modalAddUser">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #1e5631;">
+                    <i class="fas fa-user-plus"></i> Tambah Pengguna Baru
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalAddUser')">&times;</button>
+            </div>
+
+            <form method="POST" action="/admin/users">
+                <input type="hidden" name="action" value="create">
+
+                <div class="form-row">
+                    <label for="add_username">Username</label>
+                    <input type="text" id="add_username" name="username" required class="filter-control" placeholder="Contoh: 240305099 atau nama_user">
+                </div>
+
+                <div class="form-row">
+                    <label for="add_password">Password Awal</label>
+                    <input type="text" id="add_password" name="password" value="12345*" required class="filter-control" placeholder="12345*">
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
+                        Password bawaan sistem disetel ke <code>12345*</code>.
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <label for="add_nama">Nama Lengkap</label>
+                    <input type="text" id="add_nama" name="nama_lengkap" required class="filter-control" placeholder="Nama Lengkap Beserta Gelar">
+                </div>
+
+                <div class="form-row">
+                    <label for="add_role">Peran (Role)</label>
+                    <select id="add_role" name="role" class="filter-control" onchange="toggleAddKelasInput(this.value)">
+                        <option value="peserta">Peserta (Mahasiswa)</option>
+                        <option value="dosen">Dosen (Pengajar)</option>
+                        <option value="pengawas">Pengawas Ujian</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div class="form-row" id="add_nim_row">
+                    <label for="add_nim">NIM (Nomor Induk Mahasiswa)</label>
+                    <input type="text" id="add_nim" name="nim" class="filter-control" placeholder="Contoh: 240305013">
+                </div>
+
+                <div class="form-row" id="add_kelas_row">
+                    <label for="add_kelas">Kelas / Rombel</label>
+                    <select id="add_kelas" name="id_kelas" class="filter-control">
+                        <option value="">-- Pilih Kelas --</option>
+                        <% kelasList.forEach(function(k) { %>
+                            <option value="<%= k.id %>"><%= k.nama_kelas %></option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalAddUser')">Batal</button>
+                    <button type="submit" class="btn-tambah-user">Simpan Pengguna</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: EDIT PENGGUNA -->
+    <div class="modal-overlay" id="modalEditUser">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #1e5631;">
+                    <i class="fas fa-user-pen"></i> Edit Data Pengguna
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalEditUser')">&times;</button>
+            </div>
+
+            <form method="POST" action="/admin/users">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="user_id" id="edit_user_id">
+
+                <div class="form-row">
+                    <label for="edit_username">Username</label>
+                    <input type="text" id="edit_username" name="username" required class="filter-control" placeholder="Masukkan username">
+                    <small style="color: #1e5631; font-size: 0.8rem; margin-top: 4px; display: block; font-weight: 500;">
+                        <i class="fas fa-user-gear"></i> Role Admin diizinkan mengubah username akun ini.
+                    </small>
+                </div>
+
+                <div class="form-row">
+                    <label for="edit_nama">Nama Lengkap</label>
+                    <input type="text" id="edit_nama" name="nama_lengkap" required class="filter-control">
+                </div>
+
+                <div class="form-row">
+                    <label for="edit_role">Peran (Role)</label>
+                    <select id="edit_role" name="role" class="filter-control" onchange="toggleEditKelasInput(this.value)">
+                        <option value="peserta">Peserta (Mahasiswa)</option>
+                        <option value="dosen">Dosen (Pengajar)</option>
+                        <option value="pengawas">Pengawas Ujian</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div class="form-row" id="edit_nim_row">
+                    <label for="edit_nim">NIM</label>
+                    <input type="text" id="edit_nim" name="nim" class="filter-control">
+                </div>
+
+                <div class="form-row" id="edit_kelas_row">
+                    <label for="edit_kelas">Kelas</label>
+                    <select id="edit_kelas" name="id_kelas" class="filter-control">
+                        <option value="">-- Pilih Kelas --</option>
+                        <% kelasList.forEach(function(k) { %>
+                            <option value="<%= k.id %>"><%= k.nama_kelas %></option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalEditUser')">Batal</button>
+                    <button type="submit" class="btn-tambah-user">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: IMPORT PENGGUNA VIA XLSX -->
+    <div class="modal-overlay" id="modalImportXlsx">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #ea580c;">
+                    <i class="fas fa-file-excel"></i> Import Pengguna Massal (.XLSX)
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalImportXlsx')">&times;</button>
+            </div>
+
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
+                Tambahkan data pengguna atau peserta ujian dalam skala banyak sekaligus secara cepat menggunakan berkas Microsoft Excel (.xlsx / .xls) atau CSV.
+            </p>
+
+            <div style="background: #f0fdf4; border: 1.5px dashed #86efac; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div>
+                    <div style="font-weight: 700; color: #166534; font-size: 0.92rem;">
+                        <i class="fas fa-file-arrow-down"></i> Format Template Excel Tersedia
+                    </div>
+                    <div style="font-size: 0.8rem; color: #15803d; margin-top: 2px;">
+                        Kolom: Username, Password, Nama Lengkap, Role, NIM, Kelas
+                    </div>
+                </div>
+                <a href="/admin/users/template_xlsx" class="btn btn-sm" style="background: #16a34a; color: #ffffff; text-decoration: none; padding: 7px 14px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-download"></i> Unduh Template
+                </a>
+            </div>
+
+            <form method="POST" action="/admin/users/import_xlsx" enctype="multipart/form-data">
+                <div class="form-row">
+                    <label for="file_xlsx" style="font-weight: 600;">Pilih Berkas Excel (.xlsx, .xls, .csv)</label>
+                    <input type="file" id="file_xlsx" name="file_xlsx" accept=".xlsx, .xls, .csv" required class="filter-control" style="padding: 10px;">
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 6px; display: block;">
+                        * Jika password pada baris dikosongkan, sistem otomatis memberikan password default <code>12345*</code>.
+                    </small>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalImportXlsx')">Batal</button>
+                    <button type="submit" class="btn-import-xlsx">
+                        <i class="fas fa-upload"></i> Unggah & Proses Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: KONFIRMASI RESET PASSWORD -->
+    <div class="modal-overlay" id="modalConfirmReset">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #15803d;">
+                    <i class="fas fa-key"></i> Konfirmasi Reset Password
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalConfirmReset')">&times;</button>
+            </div>
+
+            <p style="color: #334155; font-size: 0.95rem; line-height: 1.5; margin-bottom: 14px;">
+                Apakah Anda yakin ingin mereset password akun <strong id="reset_user_nama"></strong> (<code id="reset_user_username"></code>)?
+            </p>
+
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-size: 0.88rem; color: #166534;">
+                <i class="fas fa-info-circle" style="margin-right: 6px;"></i> Password akun akan diatur ke password standar: <strong>12345*</strong>
+            </div>
+
+            <input type="hidden" id="reset_user_id">
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalConfirmReset')">Batal</button>
+                <button type="button" id="btnConfirmReset" class="btn-action-reset" style="padding: 9px 18px; font-size: 0.9rem;" onclick="executeResetPassword()">
+                    <i class="fas fa-check"></i> Ya, Reset ke 12345*
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: KONFIRMASI HAPUS PENGGUNA -->
+    <div class="modal-overlay" id="modalConfirmDelete">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #dc2626;">
+                    <i class="fas fa-trash"></i> Konfirmasi Hapus Akun
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalConfirmDelete')">&times;</button>
+            </div>
+
+            <p style="color: #334155; font-size: 0.95rem; line-height: 1.5; margin-bottom: 14px;">
+                Apakah Anda yakin ingin menghapus akun <strong id="delete_user_nama"></strong> (<code id="delete_user_username"></code>)?
+            </p>
+
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-size: 0.88rem; color: #991b1b;">
+                <i class="fas fa-triangle-exclamation" style="margin-right: 6px;"></i> Tindakan ini bersifat permanen dan data profil mahasiswa terkait akan dihapus.
+            </div>
+
+            <input type="hidden" id="delete_user_id">
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalConfirmDelete')">Batal</button>
+                <button type="button" id="btnConfirmDelete" class="btn-action-hapus" style="padding: 9px 18px; font-size: 0.9rem;" onclick="executeDeleteUser()">
+                    <i class="fas fa-trash"></i> Ya, Hapus Pengguna
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: KONFIRMASI RESET SESI PESERTA -->
+    <div class="modal-overlay" id="modalConfirmResetSesi">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #d97706;">
+                    <i class="fas fa-rotate-left"></i> Konfirmasi Reset Sesi Ujian
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalConfirmResetSesi')">&times;</button>
+            </div>
+
+            <p style="color: #334155; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">
+                Reset sesi ujian peserta <strong id="reset_sesi_nama"></strong>? Mahasiswa akan dapat mengulang atau mengerjakan kembali ujian secara bersih.
+            </p>
+
+            <input type="hidden" id="reset_sesi_id">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalConfirmResetSesi')">Batal</button>
+                <button type="button" id="btnConfirmResetSesi" class="btn btn-warning" style="padding: 9px 18px; font-weight: 600;" onclick="executeResetSesi()">
+                    <i class="fas fa-rotate-left"></i> Ya, Reset Sesi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: KONFIRMASI PAKSA KELUAR PESERTA -->
+    <div class="modal-overlay" id="modalConfirmPaksaKeluar">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #dc2626;">
+                    <i class="fas fa-right-from-bracket"></i> Paksa Keluar Peserta
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalConfirmPaksaKeluar')">&times;</button>
+            </div>
+
+            <p style="color: #334155; font-size: 0.95rem; line-height: 1.5; margin-bottom: 14px;">
+                Keluarkan peserta <strong id="keluar_peserta_nama"></strong> dari sesi login sekarang?
+            </p>
+
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-size: 0.88rem; color: #991b1b;">
+                <i class="fas fa-circle-exclamation" style="margin-right: 6px;"></i> Peserta akan langsung dikeluarkan dari portal ujian dan sesi login dibatalkan.
+            </div>
+
+            <input type="hidden" id="keluar_user_id">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalConfirmPaksaKeluar')">Batal</button>
+                <button type="button" id="btnConfirmPaksaKeluar" class="btn-action-hapus" style="padding: 9px 18px; font-size: 0.9rem;" onclick="executePaksaKeluar()">
+                    <i class="fas fa-right-from-bracket"></i> Ya, Keluarkan Peserta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 8: KONFIRMASI AKHIRI SESI PESERTA SECARA PAKSA -->
+    <div class="modal-overlay" id="modalConfirmAkhiriSesi">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #dc2626;">
+                    <i class="fas fa-flag-checkered"></i> Akhiri Sesi Ujian (Paksa Selesai)
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalConfirmAkhiriSesi')">&times;</button>
+            </div>
+
+            <p style="color: #334155; font-size: 0.95rem; line-height: 1.5; margin-bottom: 14px;">
+                Akhiri sesi ujian peserta <strong id="akhiri_peserta_nama"></strong> secara paksa?
+            </p>
+
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-size: 0.88rem; color: #92400e;">
+                <i class="fas fa-triangle-exclamation" style="margin-right: 6px;"></i> Sistem akan langsung mengunci jawaban yang sudah tersimpan, menghitung perolehan nilai, dan menandai status sebagai <strong>SELESAI</strong>.
+            </div>
+
+            <input type="hidden" id="akhiri_sesi_id">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalConfirmAkhiriSesi')">Batal</button>
+                <button type="button" id="btnConfirmAkhiriSesi" class="btn-action-hapus" style="padding: 9px 18px; font-size: 0.9rem;" onclick="executeAkhiriSesi()">
+                    <i class="fas fa-check"></i> Ya, Akhiri Sesi Ujian
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 9: KONFIRMASI TANDAI SESI AKTIF -->
+    <div class="modal-overlay" id="modalConfirmTandaiAktif">
+        <div class="modal-content" style="max-width: 460px;">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color: #16a34a;">
+                    <i class="fas fa-play"></i> Tandai Sesi Aktif / Lanjutkan Ujian
+                </h3>
+                <button type="button" class="close-btn" onclick="closeModal('modalConfirmTandaiAktif')">&times;</button>
+            </div>
+
+            <p style="color: #334155; font-size: 0.95rem; line-height: 1.5; margin-bottom: 14px;">
+                Tandai sesi ujian peserta <strong id="aktif_peserta_nama"></strong> sebagai aktif kembali?
+            </p>
+
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 14px; margin-bottom: 22px; font-size: 0.88rem; color: #166534;">
+                <i class="fas fa-info-circle" style="margin-right: 6px;"></i> Peserta akan diizinkan masuk kembali ke ruang ujian dan melanjutkan pengerjaan soal.
+            </div>
+
+            <input type="hidden" id="aktif_sesi_id">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modalConfirmTandaiAktif')">Batal</button>
+                <button type="button" id="btnConfirmTandaiAktif" class="btn-action-reset" style="padding: 9px 18px; font-size: 0.9rem;" onclick="executeTandaiAktif()">
+                    <i class="fas fa-play"></i> Ya, Tandai Aktif
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State variables for real-time monitoring
+        let autoRefreshTimer = null;
+        let isPolling = false;
+        let currentStatusPesertaData = [];
+
+        // Toast notification system
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toastNotification');
+            t.style.display = 'block';
+            t.style.backgroundColor = type === 'success' ? '#16a34a' : (type === 'warning' ? '#d97706' : '#dc2626');
+            t.innerHTML = (type === 'success' ? '<i class="fas fa-check-circle" style="margin-right:8px;"></i>' : '<i class="fas fa-exclamation-triangle" style="margin-right:8px;"></i>') + msg;
+            setTimeout(() => {
+                t.style.display = 'none';
+            }, 3000);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            const sectionDaftar = document.getElementById('sectionDaftarUser');
+            const sectionStatus = document.getElementById('sectionStatusPeserta');
+            const btnDaftar = document.getElementById('tabDaftarBtn');
+            const btnStatus = document.getElementById('tabStatusBtn');
+
+            if (tabName === 'status') {
+                sectionDaftar.style.display = 'none';
+                sectionStatus.style.display = 'block';
+                btnDaftar.classList.remove('active');
+                btnStatus.classList.add('active');
+                startAutoRefresh();
+                fetchStatusPesertaRealtime(false);
+            } else {
+                sectionDaftar.style.display = 'block';
+                sectionStatus.style.display = 'none';
+                btnDaftar.classList.add('active');
+                btnStatus.classList.remove('active');
+                stopAutoRefresh();
+            }
+        }
+
+        // Real-time polling functions
+        function startAutoRefresh() {
+            stopAutoRefresh();
+            const isChecked = document.getElementById('autoRefreshToggle')?.checked;
+            if (isChecked) {
+                autoRefreshTimer = setInterval(() => {
+                    fetchStatusPesertaRealtime(false);
+                }, 3000);
+            }
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshTimer) {
+                clearInterval(autoRefreshTimer);
+                autoRefreshTimer = null;
+            }
+        }
+
+        function toggleAutoRefresh(enabled) {
+            if (enabled) {
+                startAutoRefresh();
+                fetchStatusPesertaRealtime(true);
+            } else {
+                stopAutoRefresh();
+            }
+        }
+
+        // Fetch realtime status peserta from server
+        async function fetchStatusPesertaRealtime(showIndicator = false) {
+            if (isPolling) return;
+            isPolling = true;
+
+            const icon = document.getElementById('refreshIcon');
+            if (showIndicator && icon) {
+                icon.classList.add('fa-spin');
+            }
+
+            try {
+                const res = await fetch('/admin/api/status_peserta');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.data)) {
+                        currentStatusPesertaData = data.data;
+                        updateStatusPesertaUI(data);
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching realtime status peserta:', err);
+            } finally {
+                isPolling = false;
+                if (showIndicator && icon) {
+                    setTimeout(() => icon.classList.remove('fa-spin'), 400);
+                }
+            }
+        }
+
+        // Local timezone detection & client-side time formatters
+        function getLocalTimezoneName() {
+            try {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                const offsetMinutes = -new Date().getTimezoneOffset();
+                const offsetHours = offsetMinutes / 60;
+                if (tz === 'Asia/Jakarta' || offsetHours === 7) return 'WIB';
+                if (tz === 'Asia/Makassar' || tz === 'Asia/Ujung_Pandang' || offsetHours === 8) return 'WITA';
+                if (tz === 'Asia/Jayapura' || offsetHours === 9) return 'WIT';
+                return offsetHours >= 0 ? `GMT+${offsetHours}` : `GMT${offsetHours}`;
+            } catch (e) {
+                return 'WIB';
+            }
+        }
+
+        function formatClientDateTime(isoString) {
+            if (!isoString) return '-';
+            const d = new Date(isoString);
+            if (isNaN(d.getTime())) return '-';
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function formatClientTimeOnly(isoString) {
+            if (!isoString) return '-';
+            const d = new Date(isoString);
+            if (isNaN(d.getTime())) return '-';
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Live ticking clock based on user's exact local device clock & timezone
+        function renderLiveClock() {
+            const clockElem = document.getElementById('realtimeTimestamp');
+            if (!clockElem) return;
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const tz = getLocalTimezoneName();
+            clockElem.innerHTML = `
+                <strong style="font-family: monospace; font-size: 0.92rem; color: #0f172a; letter-spacing: 0.5px;">${hours}:${minutes}:${seconds}</strong>
+                <span style="background: #e0f2fe; color: #0369a1; padding: 2px 7px; border-radius: 4px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.5px;">${tz}</span>
+            `;
+        }
+
+        // Start live ticking clock immediately
+        setInterval(renderLiveClock, 1000);
+        renderLiveClock();
+
+        // Update table DOM & summary chips smoothly
+        function updateStatusPesertaUI(apiResponse) {
+            const list = apiResponse.data || [];
+
+            // Briefly show sync pulse
+            const syncPulse = document.getElementById('syncPulse');
+            if (syncPulse) {
+                syncPulse.style.display = 'inline-block';
+                setTimeout(() => {
+                    syncPulse.style.display = 'none';
+                }, 1200);
+            }
+
+            // Update Summary Chips
+            const chipTotal = document.getElementById('chipTotalPeserta');
+            const chipLogin = document.getElementById('chipLoginPeserta');
+            const chipActive = document.getElementById('chipActivePeserta');
+            const chipSelesai = document.getElementById('chipSelesaiPeserta');
+
+            if (chipTotal) chipTotal.innerText = apiResponse.total || list.length;
+            if (chipLogin) chipLogin.innerText = apiResponse.login_count || 0;
+            if (chipActive) chipActive.innerText = apiResponse.active_count || 0;
+            if (chipSelesai) chipSelesai.innerText = apiResponse.completed_count || 0;
+
+            renderStatusPesertaRows(list);
+        }
+
+        function renderStatusPesertaRows(list) {
+            const tbody = document.getElementById('statusPesertaTableBody');
+            if (!tbody) return;
+
+            const q = (document.getElementById('statusSearchInput')?.value || '').toLowerCase().trim();
+            const filterStatus = (document.getElementById('statusFilterSelect')?.value || '').trim();
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 32px; color: #64748b;">Belum ada data aktivitas ujian mahasiswa.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            let visibleCount = 0;
+
+            list.forEach((sp, idx) => {
+                const nimLower = (sp.nim || '').toLowerCase();
+                const namaLower = (sp.nama_lengkap || '').toLowerCase();
+                const kelasLower = (sp.nama_kelas || '').toLowerCase();
+
+                const matchQuery = !q || nimLower.includes(q) || namaLower.includes(q) || kelasLower.includes(q);
+                const matchStatus = !filterStatus || sp.status === filterStatus;
+
+                if (!matchQuery || !matchStatus) return;
+                visibleCount++;
+
+                // Build status badge
+                let statusBadge = '<span class="badge-belum">Belum Ujian</span>';
+                if (sp.status === 'sedang_login') {
+                    statusBadge = '<span class="badge-sedang-login"><i class="fas fa-user-check"></i> Sedang Login</span>';
+                } else if (sp.status === 'berlangsung') {
+                    statusBadge = '<span class="badge-dikerjakan"><i class="fas fa-spinner fa-spin"></i> Sedang Mengerjakan</span>';
+                } else if (sp.status === 'selesai') {
+                    statusBadge = '<span class="badge-selesai"><i class="fas fa-check-circle"></i> Test Selesai</span>';
+                } else if (sp.status === 'timeout') {
+                    statusBadge = '<span class="badge-timeout"><i class="fas fa-clock"></i> Waktu Habis</span>';
+                }
+
+                // Build action buttons
+                let actionButtons = '<span style="color: #94a3b8; font-size: 0.85rem;">-</span>';
+                const safeName = (sp.nama_lengkap || '').replace(/'/g, "\\'");
+
+                if (sp.status === 'sedang_login' && sp.user_id) {
+                    actionButtons = `
+                        <button type="button" class="btn btn-sm btn-outline-danger" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openPaksaKeluarModal(${sp.user_id}, '${safeName}')">
+                            <i class="fas fa-right-from-bracket"></i> Paksa Keluar
+                        </button>
+                    `;
+                } else if (sp.status === 'berlangsung' && sp.sesi_id) {
+                    actionButtons = `
+                        <button type="button" class="btn btn-sm" style="background: #dc2626; color: #fff; font-size: 0.78rem; padding: 4px 8px; border: none; border-radius: 4px;" onclick="openAkhiriSesiModal(${sp.sesi_id}, '${safeName}')">
+                            <i class="fas fa-flag-checkered"></i> Akhiri Sesi
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-warning" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openResetSesiModal(${sp.sesi_id}, '${safeName}')">
+                            <i class="fas fa-rotate-left"></i> Reset
+                        </button>
+                    `;
+                } else if (sp.status === 'selesai' && sp.sesi_id) {
+                    actionButtons = `
+                        <button type="button" class="btn btn-sm btn-outline-secondary" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openResetSesiModal(${sp.sesi_id}, '${safeName}')">
+                            <i class="fas fa-rotate-left"></i> Ujian Ulang
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-success" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openTandaiAktifModal(${sp.sesi_id}, '${safeName}')">
+                            <i class="fas fa-play"></i> Buka Sesi
+                        </button>
+                    `;
+                } else if (sp.status === 'timeout' && sp.sesi_id) {
+                    actionButtons = `
+                        <button type="button" class="btn btn-sm btn-outline-success" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openTandaiAktifModal(${sp.sesi_id}, '${safeName}')">
+                            <i class="fas fa-play"></i> Aktifkan Lagi
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-warning" style="font-size: 0.78rem; padding: 4px 8px;" onclick="openResetSesiModal(${sp.sesi_id}, '${safeName}')">
+                            <i class="fas fa-rotate-left"></i> Reset
+                        </button>
+                    `;
+                }
+
+                // Format Waktu Mulai in user's local timezone
+                let waktuMulaiDisplay = '-';
+                if (sp.waktu_mulai_iso) {
+                    if (sp.is_login_only || sp.status === 'sedang_login') {
+                        waktuMulaiDisplay = `Login: ${formatClientTimeOnly(sp.waktu_mulai_iso)}`;
+                    } else {
+                        waktuMulaiDisplay = formatClientDateTime(sp.waktu_mulai_iso);
+                    }
+                } else if (sp.waktu_mulai) {
+                    waktuMulaiDisplay = sp.waktu_mulai;
+                }
+
+                // Format Waktu Selesai in user's local timezone
+                let waktuSelesaiDisplay = '-';
+                if (sp.waktu_selesai_iso) {
+                    waktuSelesaiDisplay = formatClientDateTime(sp.waktu_selesai_iso);
+                } else if (sp.waktu_selesai && sp.waktu_selesai !== '-') {
+                    waktuSelesaiDisplay = sp.waktu_selesai;
+                }
+
+                // Compute exact duration locally
+                let durasiDisplay = '-';
+                if (sp.status === 'berlangsung' && sp.waktu_mulai_iso) {
+                    const startMs = new Date(sp.waktu_mulai_iso).getTime();
+                    const elapsedSec = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+                    const jam = Math.floor(elapsedSec / 3600);
+                    const mnt = Math.floor((elapsedSec % 3600) / 60);
+                    const dtk = elapsedSec % 60;
+                    durasiDisplay = (jam > 0 ? jam + ' jam ' : '') + mnt + ' mnt ' + dtk + ' dtk (Aktif)';
+                } else if (sp.status === 'selesai' && sp.waktu_mulai_iso && sp.waktu_selesai_iso) {
+                    const startMs = new Date(sp.waktu_mulai_iso).getTime();
+                    const endMs = new Date(sp.waktu_selesai_iso).getTime();
+                    const diffSec = Math.max(0, Math.floor((endMs - startMs) / 1000));
+                    const jam = Math.floor(diffSec / 3600);
+                    const mnt = Math.floor((diffSec % 3600) / 60);
+                    const dtk = diffSec % 60;
+                    durasiDisplay = (jam > 0 ? jam + ' jam ' : '') + mnt + ' mnt ' + dtk + ' dtk';
+                } else if (sp.durasi_pengerjaan) {
+                    durasiDisplay = sp.durasi_pengerjaan;
+                }
+
+                const durasiColor = sp.status === 'berlangsung' ? '#b45309' : '#334155';
+
+                html += `
+                    <tr data-nim="${nimLower}" data-nama="${namaLower}" data-kelas="${kelasLower}" data-status="${sp.status}">
+                        <td><strong>${sp.no || idx + 1}</strong></td>
+                        <td><code>${sp.nim}</code></td>
+                        <td>
+                            <strong>${sp.nama_lengkap}</strong>
+                            ${sp.judul_ujian && sp.judul_ujian !== '-' ? `<div style="font-size: 0.76rem; color: #64748b;">${sp.judul_ujian}</div>` : ''}
+                        </td>
+                        <td>${sp.nama_kelas || '-'}</td>
+                        <td>${statusBadge}</td>
+                        <td style="font-size: 0.82rem; color: #475569;">${waktuMulaiDisplay}</td>
+                        <td style="font-size: 0.82rem; color: #475569;">${waktuSelesaiDisplay}</td>
+                        <td style="font-size: 0.82rem; font-weight: 500; color: ${durasiColor};">${durasiDisplay}</td>
+                        <td><strong>${sp.nilai_total !== null && sp.nilai_total !== undefined ? sp.nilai_total : '-'}</strong></td>
+                        <td><div style="display: flex; gap: 5px; flex-wrap: wrap; align-items: center;">${actionButtons}</div></td>
+                    </tr>
+                `;
+            });
+
+            if (visibleCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; padding: 28px; color: #64748b;">Tidak ada data peserta yang cocok dengan kriteria filter.</td></tr>`;
+            } else {
+                tbody.innerHTML = html;
+            }
+        }
+
+        function filterStatusPesertaTable() {
+            if (currentStatusPesertaData && currentStatusPesertaData.length > 0) {
+                renderStatusPesertaRows(currentStatusPesertaData);
+            }
+        }
+
+        // Live table filtering for Tab 1 (Daftar User)
+        function filterUserTable() {
+            const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+            const role = (document.getElementById('roleFilter').value || '').toLowerCase().trim();
+            const kelas = (document.getElementById('kelasFilter').value || '').trim();
+
+            const table = document.getElementById('usersTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const tr = rows[i];
+                const uUsername = tr.getAttribute('data-username') || '';
+                const uNama = tr.getAttribute('data-nama') || '';
+                const uRole = tr.getAttribute('data-role') || '';
+                const uKelas = tr.getAttribute('data-kelas') || '';
+
+                const matchesQuery = !q || uUsername.includes(q) || uNama.includes(q);
+                const matchesRole = !role || uRole === role;
+                const matchesKelas = !kelas || uKelas === kelas;
+
+                if (matchesQuery && matchesRole && matchesKelas) {
+                    tr.style.display = '';
+                } else {
+                    tr.style.display = 'none';
+                }
+            }
+        }
+
+        // Modal Controls
+        function openAddModal() {
+            document.getElementById('modalAddUser').style.display = 'flex';
+        }
+
+        function openImportModal() {
+            document.getElementById('modalImportXlsx').style.display = 'flex';
+        }
+
+        function openEditModal(user) {
+            document.getElementById('edit_user_id').value = user.id;
+            document.getElementById('edit_username').value = user.username || '';
+            document.getElementById('edit_nama').value = user.nama_lengkap || '';
+            document.getElementById('edit_role').value = user.role || 'peserta';
+            document.getElementById('edit_nim').value = user.nim || '';
+            document.getElementById('edit_kelas').value = user.id_kelas || '';
+
+            toggleEditKelasInput(user.role);
+            document.getElementById('modalEditUser').style.display = 'flex';
+        }
+
+        function openResetModal(userId, username, nama) {
+            document.getElementById('reset_user_id').value = userId;
+            document.getElementById('reset_user_nama').innerText = nama || username;
+            document.getElementById('reset_user_username').innerText = username;
+            const btn = document.getElementById('btnConfirmReset');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Ya, Reset ke 12345*';
+            document.getElementById('modalConfirmReset').style.display = 'flex';
+        }
+
+        function openDeleteModal(userId, username, nama) {
+            document.getElementById('delete_user_id').value = userId;
+            document.getElementById('delete_user_nama').innerText = nama || username;
+            document.getElementById('delete_user_username').innerText = username;
+            const btn = document.getElementById('btnConfirmDelete');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash"></i> Ya, Hapus Pengguna';
+            document.getElementById('modalConfirmDelete').style.display = 'flex';
+        }
+
+        function openResetSesiModal(sesiId, nama) {
+            document.getElementById('reset_sesi_id').value = sesiId;
+            document.getElementById('reset_sesi_nama').innerText = nama;
+            const btn = document.getElementById('btnConfirmResetSesi');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-rotate-left"></i> Ya, Reset Sesi';
+            document.getElementById('modalConfirmResetSesi').style.display = 'flex';
+        }
+
+        function openPaksaKeluarModal(userId, nama) {
+            document.getElementById('keluar_user_id').value = userId;
+            document.getElementById('keluar_peserta_nama').innerText = nama;
+            const btn = document.getElementById('btnConfirmPaksaKeluar');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-right-from-bracket"></i> Ya, Keluarkan Peserta';
+            document.getElementById('modalConfirmPaksaKeluar').style.display = 'flex';
+        }
+
+        function openAkhiriSesiModal(sesiId, nama) {
+            document.getElementById('akhiri_sesi_id').value = sesiId;
+            document.getElementById('akhiri_peserta_nama').innerText = nama;
+            const btn = document.getElementById('btnConfirmAkhiriSesi');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Ya, Akhiri Sesi Ujian';
+            document.getElementById('modalConfirmAkhiriSesi').style.display = 'flex';
+        }
+
+        function openTandaiAktifModal(sesiId, nama) {
+            document.getElementById('aktif_sesi_id').value = sesiId;
+            document.getElementById('aktif_peserta_nama').innerText = nama;
+            const btn = document.getElementById('btnConfirmTandaiAktif');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-play"></i> Ya, Tandai Aktif';
+            document.getElementById('modalConfirmTandaiAktif').style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // Action Executions
+        async function executeResetPassword() {
+            const userId = document.getElementById('reset_user_id').value;
+            const btn = document.getElementById('btnConfirmReset');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            try {
+                const res = await fetch('/admin/api/users/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset_password', user_id: userId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('modalConfirmReset');
+                    showToast(data.message || 'Password berhasil direset ke 12345*', 'success');
+                    setTimeout(() => { window.location.reload(); }, 800);
+                } else {
+                    showToast(data.message || 'Gagal mereset password', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Ya, Reset ke 12345*';
+                }
+            } catch(err) {
+                window.location.reload();
+            }
+        }
+
+        async function executeDeleteUser() {
+            const userId = document.getElementById('delete_user_id').value;
+            const btn = document.getElementById('btnConfirmDelete');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghapus...';
+
+            try {
+                const res = await fetch('/admin/api/users/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete', user_id: userId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('modalConfirmDelete');
+                    showToast(data.message || 'Pengguna berhasil dihapus', 'success');
+                    setTimeout(() => { window.location.reload(); }, 800);
+                } else {
+                    showToast(data.message || 'Gagal menghapus pengguna', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-trash"></i> Ya, Hapus Pengguna';
+                }
+            } catch(err) {
+                window.location.reload();
+            }
+        }
+
+        async function executeResetSesi() {
+            const sesiId = document.getElementById('reset_sesi_id').value;
+            const btn = document.getElementById('btnConfirmResetSesi');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            try {
+                const res = await fetch('/admin/api/users/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reset_sesi', sesi_id: sesiId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('modalConfirmResetSesi');
+                    showToast(data.message || 'Sesi ujian berhasil direset!', 'success');
+                    fetchStatusPesertaRealtime(true);
+                } else {
+                    showToast(data.message || 'Gagal mereset sesi', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-rotate-left"></i> Ya, Reset Sesi';
+                }
+            } catch(err) {
+                window.location.reload();
+            }
+        }
+
+        async function executePaksaKeluar() {
+            const userId = document.getElementById('keluar_user_id').value;
+            const btn = document.getElementById('btnConfirmPaksaKeluar');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            try {
+                const res = await fetch('/admin/api/users/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'paksa_keluar', user_id: userId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('modalConfirmPaksaKeluar');
+                    showToast(data.message || 'Peserta berhasil dipaksa keluar', 'success');
+                    fetchStatusPesertaRealtime(true);
+                } else {
+                    showToast(data.message || 'Gagal mengeluarkan peserta', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-right-from-bracket"></i> Ya, Keluarkan Peserta';
+                }
+            } catch(err) {
+                window.location.reload();
+            }
+        }
+
+        async function executeAkhiriSesi() {
+            const sesiId = document.getElementById('akhiri_sesi_id').value;
+            const btn = document.getElementById('btnConfirmAkhiriSesi');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            try {
+                const res = await fetch('/admin/api/users/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'akhiri_sesi', sesi_id: sesiId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('modalConfirmAkhiriSesi');
+                    showToast(data.message || 'Sesi ujian berhasil diakhiri secara paksa', 'success');
+                    fetchStatusPesertaRealtime(true);
+                } else {
+                    showToast(data.message || 'Gagal mengakhiri sesi', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Ya, Akhiri Sesi Ujian';
+                }
+            } catch(err) {
+                window.location.reload();
+            }
+        }
+
+        async function executeTandaiAktif() {
+            const sesiId = document.getElementById('aktif_sesi_id').value;
+            const btn = document.getElementById('btnConfirmTandaiAktif');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+            try {
+                const res = await fetch('/admin/api/users/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'tandai_aktif', sesi_id: sesiId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal('modalConfirmTandaiAktif');
+                    showToast(data.message || 'Sesi berhasil ditandai sebagai aktif', 'success');
+                    fetchStatusPesertaRealtime(true);
+                } else {
+                    showToast(data.message || 'Gagal menandai sesi aktif', 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-play"></i> Ya, Tandai Aktif';
+                }
+            } catch(err) {
+                window.location.reload();
+            }
+        }
+
+        // Close on backdrop click
+        window.addEventListener('click', function(e) {
+            ['modalAddUser', 'modalEditUser', 'modalImportXlsx', 'modalConfirmReset', 'modalConfirmDelete', 'modalConfirmResetSesi', 'modalConfirmPaksaKeluar', 'modalConfirmAkhiriSesi', 'modalConfirmTandaiAktif'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && e.target === el) {
+                    el.style.display = 'none';
+                }
+            });
+        });
+
+        // Toggle Kelas & NIM fields
+        function toggleAddKelasInput(role) {
+            const nimRow = document.getElementById('add_nim_row');
+            const kelasRow = document.getElementById('add_kelas_row');
+            if (role === 'peserta') {
+                nimRow.style.display = 'block';
+                kelasRow.style.display = 'block';
+            } else {
+                nimRow.style.display = 'none';
+                kelasRow.style.display = 'none';
+            }
+        }
+
+        function toggleEditKelasInput(role) {
+            const nimRow = document.getElementById('edit_nim_row');
+            const kelasRow = document.getElementById('edit_kelas_row');
+            if (role === 'peserta') {
+                nimRow.style.display = 'block';
+                kelasRow.style.display = 'block';
+            } else {
+                nimRow.style.display = 'none';
+                kelasRow.style.display = 'none';
+            }
+        }
+
+        // Auto-run realtime when loaded if active tab is status
+        document.addEventListener('DOMContentLoaded', () => {
+            const isStatusTab = '<%= activeTab %>' === 'status';
+            if (isStatusTab) {
+                startAutoRefresh();
+                fetchStatusPesertaRealtime(false);
+            }
+        });
+    </script>
+</body>
+</html>

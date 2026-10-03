@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Peserta - SIPENA</title>
+    <meta name="description" content="Portal Login Peserta Ujian SIPENA">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+            max-width: 430px;
+            width: 100%;
+            padding: 42px 32px 34px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+        }
+
+        .avatar-badge {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background-color: #1b4d3e;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(27, 77, 62, 0.2);
+        }
+
+        .avatar-badge i {
+            color: #ffffff;
+            font-size: 1.7rem;
+        }
+
+        .login-title {
+            color: #1b4d3e;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-subtitle {
+            color: #64748b;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            margin-bottom: 24px;
+            padding: 0 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 7px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #0f172a;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-input:focus {
+            border-color: #1b4d3e;
+            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.12);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 1rem;
+            padding: 4px 6px;
+        }
+
+        .toggle-password:hover {
+            color: #475569;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1b4d3e;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(27, 77, 62, 0.2);
+            font-family: inherit;
+        }
+
+        .btn-login:hover {
+            background-color: #143d22;
+            transform: translateY(-1px);
+        }
+
+        .btn-login.is-loading,
+        .btn-login:disabled {
+            background-color: #0d9488 !important; /* Warna berbeda (Teal segar) saat memproses */
+            color: #ffffff !important;
+            cursor: wait !important;
+            opacity: 0.95;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.35);
+            transform: none !important;
+        }
+
+        .alert-box {
+            background-color: #fffbeb;
+            border: 1.5px solid #fef08a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 18px;
+            text-align: center;
+            color: #854d0e;
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .alert-box i {
+            color: #d97706;
+            margin-right: 4px;
+        }
+
+        .card-divider {
+            border-top: 1px solid #e2e8f0;
+            margin-top: 22px;
+            padding-top: 18px;
+            text-align: center;
+        }
+
+        .footer-link {
+            color: #475569;
+            font-size: 0.88rem;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.15s ease;
+        }
+
+        .footer-link:hover {
+            color: #1b4d3e;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        /* Status Selesai Card */
+        .selesai-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .selesai-icon i {
+            font-size: 2.2rem;
+            color: white;
+        }
+        .status-tag {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+            border-radius: 999px;
+            padding: 4px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <% if (typeof status !== 'undefined' && status === 'selesai') { %>
+        <div class="login-card">
+            <div class="selesai-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="status-tag"><i class="fas fa-flag-checkered"></i> TEST SELESAI</div>
+            <h2 class="login-title" style="font-size: 1.6rem; color: #15803d;">Ujian Telah Selesai</h2>
+            <p class="login-subtitle">
+                Jawaban Anda telah berhasil dikumpulkan.<br>
+                Terima kasih telah mengikuti ujian.
+            </p>
+            <div class="card-divider" style="margin-top: 14px; padding-top: 16px;">
+                <a href="/peserta_login" class="btn-login" style="text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Login Kembali
+                </a>
+            </div>
+            <div style="margin-top: 16px;">
+                <a href="/admin/login" class="footer-link">Login sebagai Admin/Dosen/Pengawas</a>
+            </div>
+        </div>
+    <% } else { %>
+        <!-- LOGIN CARD MATCHING IMAGE 1 -->
+        <div class="login-card">
+            <div class="avatar-badge">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+
+            <h2 class="login-title">Login Peserta</h2>
+            <p class="login-subtitle">Masukkan username dan password untuk mengakses ujian</p>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i><%= error %>
+                </div>
+            <% } %>
+
+            <form method="POST" action="/peserta_login" id="pesertaLoginForm">
+                <input type="hidden" name="sid" value="<%= typeof sid !== 'undefined' ? sid : '' %>">
+
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" placeholder="Masukkan username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" class="form-input" style="padding-right: 40px;" placeholder="Masukkan password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword()" title="Tampilkan/Sembunyikan Password">
+                            <i class="fas fa-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login" id="btnPesertaLogin">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+            <div class="alert-box">
+                <i class="fas fa-info-circle"></i>
+                <strong>Lupa password?</strong> Hubungi Pengawas/Dosen untuk melakukan reset password.
+            </div>
+
+            <div class="card-divider">
+                <a href="/admin/login" class="footer-link">Login sebagai Admin/Dosen/Pengawas</a>
+            </div>
+        </div>
+    <% } %>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Tampilkan indikator proses saat form login dikirim
+        const pesertaForm = document.getElementById('pesertaLoginForm');
+        const pesertaSubmitBtn = document.getElementById('btnPesertaLogin');
+        if (pesertaForm && pesertaSubmitBtn) {
+            pesertaForm.addEventListener('submit', function(e) {
+                if (!this.checkValidity()) return;
+                pesertaSubmitBtn.classList.add('is-loading');
+                pesertaSubmitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
+                setTimeout(() => {
+                    pesertaSubmitBtn.disabled = true;
+                }, 0);
+            });
+        }
+    </script>
+</body>
+</html>

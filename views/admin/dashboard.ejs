@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - Panel Admin SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Sistem Penilaian Akademik</h1>
+                <p class="subtitle">Selamat datang, <%= adminNama %> (<%= adminRole.toUpperCase() %>)</p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/dashboard', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <span>Beranda</span>
+            </nav>
+
+            <h2><i class="fas fa-home"></i> Beranda Sistem</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalUjian %></div>
+                    <div class="stat-label">Total Penilaian</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalSoal %></div>
+                    <div class="stat-label">Total Bank Soal</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalPeserta %></div>
+                    <div class="stat-label">Ujian Selesai</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><%= totalMahasiswa %></div>
+                    <div class="stat-label">Total Peserta</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin: 0;"><i class="fas fa-file-lines"></i> Penilaian Terbaru</h3>
+                    <a href="/admin/ujian" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Kelola Ujian</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Judul Ujian</th>
+                                <th>Materi / MK</th>
+                                <th>Jenis</th>
+                                <th>Durasi</th>
+                                <th>Peserta Selesai</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (recentExams.length === 0) { %>
+                                <tr><td colspan="7" class="text-center" style="padding: 20px;">Belum ada penilaian yang dibuat.</td></tr>
+                            <% } else { %>
+                                <% recentExams.forEach(function(exam) { %>
+                                    <tr>
+                                        <td><strong><%= exam.judul_ujian %></strong></td>
+                                        <td><%= exam.nama_mk %></td>
+                                        <td><span class="badge badge-info"><%= exam.jenis_ujian %></span></td>
+                                        <td><%= exam.durasi_menit %> Menit</td>
+                                        <td><%= exam.peserta_count %> orang</td>
+                                        <td>
+                                            <span class="badge <%= exam.aktif ? 'badge-success' : 'badge-danger' %>">
+                                                <%= exam.aktif ? 'Aktif' : 'Non-Aktif' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/soal?ujian_id=<%= exam.id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-list-check"></i> Soal
+                                            </a>
+                                            <a href="/admin/hasil?ujian_id=<%= exam.id %>" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-chart-bar"></i> Laporan
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

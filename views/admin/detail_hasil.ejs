@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Jawaban Peserta - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Detail Penilaian Peserta</h1>
+                <p class="subtitle"><%= adminNama %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/detail_hasil', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <a href="/admin/hasil">Laporan Hasil</a> &raquo;
+                <span>Detail Jawaban</span>
+            </nav>
+
+            <div class="card" style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3 style="margin-bottom: 4px;"><%= mahasiswa.nama_lengkap %> (<%= mahasiswa.nim %>)</h3>
+                        <p style="color: var(--text-muted); margin: 0;"><%= ujian.judul_ujian %> &bull; <%= ujian.nama_mk %></p>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="font-size: 2rem; font-weight: 800; color: <%= sesi.nilai_total >= (ujian.nilai_lulus || 60) ? '#16a34a' : '#dc2626' %>;">
+                            <%= sesi.nilai_total %>
+                        </span>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Total Nilai Akhir</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 16px;">Analisis Butir Jawaban</h3>
+
+            <% soalList.forEach(function(s, idx) { 
+                const j = jawabanList.find(item => item.id_soal === s.id);
+                const isCorrect = j ? j.is_correct : false;
+                const nilai = j ? j.nilai : 0;
+            %>
+                <div class="card" style="margin-bottom: 16px; border-left: 4px solid <%= isCorrect ? '#16a34a' : '#dc2626' %>;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong>Soal <%= idx + 1 %> (<%= s.jenis_soal.toUpperCase() %>)</strong>
+                        <span class="badge <%= isCorrect ? 'badge-success' : 'badge-danger' %>">
+                            Nilai: <%= nilai %> / <%= s.poin || 4 %> Poin
+                        </span>
+                    </div>
+
+                    <div style="margin-bottom: 10px; color: var(--text-dark);">
+                        <%- s.pertanyaan %>
+                    </div>
+
+                    <div style="padding: 10px 14px; background: #f8fafc; border-radius: 6px; font-size: 0.9rem; margin-bottom: 8px;">
+                        <strong>Jawaban Peserta:</strong> <code><%= j ? j.jawaban : '(Tidak dijawab)' %></code>
+                    </div>
+
+                    <% if (s.pembahasan) { %>
+                        <div style="font-size: 0.85rem; color: #475569;">
+                            <strong>Pembahasan:</strong> <%= s.pembahasan %>
+                        </div>
+                    <% } %>
+                </div>
+            <% }); %>
+
+            <div style="margin-top: 20px;">
+                <a href="/admin/hasil" class="btn btn-secondary">&larr; Kembali ke Daftar Hasil</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat & Arsip Ujian - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Riwayat & Arsip Penilaian</h1>
+                <p class="subtitle"><%= adminNama %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/arsip', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Arsip</span>
+            </nav>
+
+            <h2><i class="fas fa-history"></i> Riwayat & Arsip Reset Ujian</h2>
+
+            <div class="card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>ID Sesi</th>
+                            <th>Nilai Terdahulu</th>
+                            <th>Status Terakhir</th>
+                            <th>Alasan Reset</th>
+                            <th>Direset Oleh</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (riwayat.length === 0) { %>
+                            <tr><td colspan="6" class="text-center" style="padding: 24px;">Belum ada arsip sesi yang direset.</td></tr>
+                        <% } else { %>
+                            <% riwayat.forEach(function(r, idx) { %>
+                                <tr>
+                                    <td><%= idx + 1 %></td>
+                                    <td><code>SESI-#<%= r.id_sesi %></code></td>
+                                    <td><%= r.nilai_total %></td>
+                                    <td><span class="badge badge-info"><%= r.status_kelulusan || 'Selesai' %></span></td>
+                                    <td><%= r.alasan_reset %></td>
+                                    <td><%= r.direset_oleh %></td>
+                                </tr>
+                            <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

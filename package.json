@@ -1,0 +1,23 @@
+{
+  "name": "sipena",
+  "version": "1.0.0",
+  "description": "SIPENA – Sistem Penilaian Akademik Berbasis UTBK - Multi Program Studi",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -e \"console.log('Build OK')\""
+  },
+  "dependencies": {
+    "@google/genai": "^0.2.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "docx": "^9.8.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "multer": "^2.4.0",
+    "xlsx": "^0.18.5"
+  }
+}

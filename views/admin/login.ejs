@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin/Dosen/Pengawas - SIPENA</title>
+    <meta name="description" content="Portal Login Admin, Dosen, dan Pengawas SIPENA">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+            max-width: 430px;
+            width: 100%;
+            padding: 44px 34px 38px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+        }
+
+        .login-title {
+            color: #1b4d3e;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.35;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .login-subtitle {
+            color: #64748b;
+            font-size: 0.92rem;
+            line-height: 1.45;
+            margin-bottom: 26px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 7px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #0f172a;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-input:focus {
+            border-color: #1b4d3e;
+            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.12);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            font-size: 1rem;
+            padding: 4px 6px;
+        }
+
+        .toggle-password:hover {
+            color: #475569;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1b4d3e;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(27, 77, 62, 0.2);
+            font-family: inherit;
+        }
+
+        .btn-login:hover {
+            background-color: #143d22;
+            transform: translateY(-1px);
+        }
+
+        .btn-login.is-loading,
+        .btn-login:disabled {
+            background-color: #0d9488 !important; /* Warna berbeda (Teal segar) saat memproses */
+            color: #ffffff !important;
+            cursor: wait !important;
+            opacity: 0.95;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.35);
+            transform: none !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .links-container {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .action-link {
+            color: #1b4d3e;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .action-link:hover {
+            color: #143d22;
+            text-decoration: underline;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN CARD MATCHING IMAGE 2 -->
+    <div class="login-card">
+        <h2 class="login-title">
+            Login<br>Admin/Dosen/Pengawas
+        </h2>
+        <p class="login-subtitle">Masukkan kredensial untuk mengakses panel</p>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert-error">
+                <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i><%= error %>
+            </div>
+        <% } %>
+
+        <form method="POST" action="/admin/login" id="adminLoginForm">
+            <input type="hidden" name="sid" value="<%= typeof sid !== 'undefined' ? sid : '' %>">
+
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="Masukkan username" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" name="password" class="form-input" style="padding-right: 40px;" placeholder="Masukkan password" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword()" title="Tampilkan/Sembunyikan Password">
+                        <i class="fas fa-eye" id="eye-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="btnLogin">
+                Login
+            </button>
+        </form>
+
+        <div class="links-container">
+            <div>
+                <a href="/lupa_password" class="action-link">Lupa Password?</a>
+            </div>
+            <div>
+                <a href="/peserta_login" class="action-link">Kembali ke halaman peserta</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // Ubah tampilan tombol saat form login dikirim
+        const loginForm = document.getElementById('adminLoginForm');
+        const submitBtn = document.getElementById('btnLogin');
+        loginForm.addEventListener('submit', function(e) {
+            if (!this.checkValidity()) return;
+            submitBtn.classList.add('is-loading');
+            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Memproses...';
+            setTimeout(() => {
+                submitBtn.disabled = true;
+            }, 0);
+        });
+    </script>
+</body>
+</html>

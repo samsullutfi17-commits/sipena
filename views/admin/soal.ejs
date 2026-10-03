@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Soal - <%= currentUjian ? currentUjian.judul_ujian : 'Ujian' %> - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Bank Soal</h1>
+                <p class="subtitle"><%= adminNama %> &bull; <%= currentUjian ? currentUjian.judul_ujian : '' %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/soal', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <a href="/admin/ujian">Penilaian</a> &raquo;
+                <span>Bank Soal</span>
+            </nav>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h2 style="margin: 0;"><i class="fas fa-question-circle"></i> Bank Soal</h2>
+                    <select class="form-select" onchange="window.location.href='/admin/soal?ujian_id=' + this.value" style="width: auto;">
+                        <% ujianList.forEach(function(u) { %>
+                            <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>>
+                                <%= u.judul_ujian %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-accent" onclick="openModal('ai-modal')">
+                        <i class="fas fa-wand-magic-sparkles"></i> AI Generate Soal
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="openModal('create-soal-modal')">
+                        <i class="fas fa-plus"></i> Tambah Soal Manual
+                    </button>
+                </div>
+            </div>
+
+            <% if (message) { %>
+                <div class="alert alert-success"><%= message %></div>
+            <% } %>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                    <h3 style="margin: 0;">Daftar Soal (<%= soalList.length %> Butir)</h3>
+                    <span class="badge badge-info">Total Poin: <%= soalList.reduce((acc, s) => acc + (s.poin || 0), 0) %></span>
+                </div>
+
+                <% if (soalList.length === 0) { %>
+                    <p class="text-center" style="padding: 30px; color: var(--text-muted);">
+                        Belum ada soal untuk penilaian ini. Klik "Tambah Soal Manual" atau "AI Generate Soal" untuk membuat soal!
+                    </p>
+                <% } else { %>
+                    <% soalList.forEach(function(s, idx) { %>
+                        <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span class="badge badge-primary">No. <%= idx + 1 %></span>
+                                    <span class="badge badge-secondary"><%= s.jenis_soal.toUpperCase() %></span>
+                                    <span class="badge badge-info"><%= s.tingkat_kesulitan || 'sedang' %></span>
+                                    <span class="badge badge-warning"><%= s.level_kognitif || 'C1' %></span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-weight: 600; font-size: 0.9rem;"><%= s.poin || 4 %> Poin</span>
+                                    <form method="POST" action="/admin/soal" style="display: inline;" onsubmit="return confirm('Hapus butir soal ini?');">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id_ujian" value="<%= selectedUjianId %>">
+                                        <input type="hidden" name="soal_id" value="<%= s.id %>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div style="font-size: 1.05rem; margin-bottom: 12px; color: var(--text-dark);">
+                                <%- s.pertanyaan %>
+                            </div>
+
+                            <% if (s.opsi && s.opsi.length > 0) { %>
+                                <div style="margin-left: 15px; margin-bottom: 12px;">
+                                    <% s.opsi.forEach(function(o, oIdx) { %>
+                                        <div style="color: <%= o.benar ? '#15803d' : '#475569' %>; font-weight: <%= o.benar ? '600' : 'normal' %>; margin-bottom: 4px;">
+                                            <%= String.fromCharCode(65 + oIdx) %>. <%= o.teks_opsi %> <%= o.benar ? '✔ (Kunci)' : '' %>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } %>
+
+                            <% if (s.pembahasan) { %>
+                                <div style="font-size: 0.85rem; color: #64748b; background: #f8fafc; padding: 8px 12px; border-radius: 4px;">
+                                    <strong>Pembahasan:</strong> <%= s.pembahasan %>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Soal Manual Modal -->
+    <div id="create-soal-modal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 680px; width: 92%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3><i class="fas fa-plus-circle"></i> Tambah Soal Manual</h3>
+                <button type="button" onclick="closeModal('create-soal-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <form method="POST" action="/admin/soal">
+                <input type="hidden" name="action" value="create">
+                <input type="hidden" name="id_ujian" value="<%= selectedUjianId %>">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label>Jenis Soal</label>
+                        <select name="jenis_soal" id="jenis_soal_select" class="form-select" onchange="switchSoalType(this.value)">
+                            <option value="pg">Pilihan Ganda (PG)</option>
+                            <option value="tf">Benar / Salah (TF)</option>
+                            <option value="short">Jawaban Singkat</option>
+                            <option value="multiple">Pilihan Ganda Kompleks</option>
+                            <option value="matching">Menjodohkan (Matching)</option>
+                            <option value="ordering">Penyusunan Urutan</option>
+                            <option value="esai">Esai Uraian</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Bobot Poin</label>
+                        <input type="number" name="poin" value="4" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teks Pertanyaan</label>
+                    <textarea name="pertanyaan" rows="3" required class="form-control" placeholder="Tuliskan teks pertanyaan..."></textarea>
+                </div>
+
+                <!-- Type: PG & Multiple -->
+                <div id="type_pg_container">
+                    <label>Opsi Jawaban (Pilih Kunci yang Benar):</label>
+                    <% ['A', 'B', 'C', 'D', 'E'].forEach(function(letter, idx) { %>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <input type="radio" name="opsi_benar" value="<%= idx %>" <%= idx === 0 ? 'checked' : '' %>>
+                            <input type="text" name="opsi_teks[]" placeholder="Opsi <%= letter %>" class="form-control" style="flex: 1;">
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Type: TF -->
+                <div id="type_tf_container" style="display: none;">
+                    <label>Kunci Jawaban Benar / Salah:</label>
+                    <div style="display: flex; gap: 20px; margin-top: 8px;">
+                        <label><input type="radio" name="jawaban_tf" value="true" checked> BENAR</label>
+                        <label><input type="radio" name="jawaban_tf" value="false"> SALAH</label>
+                    </div>
+                </div>
+
+                <!-- Type: Short & Essay -->
+                <div id="type_short_container" style="display: none;">
+                    <label>Kata Kunci / Jawaban (pisahkan dengan koma):</label>
+                    <input type="text" name="keywords" class="form-control" placeholder="contoh: etika, integritas, profesional">
+                </div>
+
+                <!-- Type: Matching -->
+                <div id="type_matching_container" style="display: none;">
+                    <label>Kunci Kolom A (1 per baris):</label>
+                    <textarea name="matching_keys" rows="3" class="form-control" placeholder="Istilah 1&#10;Istilah 2"></textarea>
+                    <label style="margin-top: 8px;">Nilai Kolom B (1 per baris, sejajar Kolom A):</label>
+                    <textarea name="matching_values" rows="3" class="form-control" placeholder="Definisi 1&#10;Definisi 2"></textarea>
+                </div>
+
+                <!-- Type: Ordering -->
+                <div id="type_ordering_container" style="display: none;">
+                    <label>Urutan yang Benar (1 item per baris dari pertama ke terakhir):</label>
+                    <textarea name="ordering_items" rows="4" class="form-control" placeholder="Langkah 1&#10;Langkah 2&#10;Langkah 3"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>Pembahasan / Kunci Penjelasan</label>
+                    <textarea name="pembahasan" rows="2" class="form-control" placeholder="Penjelasan jawaban yang benar..."></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('create-soal-modal')">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Soal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- AI Generate Modal -->
+    <div id="ai-modal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 550px; width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3><i class="fas fa-wand-magic-sparkles" style="color: var(--accent);"></i> AI Generator Soal</h3>
+                <button type="button" onclick="closeModal('ai-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+                Hasilkan butir soal berkualitas secara otomatis menggunakan AI berstandar Taksonomi Bloom.
+            </p>
+
+            <form id="ai-generate-form" onsubmit="handleAiGenerate(event)">
+                <div class="form-group">
+                    <label>Topik / Materi Ujian</label>
+                    <input type="text" id="ai-topic" required class="form-control" value="<%= currentUjian ? currentUjian.judul_ujian : 'Etika Profesi Komputer' %>">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label>Jenis Soal</label>
+                        <select id="ai-jenis" class="form-select">
+                            <option value="pg">Pilihan Ganda</option>
+                            <option value="tf">Benar / Salah</option>
+                            <option value="short">Jawaban Singkat</option>
+                            <option value="esai">Esai</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah Butir</label>
+                        <input type="number" id="ai-count" value="3" min="1" max="10" class="form-control">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label>Tingkat Kesulitan</label>
+                        <select id="ai-kesulitan" class="form-select">
+                            <option value="mudah">Mudah</option>
+                            <option value="sedang" selected>Sedang</option>
+                            <option value="sulit">Sulit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Taksonomi Bloom</label>
+                        <select id="ai-kognitif" class="form-select">
+                            <option value="C1">C1 - Mengingat</option>
+                            <option value="C2" selected>C2 - Memahami</option>
+                            <option value="C3">C3 - Menerapkan</option>
+                            <option value="C4">C4 - Menganalisis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="ai-status" style="display: none; padding: 10px; margin-top: 10px; border-radius: 6px; font-size: 0.9rem;"></div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('ai-modal')">Tutup</button>
+                    <button type="submit" class="btn btn-accent" id="btn-generate-ai">
+                        <i class="fas fa-sparkles"></i> Generate Sekarang
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function switchSoalType(type) {
+            document.getElementById('type_pg_container').style.display = (type === 'pg' || type === 'multiple') ? 'block' : 'none';
+            document.getElementById('type_tf_container').style.display = (type === 'tf') ? 'block' : 'none';
+            document.getElementById('type_short_container').style.display = (type === 'short' || type === 'esai') ? 'block' : 'none';
+            document.getElementById('type_matching_container').style.display = (type === 'matching') ? 'block' : 'none';
+            document.getElementById('type_ordering_container').style.display = (type === 'ordering') ? 'block' : 'none';
+        }
+
+        async function handleAiGenerate(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-generate-ai');
+            const status = document.getElementById('ai-status');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            status.style.display = 'block';
+            status.style.background = '#eef6fc';
+            status.style.color = '#1e429f';
+            status.textContent = 'Menghasilkan soal dengan AI...';
+
+            try {
+                const res = await fetch('/admin/ai_generate_api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topik: document.getElementById('ai-topic').value,
+                        jenis: document.getElementById('ai-jenis').value,
+                        jumlah: document.getElementById('ai-count').value,
+                        kesulitan: document.getElementById('ai-kesulitan').value,
+                        kognitif: document.getElementById('ai-kognitif').value
+                    })
+                });
+                const questions = await res.json();
+                if (Array.isArray(questions) && questions.length > 0) {
+                    status.style.background = '#dcfce7';
+                    status.style.color = '#15803d';
+                    status.textContent = `Berhasil menghasilkan ${questions.length} butir soal! Menyimpan...`;
+
+                    for (const q of questions) {
+                        const formData = new FormData();
+                        formData.append('action', 'create');
+                        formData.append('id_ujian', '<%= selectedUjianId %>');
+                        formData.append('jenis_soal', q.jenis_soal || 'pg');
+                        formData.append('pertanyaan', q.pertanyaan);
+                        formData.append('poin', q.poin || 4);
+                        formData.append('tingkat_kesulitan', q.tingkat_kesulitan || 'sedang');
+                        formData.append('level_kognitif', q.level_kognitif || 'C1');
+                        formData.append('pembahasan', q.pembahasan || '');
+
+                        if (q.opsi && Array.isArray(q.opsi)) {
+                            q.opsi.forEach((o, idx) => {
+                                formData.append('opsi_teks[]', o.teks);
+                                if (o.benar) formData.append('opsi_benar', idx);
+                            });
+                        }
+
+                        await fetch('/admin/soal', {
+                            method: 'POST',
+                            body: new URLSearchParams(formData)
+                        });
+                    }
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    throw new Error('Format output AI tidak valid');
+                }
+            } catch (err) {
+                status.style.background = '#fee2e2';
+                status.style.color = '#b91c1c';
+                status.textContent = 'Gagal menghasilkan soal: ' + err.message;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sparkles"></i> Generate Sekarang';
+            }
+        }
+    </script>
+</body>
+</html>

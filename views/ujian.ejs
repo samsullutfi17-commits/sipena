@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian - <%= judulUjian %> - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .timer-badge {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+        .soal-grid-nav {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .soal-nav-btn {
+            padding: 10px 4px;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: block;
+        }
+        .soal-nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .soal-nav-btn.answered {
+            background: #e6f4ea;
+            border-color: #34a853;
+            color: #137333;
+        }
+        .soal-nav-btn.active.answered {
+            background: var(--primary-dark);
+            color: white;
+        }
+        .opsi-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+        .opsi-item:hover {
+            border-color: var(--primary);
+            background: #f9fbf9;
+        }
+        .opsi-item input {
+            margin-top: 4px;
+            cursor: pointer;
+        }
+        .opsi-item.selected {
+            border-color: var(--primary);
+            background: #eaf5ef;
+        }
+        .matching-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .matching-key {
+            flex: 1;
+            padding: 10px 14px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .ordering-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container exam-header">
+            <div>
+                <h1><%= judulUjian %></h1>
+                <p class="subtitle"><%= namaPeserta %> (<%= nimPeserta %>) &bull; <%= prodi %></p>
+            </div>
+            <div class="timer-badge">
+                <i class="fas fa-clock"></i>
+                <span id="countdown">--:--</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 25px; margin-bottom: 50px;">
+        <div style="display: grid; grid-template-columns: 1fr 300px; gap: 24px;">
+            <!-- Main Question Area -->
+            <div>
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">
+                        <h3 style="margin: 0; color: var(--primary);">
+                            Soal No. <%= currentSoalNo %> dari <%= soalList.length %>
+                        </h3>
+                        <span class="badge" style="background: #e2e8f0; color: #475569; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+                            Bobot: <%= current.poin || 4 %> Poin
+                        </span>
+                    </div>
+
+                    <div style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 24px; color: var(--text-dark);">
+                        <%- current.pertanyaan %>
+                    </div>
+
+                    <!-- Question Input Types -->
+                    <form id="answer-form">
+                        <input type="hidden" name="soal_id" id="soal_id" value="<%= current.id %>">
+                        <input type="hidden" name="no_soal" id="no_soal" value="<%= currentSoalNo %>">
+
+                        <% if (current.jenis_soal === 'pg') { %>
+                            <div class="opsi-list">
+                                <% 
+                                const shuffledInfo = shuffledOptions[current.id];
+                                let opsiItems = current.opsi || [];
+                                if (shuffledInfo && shuffledInfo.order) {
+                                    const map = {};
+                                    opsiItems.forEach(o => map[o.id] = o);
+                                    opsiItems = shuffledInfo.order.map(id => map[id]).filter(Boolean);
+                                }
+                                const currentAnswer = answers[current.id];
+                                const labels = ['A', 'B', 'C', 'D', 'E', 'F'];
+                                opsiItems.forEach(function(opsi, idx) { 
+                                    const isSelected = String(currentAnswer) === String(opsi.id);
+                                %>
+                                    <label class="opsi-item <%= isSelected ? 'selected' : '' %>">
+                                        <input type="radio" name="jawaban" value="<%= opsi.id %>" <%= isSelected ? 'checked' : '' %> onchange="saveAnswer(this.value)">
+                                        <span style="font-weight: 700; color: var(--primary);"><%= labels[idx] %>.</span>
+                                        <span><%= opsi.teks_opsi %></span>
+                                    </label>
+                                <% }); %>
+                            </div>
+
+                        <% } else if (current.jenis_soal === 'tf') { %>
+                            <% const currentAnswer = answers[current.id]; %>
+                            <div style="display: flex; gap: 16px;">
+                                <label class="opsi-item <%= currentAnswer === 'true' || currentAnswer === true ? 'selected' : '' %>" style="flex: 1;">
+                                    <input type="radio" name="jawaban" value="true" <%= currentAnswer === 'true' || currentAnswer === true ? 'checked' : '' %> onchange="saveAnswer('true')">
+                                    <strong style="color: #16a34a;"><i class="fas fa-check-circle"></i> BENAR</strong>
+                                </label>
+                                <label class="opsi-item <%= currentAnswer === 'false' || currentAnswer === false ? 'selected' : '' %>" style="flex: 1;">
+                                    <input type="radio" name="jawaban" value="false" <%= currentAnswer === 'false' || currentAnswer === false ? 'checked' : '' %> onchange="saveAnswer('false')">
+                                    <strong style="color: #dc2626;"><i class="fas fa-times-circle"></i> SALAH</strong>
+                                </label>
+                            </div>
+
+                        <% } else if (current.jenis_soal === 'short') { %>
+                            <div class="form-group">
+                                <label>Tuliskan Jawaban Singkat Anda:</label>
+                                <input type="text" class="form-control" name="jawaban"
+                                       value="<%= answers[current.id] || '' %>"
+                                       placeholder="Ketik jawaban singkat disini..."
+                                       oninput="saveAnswer(this.value)"
+                                       style="padding: 12px; font-size: 1rem; width: 100%;">
+                            </div>
+
+                        <% } else if (current.jenis_soal === 'multiple') { %>
+                            <div class="opsi-list">
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">
+                                    <i class="fas fa-info-circle"></i> Anda dapat memilih lebih dari satu jawaban yang benar.
+                                </p>
+                                <% 
+                                const selectedArray = Array.isArray(answers[current.id]) ? answers[current.id].map(String) : (answers[current.id] ? String(answers[current.id]).split(',') : []);
+                                (current.opsi || []).forEach(function(opsi, idx) { 
+                                    const isChecked = selectedArray.includes(String(opsi.id));
+                                %>
+                                    <label class="opsi-item <%= isChecked ? 'selected' : '' %>">
+                                        <input type="checkbox" name="jawaban_multiple" value="<%= opsi.id %>" <%= isChecked ? 'checked' : '' %> onchange="saveMultipleAnswer()">
+                                        <span><%= opsi.teks_opsi %></span>
+                                    </label>
+                                <% }); %>
+                            </div>
+
+                        <% } else if (current.jenis_soal === 'matching') { %>
+                            <% 
+                            const pairs = (current.data_tambahan && current.data_tambahan.pairs) || {};
+                            const userMatches = typeof answers[current.id] === 'object' ? answers[current.id] : JSON.parse(answers[current.id] || '{}');
+                            const allValues = Object.values(pairs);
+                            %>
+                            <div class="matching-container">
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+                                    <i class="fas fa-link"></i> Pasangkan setiap item di sebelah kiri dengan definisi yang cocok:
+                                </p>
+                                <% Object.keys(pairs).forEach(function(key) { %>
+                                    <div class="matching-row">
+                                        <div class="matching-key"><%= key %></div>
+                                        <select class="form-select matching-select" data-key="<%= key %>" onchange="saveMatchingAnswer()">
+                                            <option value="">-- Pilih Pasangan --</option>
+                                            <% allValues.forEach(function(v) { %>
+                                                <option value="<%= v %>" <%= userMatches[key] === v ? 'selected' : '' %>><%= v %></option>
+                                            <% }); %>
+                                        </select>
+                                    </div>
+                                <% }); %>
+                            </div>
+
+                        <% } else if (current.jenis_soal === 'ordering') { %>
+                            <% 
+                            const correctOrder = (current.data_tambahan && current.data_tambahan.correct_order) || [];
+                            let userOrder = answers[current.id] || (shuffledOptions[current.id] && shuffledOptions[current.id].display_order) || correctOrder;
+                            if (typeof userOrder === 'string') {
+                                try { userOrder = JSON.parse(userOrder); } catch(e) {}
+                            }
+                            %>
+                            <div class="ordering-container">
+                                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+                                    <i class="fas fa-sort"></i> Susun urutan langkah-langkah berikut:
+                                </p>
+                                <div id="ordering-list">
+                                    <% userOrder.forEach(function(item, idx) { %>
+                                        <div class="ordering-item" data-index="<%= idx %>">
+                                            <span style="font-weight: 700; width: 25px;"><%= idx + 1 %>.</span>
+                                            <span style="flex: 1;"><%= item %></span>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveOrdering(<%= idx %>, -1)" <%= idx === 0 ? 'disabled' : '' %>><i class="fas fa-arrow-up"></i></button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="moveOrdering(<%= idx %>, 1)" <%= idx === userOrder.length - 1 ? 'disabled' : '' %>><i class="fas fa-arrow-down"></i></button>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+
+                        <% } else if (current.jenis_soal === 'esai') { %>
+                            <div class="form-group">
+                                <label>Tuliskan uraian jawaban Anda secara komprehensif:</label>
+                                <textarea class="form-control" name="jawaban" rows="6"
+                                          placeholder="Ketik uraian esai disini..."
+                                          oninput="saveAnswer(this.value)"
+                                          style="padding: 12px; width: 100%; border: 1px solid var(--border-color); border-radius: 6px;"><%= answers[current.id] || '' %></textarea>
+                            </div>
+                        <% } %>
+                    </form>
+
+                    <!-- Navigation Buttons -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <% if (currentSoalNo > 1) { %>
+                            <a href="/ujian?no=<%= currentSoalNo - 1 %>" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left"></i> Soal Sebelumnya
+                            </a>
+                        <% } else { %>
+                            <div></div>
+                        <% } %>
+
+                        <% if (currentSoalNo < soalList.length) { %>
+                            <a href="/ujian?no=<%= currentSoalNo + 1 %>" class="btn btn-primary">
+                                Soal Selanjutnya <i class="fas fa-arrow-right"></i>
+                            </a>
+                        <% } else { %>
+                            <button type="button" class="btn btn-accent" onclick="confirmSubmit()">
+                                <i class="fas fa-check-circle"></i> Selesai & Kumpulkan Ujian
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation Area -->
+            <div>
+                <div class="card" style="position: sticky; top: 90px;">
+                    <h4 style="margin-top: 0; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);">
+                        <i class="fas fa-th"></i> Navigasi Soal
+                    </h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                        Klik nomor soal untuk berpindah halaman langsung.
+                    </p>
+
+                    <div class="soal-grid-nav">
+                        <% soalList.forEach(function(s, idx) { 
+                            const no = idx + 1;
+                            const isActive = no === currentSoalNo;
+                            const isAnswered = answers[s.id] !== undefined && answers[s.id] !== '' && answers[s.id] !== null;
+                        %>
+                            <a href="/ujian?no=<%= no %>" class="soal-nav-btn <%= isActive ? 'active' : '' %> <%= isAnswered ? 'answered' : '' %>">
+                                <%= no %>
+                            </a>
+                        <% }); %>
+                    </div>
+
+                    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+                        <div style="display: flex; gap: 8px; font-size: 0.8rem; margin-bottom: 8px; align-items: center;">
+                            <span style="width: 14px; height: 14px; background: #e6f4ea; border: 1px solid #34a853; border-radius: 3px; display: inline-block;"></span>
+                            <span>Sudah Dijawab</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; font-size: 0.8rem; margin-bottom: 16px; align-items: center;">
+                            <span style="width: 14px; height: 14px; background: white; border: 1px solid var(--border-color); border-radius: 3px; display: inline-block;"></span>
+                            <span>Belum Dijawab</span>
+                        </div>
+
+                        <button type="button" class="btn btn-accent btn-block" onclick="confirmSubmit()">
+                            <i class="fas fa-paper-plane"></i> Kumpulkan Ujian
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Countdown Timer Logic
+        let remainingSeconds = <%= remaining %>;
+        const countdownElem = document.getElementById('countdown');
+
+        function updateCountdown() {
+            if (remainingSeconds <= 0) {
+                countdownElem.textContent = '00:00';
+                window.location.href = '/submit?auto=1';
+                return;
+            }
+            const hours = Math.floor(remainingSeconds / 3600);
+            const minutes = Math.floor((remainingSeconds % 3600) / 60);
+            const seconds = remainingSeconds % 60;
+
+            if (hours > 0) {
+                countdownElem.textContent = `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            } else {
+                countdownElem.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+            remainingSeconds--;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Save Answer via AJAX
+        function saveAnswer(value) {
+            const soalId = document.getElementById('soal_id').value;
+            const noSoal = document.getElementById('no_soal').value;
+
+            fetch('/api/save_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    soal_id: soalId,
+                    jawaban: value,
+                    no_soal: noSoal
+                })
+            });
+        }
+
+        function saveMultipleAnswer() {
+            const checkboxes = document.querySelectorAll('input[name="jawaban_multiple"]:checked');
+            const values = Array.from(checkboxes).map(c => c.value);
+            saveAnswer(values);
+        }
+
+        function saveMatchingAnswer() {
+            const selects = document.querySelectorAll('.matching-select');
+            const matches = {};
+            selects.forEach(s => {
+                const key = s.getAttribute('data-key');
+                if (s.value) matches[key] = s.value;
+            });
+            saveAnswer(matches);
+        }
+
+        let orderingState = <%- JSON.stringify((answers[current.id] || (shuffledOptions[current.id] && shuffledOptions[current.id].display_order) || (current.data_tambahan && current.data_tambahan.correct_order) || [])) %>;
+        function moveOrdering(index, direction) {
+            const target = index + direction;
+            if (target >= 0 && target < orderingState.length) {
+                const temp = orderingState[index];
+                orderingState[index] = orderingState[target];
+                orderingState[target] = temp;
+                saveAnswer(orderingState);
+                location.reload();
+            }
+        }
+
+        function confirmSubmit() {
+            if (confirm('Apakah Anda yakin ingin menyelesaikan dan mengumpulkan ujian ini sekarang?')) {
+                window.location.href = '/submit';
+            }
+        }
+    </script>
+</body>
+</html>

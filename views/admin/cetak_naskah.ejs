@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naskah Soal - <%= ujian.judul_ujian %> - Universitas Hamzanwadi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Times New Roman", Times, serif;
+            color: #000;
+            background-color: #f1f5f9;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+
+        /* Toolbar on screen only */
+        .no-print-toolbar {
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            border-bottom: 2px solid #cbd5e1;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            z-index: 1000;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .toolbar-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-print { background: #1e5631; color: #fff; }
+        .btn-print:hover { background: #143d22; }
+        .btn-word { background: #2563eb; color: #fff; }
+        .btn-word:hover { background: #1d4ed8; }
+        .btn-back { background: #64748b; color: #fff; }
+        .btn-back:hover { background: #475569; }
+
+        /* Paper sheet */
+        .paper-sheet {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 24px auto;
+            background: #ffffff;
+            padding: 20mm 20mm 25mm 20mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Kop Surat matching Image 2 */
+        .kop-surat {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 4px;
+        }
+
+        .kop-logo {
+            width: 85px;
+            height: 85px;
+            flex-shrink: 0;
+        }
+
+        .kop-logo img, .kop-logo svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .kop-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .kop-univ {
+            font-size: 18pt;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .kop-address {
+            font-size: 9.5pt;
+            line-height: 1.35;
+        }
+
+        .kop-contact {
+            font-size: 9pt;
+            line-height: 1.35;
+        }
+
+        .kop-contact a {
+            color: #0000ee;
+            text-decoration: underline;
+        }
+
+        /* Double border line */
+        .kop-divider {
+            border-top: 3px solid #000;
+            border-bottom: 1px solid #000;
+            height: 4px;
+            margin: 6px 0 16px 0;
+        }
+
+        /* Title */
+        .exam-title-box {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .exam-title-main {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .exam-title-sub {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Boxed Table matching Image 2 */
+        .exam-meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+            font-size: 11pt;
+        }
+
+        .exam-meta-table td {
+            border: 1px solid #000;
+            padding: 4px 8px;
+            vertical-align: middle;
+        }
+
+        .meta-col-left {
+            width: 50%;
+        }
+
+        .meta-col-right {
+            width: 50%;
+        }
+
+        .meta-row {
+            display: flex;
+        }
+
+        .meta-label {
+            width: 110px;
+            font-weight: normal;
+        }
+
+        .meta-sep {
+            width: 15px;
+            text-align: center;
+        }
+
+        .meta-val {
+            flex: 1;
+            font-weight: normal;
+        }
+
+        /* Petunjuk */
+        .petunjuk-list {
+            margin-bottom: 16px;
+            padding-left: 20px;
+            font-style: italic;
+            font-size: 11pt;
+        }
+
+        .petunjuk-list li {
+            margin-bottom: 2px;
+        }
+
+        /* Section Heading */
+        .section-heading {
+            font-weight: bold;
+            font-style: italic;
+            margin-bottom: 12px;
+            font-size: 12pt;
+        }
+
+        /* Questions */
+        .soal-item {
+            margin-bottom: 18px;
+            page-break-inside: avoid;
+        }
+
+        .soal-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .soal-num {
+            font-weight: bold;
+            min-width: 22px;
+        }
+
+        .soal-text {
+            flex: 1;
+            text-align: justify;
+        }
+
+        .soal-image-box {
+            margin: 10px 0 12px 28px;
+            max-width: 550px;
+        }
+
+        .soal-image-box img, .soal-image-box svg {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+        }
+
+        .opsi-list {
+            list-style: none;
+            padding-left: 28px;
+            margin-top: 6px;
+        }
+
+        .opsi-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .opsi-letter {
+            font-weight: normal;
+            min-width: 18px;
+        }
+
+        .opsi-text {
+            flex: 1;
+        }
+
+        /* Print media styles */
+        @media print {
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .no-print-toolbar {
+                display: none !important;
+            }
+
+            .paper-sheet {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+
+            @page {
+                size: A4;
+                margin: 20mm 20mm 20mm 20mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print-toolbar">
+        <div class="toolbar-title">
+            <i class="fas fa-file-alt" style="color: #1e5631;"></i>
+            <span>Naskah Soal Ujian: <strong><%= ujian.judul_ujian %></strong></span>
+        </div>
+        <div class="toolbar-actions">
+            <a href="/admin/kisi_kisi?ujian_id=<%= ujian.id %>" class="btn btn-back">
+                <i class="fas fa-arrow-left"></i> Kembali ke Kisi-Kisi
+            </a>
+            <a href="/admin/kisi_kisi/export_word?ujian_id=<%= ujian.id %>" class="btn btn-word">
+                <i class="fas fa-file-word"></i> Unduh Word (.docx)
+            </a>
+            <button onclick="window.print()" class="btn btn-print">
+                <i class="fas fa-print"></i> Cetak / Simpan PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="paper-sheet">
+        <!-- KOP SURAT MATCHING IMAGE 2 -->
+        <div class="kop-surat">
+            <div class="kop-logo">
+                <img src="/assets/img/logo_hamzanwadi.svg" alt="Logo Universitas Hamzanwadi">
+            </div>
+            <div class="kop-text">
+                <div class="kop-univ"><%= settings.nama_institusi || 'UNIVERSITAS HAMZANWADI' %></div>
+                <div class="kop-address"><%= settings.alamat_institusi || 'Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor, Selong Lombok Timur 83612' %></div>
+                <div class="kop-contact">
+                    Telp. (0376) 22954, Website: <a href="http://hamzanwadi.ac.id">http://hamzanwadi.ac.id</a>, email: <a href="mailto:universitas@hamzanwadi.ac.id">universitas@hamzanwadi.ac.id</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="kop-divider"></div>
+
+        <!-- EXAM TITLE -->
+        <div class="exam-title-box">
+            <div class="exam-title-main">
+                <% if (ujian.jenis_ujian === 'UAS') { %>
+                    UJIAN AKHIR SEMESTER GANJIL UNIVERSITAS HAMZANWADI
+                <% } else { %>
+                    UJIAN TENGAH SEMESTER GANJIL UNIVERSITAS HAMZANWADI
+                <% } %>
+            </div>
+            <div class="exam-title-sub">
+                TAHUN AKADEMIK <%= ujian.tahun_akademik || '2022/2023' %>
+            </div>
+        </div>
+
+        <!-- METADATA TABLE MATCHING IMAGE 2 -->
+        <table class="exam-meta-table">
+            <tr>
+                <td class="meta-col-left">
+                    <div class="meta-row">
+                        <span class="meta-label">Hari/Tanggal</span>
+                        <span class="meta-sep">:</span>
+                        <span class="meta-val"><%= ujian.hari_tanggal || 'Sabtu, 21 Januari 2023' %></span>
+                    </div>
+                </td>
+                <td class="meta-col-right">
+                    <div class="meta-row">
+                        <span class="meta-label">Fakultas/Prodi</span>
+                        <span class="meta-sep">:</span>
+                        <span class="meta-val"><%= ujian.fakultas_prodi || 'MIPA/Pend. Informatika' %></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="meta-row">
+                        <span class="meta-label">Waktu</span>
+                        <span class="meta-sep">:</span>
+                        <span class="meta-val"><%= ujian.waktu || '09:15-11:45' %></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="meta-row">
+                        <span class="meta-label">Mata Kuliah</span>
+                        <span class="meta-sep">:</span>
+                        <span class="meta-val"><%= ujian.nama_mk %></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="meta-row">
+                        <span class="meta-label">Pengampu</span>
+                        <span class="meta-sep">:</span>
+                        <span class="meta-val"><%= ujian.pengampu || 'Samsul Lutfi, S.Pd., M.Pd' %></span>
+                    </div>
+                </td>
+                <td>
+                    <div class="meta-row">
+                        <span class="meta-label">Smt/SKS</span>
+                        <span class="meta-sep">:</span>
+                        <span class="meta-val"><%= ujian.smt_sks || 'V (A,B) / 3 sks' %></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- PETUNJUK -->
+        <ol type="a" class="petunjuk-list">
+            <li>Berdo'a sebelum mengerjakan soal !</li>
+            <li>Isi identitas Anda terlebih dahulu !</li>
+            <li>Soal Ujian ini kerjakan di rumah <strong>(Take Home)</strong>.</li>
+            <li>Terakhir, semoga Anda selamat & Sukses dari ujian ini.</li>
+        </ol>
+
+        <!-- SECTION HEADING -->
+        <div class="section-heading">SOAL</div>
+
+        <!-- QUESTIONS LIST -->
+        <div class="soal-container">
+            <% soalList.forEach(function(s, idx) { %>
+                <div class="soal-item">
+                    <div class="soal-header">
+                        <span class="soal-num"><%= idx + 1 %>.</span>
+                        <div class="soal-text"><%= s.pertanyaan %></div>
+                    </div>
+
+                    <% if (s.gambar_soal) { %>
+                        <div class="soal-image-box">
+                            <img src="<%= s.gambar_soal %>" alt="Ilustrasi Soal <%= idx + 1 %>">
+                        </div>
+                    <% } %>
+
+                    <% if (s.opsi && s.opsi.length > 0) { %>
+                        <ul class="opsi-list">
+                            <% const letters = ['a', 'b', 'c', 'd', 'e']; %>
+                            <% s.opsi.forEach(function(o, oIdx) { %>
+                                <li class="opsi-item">
+                                    <span class="opsi-letter"><%= letters[oIdx] || oIdx + 1 %>.</span>
+                                    <span class="opsi-text"><%= o.teks %></span>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <% if (typeof autoPrint !== 'undefined' && autoPrint) { %>
+        <script>
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    window.print();
+                }, 400);
+            });
+        </script>
+    <% } %>
+</body>
+</html>

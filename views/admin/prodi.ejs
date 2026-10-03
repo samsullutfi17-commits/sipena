@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Program Studi - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Program Studi</h1>
+                <p class="subtitle"><%= adminNama %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/prodi', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb" style="margin-bottom: 14px;">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Program Studi</span>
+            </nav>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 14px;">
+                <div>
+                    <h2 style="margin: 0; color: #1b4d3e; font-size: 1.55rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-graduation-cap"></i> Data Program Studi
+                    </h2>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">
+                        Kelola data jurusan/program studi serta fakultas naungan.
+                    </p>
+                </div>
+                <button type="button" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 6px rgba(27,77,62,0.2);" onclick="document.getElementById('modal-prodi').style.display='flex'">
+                    <i class="fas fa-plus"></i> Tambah Program Studi
+                </button>
+            </div>
+
+            <% if (message) { %>
+                <div class="alert alert-success" style="margin-bottom: 20px;">
+                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i> <%= message %>
+                </div>
+            <% } %>
+
+            <div class="card" style="border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 0;">
+                <table class="table" style="margin: 0;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                            <th style="width: 60px; text-align: center;">No</th>
+                            <th style="width: 140px;">Kode</th>
+                            <th>Nama Program Studi</th>
+                            <th>Fakultas</th>
+                            <th style="width: 150px; text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (prodiList.length === 0) { %>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 36px; color: #64748b;">
+                                    Belum ada data program studi. Klik tombol <strong>+ Tambah Program Studi</strong> untuk menambahkan.
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% prodiList.forEach(function(p, idx) { %>
+                                <tr>
+                                    <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
+                                    <td><code style="background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-weight: 700; color: #0f172a;"><%= p.kode_prodi %></code></td>
+                                    <td><strong style="color: #0f172a;"><%= p.nama_prodi %></strong></td>
+                                    <td><span style="color: #475569;"><%= p.nama_fakultas %></span></td>
+                                    <td style="text-align: center;">
+                                        <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                                            <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit Program Studi" onclick="openModalEditProdi(<%= JSON.stringify(p) %>)">
+                                                <i class="fas fa-pen-to-square"></i> Edit
+                                            </button>
+                                            <form method="POST" action="/admin/prodi" style="display: inline;" onsubmit="return confirm('Hapus program studi ini?');">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="id" value="<%= p.id %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 6px 10px; border-radius: 6px;" title="Hapus Prodi"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL TAMBAH PRODI -->
+    <div id="modal-prodi" class="modal-overlay" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+        <div class="card" style="max-width: 480px; width: 100%; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; padding: 24px; box-sizing: border-box; background: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #1b4d3e; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-graduation-cap"></i> Tambah Program Studi
+                </h3>
+                <button type="button" style="background: none; border: none; font-size: 1.4rem; color: #94a3b8; cursor: pointer;" onclick="document.getElementById('modal-prodi').style.display='none'">&times;</button>
+            </div>
+            <form method="POST" action="/admin/prodi">
+                <input type="hidden" name="action" value="create">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Fakultas Naungan</label>
+                    <select name="id_fakultas" class="form-select" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                        <option value="">-- Pilih Fakultas --</option>
+                        <% fakultasList.forEach(function(f) { %>
+                            <option value="<%= f.id %>"><%= f.nama_fakultas %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Kode Prodi</label>
+                    <input type="text" name="kode_prodi" required class="form-control" placeholder="Contoh: TI / SI" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Nama Program Studi</label>
+                    <input type="text" name="nama_prodi" required class="form-control" placeholder="Contoh: S1 Teknik Informatika" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-prodi').style.display='none'" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 600;">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT PRODI -->
+    <div id="modal-edit-prodi" class="modal-overlay" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+        <div class="card" style="max-width: 480px; width: 100%; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; padding: 24px; box-sizing: border-box; background: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #1b4d3e; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-pen-to-square"></i> Edit Program Studi
+                </h3>
+                <button type="button" style="background: none; border: none; font-size: 1.4rem; color: #94a3b8; cursor: pointer;" onclick="document.getElementById('modal-edit-prodi').style.display='none'">&times;</button>
+            </div>
+            <form method="POST" action="/admin/prodi">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="id" id="edit_prodi_id">
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Fakultas Naungan</label>
+                    <select name="id_fakultas" id="edit_id_fakultas" class="form-select" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                        <option value="">-- Pilih Fakultas --</option>
+                        <% fakultasList.forEach(function(f) { %>
+                            <option value="<%= f.id %>"><%= f.nama_fakultas %></option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Kode Prodi</label>
+                    <input type="text" name="kode_prodi" id="edit_kode_prodi" required class="form-control" placeholder="Contoh: TI / SI" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Nama Program Studi</label>
+                    <input type="text" name="nama_prodi" id="edit_nama_prodi" required class="form-control" placeholder="Contoh: S1 Teknik Informatika" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-edit-prodi').style.display='none'" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 600;">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModalEditProdi(p) {
+            document.getElementById('edit_prodi_id').value = p.id;
+            document.getElementById('edit_id_fakultas').value = p.id_fakultas || '';
+            document.getElementById('edit_kode_prodi').value = p.kode_prodi || '';
+            document.getElementById('edit_nama_prodi').value = p.nama_prodi || '';
+            document.getElementById('modal-edit-prodi').style.display = 'flex';
+        }
+
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('modal-prodi')) {
+                document.getElementById('modal-prodi').style.display = 'none';
+            }
+            if (e.target === document.getElementById('modal-edit-prodi')) {
+                document.getElementById('modal-edit-prodi').style.display = 'none';
+            }
+        });
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('modal-prodi').style.display = 'none';
+                document.getElementById('modal-edit-prodi').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

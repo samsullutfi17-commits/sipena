@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Hasil Ujian - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Laporan Hasil Penilaian</h1>
+                <p class="subtitle"><%= adminNama %> &bull; Administrator</p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/hasil', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Laporan Hasil</span>
+            </nav>
+
+            <h2><i class="fas fa-chart-bar"></i> Laporan Rekapitulasi Hasil Penilaian</h2>
+
+            <% if (message) { %>
+                <div class="alert alert-success"><%= message %></div>
+            <% } %>
+
+            <!-- Filter Card -->
+            <div class="card" style="margin-bottom: 20px;">
+                <form method="GET" action="/admin/hasil" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) 100px; gap: 12px; align-items: flex-end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Filter Ujian</label>
+                        <select name="ujian_id" class="form-select">
+                            <option value="">Semua Penilaian</option>
+                            <% ujianList.forEach(function(u) { %>
+                                <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>><%= u.judul_ujian %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Filter Kelas</label>
+                        <select name="kelas_id" class="form-select">
+                            <option value="">Semua Kelas</option>
+                            <% kelasList.forEach(function(k) { %>
+                                <option value="<%= k.id %>" <%= k.id === selectedKelasId ? 'selected' : '' %>><%= k.nama_kelas %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Pencarian</label>
+                        <input type="text" name="search" value="<%= search %>" class="form-control" placeholder="Nama / NIM...">
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Table -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIM</th>
+                                <th>Nama Lengkap</th>
+                                <th>Kelas / Program</th>
+                                <th>Penilaian</th>
+                                <th>Waktu Selesai</th>
+                                <th>Nilai</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (results.length === 0) { %>
+                                <tr><td colspan="9" class="text-center" style="padding: 24px;">Belum ada riwayat hasil ujian yang cocok dengan kriteria.</td></tr>
+                            <% } else { %>
+                                <% results.forEach(function(r, idx) { %>
+                                    <tr>
+                                        <td><%= idx + 1 %></td>
+                                        <td><code><%= r.nim %></code></td>
+                                        <td><strong><%= r.nama_lengkap %></strong></td>
+                                        <td><%= r.nama_kelas %> &bull; <%= r.nama_prodi %></td>
+                                        <td><%= r.judul_ujian %></td>
+                                        <td><%= r.waktu_selesai ? new Date(r.waktu_selesai).toLocaleString('id-ID') : '-' %></td>
+                                        <td><strong style="font-size: 1.1rem;"><%= r.nilai_total %></strong></td>
+                                        <td>
+                                            <span class="badge <%= r.status_lulus === 'Lulus' ? 'badge-success' : 'badge-danger' %>">
+                                                <%= r.status_lulus %>
+                                            </span>
+                                        </td>
+                                        <td style="white-space: nowrap;">
+                                            <a href="/admin/detail_hasil?sesi_id=<%= r.id %>" class="btn btn-sm btn-outline-primary" title="Rincian Jawaban">
+                                                <i class="fas fa-eye"></i> Detail
+                                            </a>
+                                            <form method="POST" action="/admin/hasil" style="display: inline;" onsubmit="return confirm('Reset ujian untuk mahasiswa ini agar bisa ujian ulang?');">
+                                                <input type="hidden" name="action" value="reset_single">
+                                                <input type="hidden" name="sesi_id" value="<%= r.id %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Reset Ujian"><i class="fas fa-rotate-left"></i></button>
+                                            </form>
+                                            <form method="POST" action="/admin/hasil" style="display: inline;" onsubmit="return confirm('Hapus permanen data nilai ini?');">
+                                                <input type="hidden" name="action" value="delete_single">
+                                                <input type="hidden" name="sesi_id" value="<%= r.id %>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

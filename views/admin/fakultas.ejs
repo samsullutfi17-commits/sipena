@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Fakultas - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Struktur Organisasi</h1>
+                <p class="subtitle"><%= adminNama %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/fakultas', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Fakultas</span>
+            </nav>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2><i class="fas fa-building"></i> Data Fakultas</h2>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('modal-fakultas').style.display='flex'">
+                    <i class="fas fa-plus"></i> Tambah Fakultas
+                </button>
+            </div>
+
+            <% if (message) { %>
+                <div class="alert alert-success"><%= message %></div>
+            <% } %>
+
+            <div class="card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Kode</th>
+                            <th>Nama Fakultas</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% fakultasList.forEach(function(f, idx) { %>
+                            <tr>
+                                <td><%= idx + 1 %></td>
+                                <td><code><%= f.kode_fakultas %></code></td>
+                                <td><strong><%= f.nama_fakultas %></strong></td>
+                                <td>
+                                    <form method="POST" action="/admin/fakultas" style="display: inline;" onsubmit="return confirm('Hapus fakultas ini?');">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id" value="<%= f.id %>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-fakultas" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 500px; width: 90%;">
+            <h3>Tambah Fakultas</h3>
+            <form method="POST" action="/admin/fakultas">
+                <input type="hidden" name="action" value="create">
+                <div class="form-group">
+                    <label>Kode Fakultas</label>
+                    <input type="text" name="kode_fakultas" required class="form-control" placeholder="FT">
+                </div>
+                <div class="form-group">
+                    <label>Nama Fakultas</label>
+                    <input type="text" name="nama_fakultas" required class="form-control" placeholder="Fakultas Teknik">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-fakultas').style.display='none'">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

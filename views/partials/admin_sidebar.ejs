@@ -1,0 +1,19 @@
+<aside class="admin-sidebar">
+    <nav class="admin-nav">
+        <a href="/admin/dashboard" class="nav-item <%= currentPath === '/admin/dashboard' ? 'active' : '' %>"><i class="fas fa-home"></i> Beranda</a>
+        <a href="/admin/ujian" class="nav-item <%= currentPath === '/admin/ujian' ? 'active' : '' %>"><i class="fas fa-file-alt"></i> Penilaian</a>
+        <a href="/admin/soal" class="nav-item <%= currentPath === '/admin/soal' ? 'active' : '' %>"><i class="fas fa-question-circle"></i> Bank Soal</a>
+        <a href="/admin/kisi_kisi" class="nav-item <%= currentPath === '/admin/kisi_kisi' ? 'active' : '' %>"><i class="fas fa-table"></i> Kisi-Kisi</a>
+        <a href="/admin/hasil" class="nav-item <%= currentPath === '/admin/hasil' || currentPath === '/admin/detail_hasil' ? 'active' : '' %>"><i class="fas fa-chart-bar"></i> Laporan</a>
+        <a href="/admin/arsip" class="nav-item <%= currentPath === '/admin/arsip' ? 'active' : '' %>"><i class="fas fa-history"></i> Riwayat</a>
+        <% if (adminRole === 'admin') { %>
+        <a href="/admin/fakultas" class="nav-item <%= currentPath === '/admin/fakultas' ? 'active' : '' %>"><i class="fas fa-building"></i> Organisasi</a>
+        <a href="/admin/prodi" class="nav-item <%= currentPath === '/admin/prodi' ? 'active' : '' %>"><i class="fas fa-sitemap"></i> Program</a>
+        <a href="/admin/kelas" class="nav-item <%= currentPath === '/admin/kelas' ? 'active' : '' %>"><i class="fas fa-users-rectangle"></i> Kelas / Grup</a>
+        <a href="/admin/matkul" class="nav-item <%= currentPath === '/admin/matkul' ? 'active' : '' %>"><i class="fas fa-book"></i> Materi</a>
+        <a href="/admin/users" class="nav-item <%= currentPath === '/admin/users' ? 'active' : '' %>"><i class="fas fa-users"></i> Pengguna</a>
+        <a href="/admin/pengaturan" class="nav-item <%= currentPath === '/admin/pengaturan' ? 'active' : '' %>"><i class="fas fa-cog"></i> Pengaturan</a>
+        <% } %>
+        <a href="/admin/ganti_password" class="nav-item <%= currentPath === '/admin/ganti_password' ? 'active' : '' %>"><i class="fas fa-key"></i> Ganti Password</a>
+    </nav>
+</aside>

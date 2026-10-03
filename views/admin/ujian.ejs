@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Penilaian - SIPENA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <script src="/assets/js/admin-sidebar.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>SIPENA – Sistem Penilaian Akademik</h1>
+                <p class="subtitle">Panel Administrator &bull; <%= adminNama %></p>
+            </div>
+            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <%- include('../partials/admin_sidebar', { currentPath: '/admin/ujian', adminRole: adminRole }) %>
+
+        <main class="admin-main">
+            <nav class="breadcrumb">
+                <a href="/admin/dashboard">Beranda</a> &raquo;
+                <span>Penilaian</span>
+            </nav>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2><i class="fas fa-file-alt"></i> Manajemen Penilaian / Ujian</h2>
+                <button type="button" class="btn btn-primary" onclick="openModal('create-modal')">
+                    <i class="fas fa-plus"></i> Tambah Ujian Baru
+                </button>
+            </div>
+
+            <% if (message) { %>
+                <div class="alert alert-success"><%= message %></div>
+            <% } %>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Judul Penilaian</th>
+                                <th>Mata Kuliah</th>
+                                <th>Jenis</th>
+                                <th>Durasi</th>
+                                <th>Total Nilai</th>
+                                <th>Batas Lulus</th>
+                                <th>Grup / Kelas</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% exams.forEach(function(exam, idx) { %>
+                                <tr>
+                                    <td><%= idx + 1 %></td>
+                                    <td><strong><%= exam.judul_ujian %></strong></td>
+                                    <td><%= exam.nama_mk %></td>
+                                    <td><span class="badge badge-info"><%= exam.jenis_ujian %></span></td>
+                                    <td><%= exam.durasi_menit %> mnt</td>
+                                    <td><%= exam.total_nilai %></td>
+                                    <td><%= exam.nilai_lulus %></td>
+                                    <td>
+                                        <% if (exam.kelas_list && exam.kelas_list.length > 0) { %>
+                                            <% exam.kelas_list.forEach(function(k) { %>
+                                                <span class="badge badge-secondary" style="margin-right: 2px;"><%= k.nama_kelas %></span>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <span style="color: #94a3b8;">Semua Kelas</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="/admin/ujian" style="display: inline;">
+                                            <input type="hidden" name="action" value="toggle_active">
+                                            <input type="hidden" name="ujian_id" value="<%= exam.id %>">
+                                            <button type="submit" class="badge <%= exam.aktif ? 'badge-success' : 'badge-danger' %>" style="border: none; cursor: pointer;">
+                                                <%= exam.aktif ? 'Aktif' : 'Non-Aktif' %>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        <a href="/admin/soal?ujian_id=<%= exam.id %>" class="btn btn-sm btn-outline-primary" title="Kelola Bank Soal">
+                                            <i class="fas fa-question-circle"></i> Soal
+                                        </a>
+                                        <a href="/admin/kisi_kisi?ujian_id=<%= exam.id %>" class="btn btn-sm btn-outline-secondary" title="Kisi-kisi">
+                                            <i class="fas fa-table"></i>
+                                        </a>
+                                        <form method="POST" action="/admin/ujian" style="display: inline;" onsubmit="return confirm('Hapus ujian ini beserta seluruh soalnya?');">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="ujian_id" value="<%= exam.id %>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Exam Modal -->
+    <div id="create-modal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1100; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3><i class="fas fa-file-circle-plus"></i> Tambah Penilaian Baru</h3>
+                <button type="button" onclick="closeModal('create-modal')" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <form method="POST" action="/admin/ujian">
+                <input type="hidden" name="action" value="create">
+
+                <div class="form-group">
+                    <label>Judul Ujian / Penilaian</label>
+                    <input type="text" name="judul_ujian" required class="form-control" placeholder="Contoh: UTS Semester Ganjil">
+                </div>
+
+                <div class="form-group">
+                    <label>Mata Kuliah / Materi</label>
+                    <select name="id_mata_kuliah" required class="form-select">
+                        <option value="">-- Pilih Mata Kuliah --</option>
+                        <% matkulList.forEach(function(m) { %>
+                            <option value="<%= m.id %>"><%= m.kode_mk %> - <%= m.nama_mk %></option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label>Jenis Penilaian</label>
+                        <select name="jenis_ujian" class="form-select">
+                            <option value="UTS">UTS</option>
+                            <option value="UAS">UAS</option>
+                            <option value="Kuis">Kuis</option>
+                            <option value="Remedial">Remedial</option>
+                            <option value="Tryout UTBK">Tryout UTBK</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Durasi (Menit)</label>
+                        <input type="number" name="durasi_menit" value="90" required class="form-control">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label>Total Nilai Maksimal</label>
+                        <input type="number" name="total_nilai" value="100" required class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Batas Kelulusan (Passing Grade)</label>
+                        <input type="number" name="nilai_lulus" value="60" required class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tugaskan ke Kelas / Grup</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 120px; overflow-y: auto; padding: 8px; border: 1px solid var(--border-color); border-radius: 6px;">
+                        <% kelasList.forEach(function(k) { %>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem;">
+                                <input type="checkbox" name="kelas_ids" value="<%= k.id %>">
+                                <%= k.nama_kelas %> (<%= k.angkatan %>)
+                            </label>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('create-modal')">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Penilaian</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+    </script>
+</body>
+</html>
