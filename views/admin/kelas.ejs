@@ -84,11 +84,9 @@
                                             <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit Kelas" onclick="openModalEditKelas(<%= JSON.stringify(k) %>)">
                                                 <i class="fas fa-pen-to-square"></i> Edit
                                             </button>
-                                            <form method="POST" action="/admin/kelas" style="display: inline;" onsubmit="return confirm('Hapus kelas ini?');">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="id" value="<%= k.id %>">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 6px 10px; border-radius: 6px;" title="Hapus Kelas"><i class="fas fa-trash"></i></button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" style="padding: 6px 10px; border-radius: 6px;" title="Hapus Kelas" onclick="openConfirmDeleteKelas(<%= k.id %>, '<%= (k.nama_kelas || '').replace(/'/g, '\\\'') %>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -186,7 +184,43 @@
         </div>
     </div>
 
+    <!-- MODAL DELETE KELAS -->
+    <div id="modal-delete-kelas" class="modal-overlay" style="display: none; position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+        <div class="card" style="max-width: 440px; width: 100%; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; padding: 24px; box-sizing: border-box; background: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #dc2626; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-trash"></i> Hapus Kelas
+                </h3>
+                <button type="button" style="background: none; border: none; font-size: 1.4rem; color: #94a3b8; cursor: pointer;" onclick="closeConfirmDeleteKelas()">&times;</button>
+            </div>
+            <p style="color: #334155; margin: 0 0 16px; font-size: 0.95rem; line-height: 1.5;">
+                Apakah Anda yakin ingin menghapus kelas <strong id="deleteKelasName"></strong>?
+            </p>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; color: #991b1b; font-size: 0.85rem; margin-bottom: 20px;">
+                <i class="fas fa-triangle-exclamation" style="margin-right: 6px;"></i> Tindakan ini tidak dapat dibatalkan.
+            </div>
+            <form method="POST" action="/admin/kelas">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" id="deleteKelasId">
+                <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeConfirmDeleteKelas()" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="background: #dc2626; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 600;"><i class="fas fa-trash"></i> Ya, Hapus</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        function openConfirmDeleteKelas(id, nama) {
+            document.getElementById('deleteKelasId').value = id;
+            document.getElementById('deleteKelasName').innerText = nama;
+            document.getElementById('modal-delete-kelas').style.display = 'flex';
+        }
+
+        function closeConfirmDeleteKelas() {
+            document.getElementById('modal-delete-kelas').style.display = 'none';
+        }
+
         function openModalEditKelas(k) {
             document.getElementById('edit_kelas_id').value = k.id;
             document.getElementById('edit_id_program_studi').value = k.id_program_studi || '';

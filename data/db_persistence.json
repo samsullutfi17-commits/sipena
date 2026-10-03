@@ -280,12 +280,12 @@
   "ujian": [
     {
       "id": 1,
-      "judul_ujian": "UTS – Pengembangan Media Pembelajaran",
+      "judul_ujian": "KUIS – Pengembangan Media Pembelajaran (Tested)",
       "id_mata_kuliah": 6,
-      "jenis_ujian": "UTS",
-      "durasi_menit": 90,
-      "total_nilai": 100,
-      "nilai_lulus": 60,
+      "jenis_ujian": "Kuis",
+      "durasi_menit": 100,
+      "total_nilai": 105,
+      "nilai_lulus": 65,
       "aktif": true,
       "hari_tanggal": "Senin, 14 November 2022",
       "waktu": "08:00 - 09:30",
@@ -298,9 +298,9 @@
     },
     {
       "id": 2,
-      "judul_ujian": "UAS – Pemrograman Terstruktur",
+      "judul_ujian": "KUIS – Pemrograman Terstruktur",
       "id_mata_kuliah": 7,
-      "jenis_ujian": "UAS",
+      "jenis_ujian": "Kuis",
       "durasi_menit": 150,
       "total_nilai": 100,
       "nilai_lulus": 60,
@@ -316,9 +316,9 @@
     },
     {
       "id": 3,
-      "judul_ujian": "UTS – Etika Profesi Teknologi Informasi",
+      "judul_ujian": "KUIS – Etika Profesi",
       "id_mata_kuliah": 1,
-      "jenis_ujian": "UTS",
+      "jenis_ujian": "Kuis",
       "durasi_menit": 90,
       "total_nilai": 100,
       "nilai_lulus": 60,
@@ -335,37 +335,22 @@
   ],
   "ujian_kelas": [
     {
-      "id": 1,
+      "id": 3,
       "id_ujian": 1,
-      "id_kelas": 1
-    },
-    {
-      "id": 2,
-      "id_ujian": 2,
       "id_kelas": 1
     },
     {
       "id": 3,
       "id_ujian": 3,
       "id_kelas": 2
+    },
+    {
+      "id": 3,
+      "id_ujian": 2,
+      "id_kelas": 1
     }
   ],
   "soal": [
-    {
-      "id": 1,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Secara etimologis, kata \"media\" berasal dari bahasa Latin \"medius\" yang secara harfiah memiliki arti...",
-      "pembahasan": "Kata media merupakan bentuk jamak dari medium yang berarti perantara atau pengantar pesan.",
-      "poin": 4,
-      "urutan": 1,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": "Memahami konsep dasar media pembelajaran",
-      "materi_pokok": "Konsep Dasar Media",
-      "indikator": "Menjelaskan pengertian etimologis media pembelajaran"
-    },
     {
       "id": 2,
       "id_ujian": 1,
@@ -821,44 +806,35 @@
       "cpmk": "Menguasai mekanisme transfer argumen pada fungsi modular",
       "materi_pokok": "Parameter Passing",
       "indikator": "Membandingkan mekanisme call by value dan call by reference"
+    },
+    {
+      "id": 32,
+      "id_ujian": 1,
+      "jenis_soal": "pg",
+      "pertanyaan": "Pertanyaan Test Hapus",
+      "pembahasan": "",
+      "poin": 5,
+      "urutan": 26,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "mudah",
+      "level_kognitif": "C1",
+      "cpmk": ""
+    },
+    {
+      "id": 33,
+      "id_ujian": 1,
+      "jenis_soal": "pg",
+      "pertanyaan": "Kisi Test Soal",
+      "pembahasan": "",
+      "poin": 4,
+      "urutan": 26,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C2",
+      "cpmk": "CPMK Awal"
     }
   ],
   "opsi_jawaban": [
-    {
-      "id": 1,
-      "id_soal": 1,
-      "teks_opsi": "Pusat perhatian",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 2,
-      "id_soal": 1,
-      "teks_opsi": "Perantara atau pengantar",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 3,
-      "id_soal": 1,
-      "teks_opsi": "Peralatan elektronik",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 4,
-      "id_soal": 1,
-      "teks_opsi": "Metode pengajaran",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 5,
-      "id_soal": 1,
-      "teks_opsi": "Bahan ajar cetak",
-      "benar": false,
-      "urutan": 5
-    },
     {
       "id": 6,
       "id_soal": 2,
@@ -1908,6 +1884,34 @@
       "teks_opsi": "Tidak ada perbedaan sama sekali",
       "benar": false,
       "urutan": 5
+    },
+    {
+      "id": 156,
+      "id_soal": 32,
+      "teks_opsi": "Opsi A",
+      "benar": true,
+      "urutan": 1
+    },
+    {
+      "id": 157,
+      "id_soal": 32,
+      "teks_opsi": "Opsi B",
+      "benar": false,
+      "urutan": 2
+    },
+    {
+      "id": 153,
+      "id_soal": 33,
+      "teks_opsi": "A",
+      "benar": true,
+      "urutan": 1
+    },
+    {
+      "id": 154,
+      "id_soal": 33,
+      "teks_opsi": "B",
+      "benar": false,
+      "urutan": 2
     }
   ],
   "sesi_ujian": [],

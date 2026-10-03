@@ -752,6 +752,31 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
 
       return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Ujian berhasil ditambahkan!'));
     }
+  } else if (action === 'edit') {
+    const id = parseInt(req.body.ujian_id, 10);
+    const u = db.ujian.find(x => x.id === id);
+    if (u) {
+      u.judul_ujian = (req.body.judul_ujian || '').trim() || u.judul_ujian;
+      u.id_mata_kuliah = parseInt(req.body.id_mata_kuliah, 10) || u.id_mata_kuliah;
+      u.jenis_ujian = req.body.jenis_ujian || u.jenis_ujian;
+      u.durasi_menit = parseInt(req.body.durasi_menit, 10) || u.durasi_menit;
+      u.total_nilai = parseInt(req.body.total_nilai, 10) || u.total_nilai;
+      u.nilai_lulus = parseInt(req.body.nilai_lulus, 10) || u.nilai_lulus;
+
+      if (req.body.kelas_ids !== undefined) {
+        db.ujian_kelas = db.ujian_kelas.filter(uk => uk.id_ujian !== id);
+        const kelasIds = Array.isArray(req.body.kelas_ids) ? req.body.kelas_ids.map(Number) : (req.body.kelas_ids ? [Number(req.body.kelas_ids)] : []);
+        kelasIds.forEach(kId => {
+          db.ujian_kelas.push({
+            id: db.ujian_kelas.length + 1,
+            id_ujian: id,
+            id_kelas: kId
+          });
+        });
+      }
+      db.save();
+      return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Data penilaian / ujian berhasil diperbarui!'));
+    }
   } else if (action === 'toggle_active') {
     const id = parseInt(req.body.ujian_id, 10);
     const u = db.ujian.find(x => x.id === id);
@@ -760,11 +785,19 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
       return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Status ujian berhasil diubah!'));
     }
   } else if (action === 'delete') {
-    const id = parseInt(req.body.ujian_id, 10);
-    db.ujian = db.ujian.filter(u => u.id !== id);
-    db.ujian_kelas = db.ujian_kelas.filter(uk => uk.id_ujian !== id);
-    db.soal = db.soal.filter(s => s.id_ujian !== id);
-    return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Ujian berhasil dihapus!'));
+    const id = parseInt(req.body.ujian_id || req.body.id, 10);
+    if (id) {
+      db.ujian = db.ujian.filter(u => u.id !== id);
+      db.ujian_kelas = db.ujian_kelas.filter(uk => uk.id_ujian !== id);
+      const sesiIds = db.sesi_ujian.filter(s => s.id_ujian === id).map(s => s.id);
+      db.jawaban_peserta = db.jawaban_peserta.filter(j => !sesiIds.includes(j.id_sesi));
+      db.sesi_ujian = db.sesi_ujian.filter(s => s.id_ujian !== id);
+      const soalIds = db.soal.filter(s => s.id_ujian === id).map(s => s.id);
+      db.opsi_jawaban = db.opsi_jawaban.filter(o => !soalIds.includes(o.id_soal));
+      db.soal = db.soal.filter(s => s.id_ujian !== id);
+      db.save();
+      return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Ujian berhasil dihapus!'));
+    }
   }
 
   res.redirect('/admin/ujian');
@@ -858,11 +891,49 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
 
       return res.redirect(`/admin/soal?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Soal berhasil ditambahkan!'));
     }
-  } else if (action === 'delete') {
+  } else if (action === 'edit') {
     const soalId = parseInt(req.body.soal_id, 10);
-    db.soal = db.soal.filter(s => s.id !== soalId);
-    db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
-    return res.redirect(`/admin/soal?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Soal berhasil dihapus!'));
+    const s = db.soal.find(x => x.id === soalId);
+    if (s) {
+      s.pertanyaan = (req.body.pertanyaan || '').trim() || s.pertanyaan;
+      s.pembahasan = (req.body.pembahasan || '').trim();
+      s.poin = parseInt(req.body.poin, 10) || s.poin;
+      s.tingkat_kesulitan = req.body.tingkat_kesulitan || s.tingkat_kesulitan;
+      s.level_kognitif = req.body.level_kognitif || s.level_kognitif;
+
+      if (['pg', 'multiple'].includes(s.jenis_soal) && req.body.opsi_teks) {
+        db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
+        const teksOpsi = req.body.opsi_teks || [];
+        const benarOpsi = req.body.opsi_benar;
+
+        teksOpsi.forEach((teks, idx) => {
+          if (teks && teks.trim()) {
+            const isBenar = Array.isArray(benarOpsi)
+              ? benarOpsi.includes(String(idx))
+              : String(benarOpsi) === String(idx);
+            db.opsi_jawaban.push({
+              id: db.opsi_jawaban.length + 1,
+              id_soal: soalId,
+              teks_opsi: teks.trim(),
+              benar: isBenar,
+              urutan: idx + 1
+            });
+          }
+        });
+      }
+      db.save();
+      return res.redirect(`/admin/soal?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Butir soal berhasil diperbarui!'));
+    }
+  } else if (action === 'delete') {
+    const soalId = parseInt(req.body.soal_id || req.body.id, 10);
+    if (soalId) {
+      const s = db.soal.find(x => x.id === soalId);
+      const finalUjianId = targetUjianId || (s ? s.id_ujian : 0);
+      db.soal = db.soal.filter(x => x.id !== soalId);
+      db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
+      db.save();
+      return res.redirect(`/admin/soal?ujian_id=${finalUjianId}&msg=` + encodeURIComponent('Soal berhasil dihapus!'));
+    }
   }
 
   res.redirect(`/admin/soal?ujian_id=${targetUjianId}`);
@@ -939,6 +1010,14 @@ app.post(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
     db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sesiId);
     db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sesiId);
     return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Data hasil berhasil dihapus!'));
+  } else if (action === 'edit_nilai') {
+    const sesiId = parseInt(req.body.sesi_id, 10);
+    const sesi = db.sesi_ujian.find(s => s.id === sesiId);
+    if (sesi) {
+      sesi.nilai_total = parseFloat(req.body.nilai_total) || 0;
+      db.save();
+      return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Nilai ujian peserta berhasil diperbarui!'));
+    }
   }
 
   res.redirect('/admin/hasil');
@@ -984,6 +1063,37 @@ app.get(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) =
     settings: db.pengaturan,
     message: req.query.msg || ''
   });
+});
+
+app.post(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) => {
+  const { action, soal_id, id, ujian_id, cpmk, materi_pokok, indikator, level_kognitif, tingkat_kesulitan, poin, pertanyaan } = req.body;
+  let targetUjianId = parseInt(ujian_id, 10) || 0;
+  const targetSoalId = parseInt(soal_id || id, 10) || 0;
+
+  if (action === 'edit' && targetSoalId) {
+    const s = db.soal.find(x => x.id === targetSoalId);
+    if (s) {
+      if (!targetUjianId) targetUjianId = s.id_ujian;
+      if (cpmk !== undefined) s.cpmk = cpmk.trim();
+      if (materi_pokok !== undefined) s.materi_pokok = materi_pokok.trim();
+      if (indikator !== undefined) s.indikator = indikator.trim();
+      if (level_kognitif !== undefined) s.level_kognitif = level_kognitif.trim();
+      if (tingkat_kesulitan !== undefined) s.tingkat_kesulitan = tingkat_kesulitan.trim();
+      if (poin !== undefined) s.poin = parseInt(poin, 10) || s.poin;
+      if (pertanyaan !== undefined && pertanyaan.trim()) s.pertanyaan = pertanyaan.trim();
+      db.save();
+      return res.redirect(`/admin/kisi_kisi?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Kisi-kisi butir soal berhasil diperbarui!'));
+    }
+  } else if (action === 'delete' && targetSoalId) {
+    const s = db.soal.find(x => x.id === targetSoalId);
+    if (s && !targetUjianId) targetUjianId = s.id_ujian;
+    db.soal = db.soal.filter(x => x.id !== targetSoalId);
+    db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== targetSoalId);
+    db.save();
+    return res.redirect(`/admin/kisi_kisi?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Butir kisi-kisi soal berhasil dihapus!'));
+  }
+
+  res.redirect(`/admin/kisi_kisi?ujian_id=${targetUjianId}`);
 });
 
 // Export PDF / Print Preview Naskah Soal matching Image 2
@@ -1043,6 +1153,68 @@ app.get(['/admin/kisi_kisi/export_matrix_word'], requireAdmin, async (req, res) 
   }
 });
 
+// Universal AI Client: Supports Groq API (if GROQ_API_KEY is provided) or Google Gemini
+async function generateWithAI({ prompt, systemInstruction = 'Anda adalah asisten AI akademik yang menghasilkan JSON valid.', temperature = 0.5 }) {
+  // 1. Prioritize Groq API if GROQ_API_KEY is configured
+  if (process.env.GROQ_API_KEY) {
+    try {
+      const model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY.trim()}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: `${systemInstruction} Respon HANYA berupa JSON valid tanpa teks pengantar.` },
+            { role: 'user', content: prompt }
+          ],
+          response_format: { type: 'json_object' },
+          temperature
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        if (content) {
+          const cleanJson = content.replace(/```json/g, '').replace(/```/g, '').trim();
+          return JSON.parse(cleanJson);
+        }
+      } else {
+        const errText = await response.text();
+        console.warn('Groq API response error:', response.status, errText);
+      }
+    } catch (err) {
+      console.warn('Groq API call failed:', err.message);
+    }
+  }
+
+  // 2. Use Google Gemini if GEMINI_API_KEY is available and Groq is not used
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      const ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY,
+        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+      });
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `${systemInstruction}\n\n${prompt}`,
+        config: { responseMimeType: 'application/json', temperature }
+      });
+      const text = response.text || '{}';
+      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      return JSON.parse(cleanJson);
+    } catch (err) {
+      console.warn('Gemini API call failed:', err.message);
+    }
+  }
+
+  return null;
+}
+
 // API: Generate Kisi-Kisi AI
 app.post(['/admin/api/generate_kisi_kisi'], requireAdmin, async (req, res) => {
   const { ujian_id, topik, cpmk, jumlah, kesulitan } = req.body;
@@ -1051,14 +1223,7 @@ app.post(['/admin/api/generate_kisi_kisi'], requireAdmin, async (req, res) => {
 
   let generatedKisi = [];
 
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const ai = new GoogleGenAI({
-        apiKey: process.env.GEMINI_API_KEY,
-        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-      });
-
-      const prompt = `Anda adalah pakar kurikulum dan evaluasi pendidikan perguruan tinggi.
+  const prompt = `Anda adalah pakar kurikulum dan evaluasi pendidikan perguruan tinggi.
 Buatkan ${count} baris matriks kisi-kisi penulisan soal ujian akademik untuk topik / mata kuliah: "${topik || 'Pengembangan Media Pembelajaran'}".
 Capaian Pembelajaran (CPMK): "${cpmk || 'Menguasai konsep dan aplikasi materi'}".
 Distribusi Kesulitan: "${kesulitan || 'proporsional'}".
@@ -1078,19 +1243,13 @@ Berikan respon HANYA berupa JSON valid:
   ]
 }`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: { responseMimeType: 'application/json' }
-      });
+  const parsed = await generateWithAI({
+    prompt,
+    systemInstruction: 'Anda adalah pakar kurikulum dan evaluasi pendidikan perguruan tinggi.'
+  });
 
-      const parsed = JSON.parse(response.text || '{}');
-      if (Array.isArray(parsed.kisi_kisi)) {
-        generatedKisi = parsed.kisi_kisi;
-      }
-    } catch (err) {
-      console.warn('Gemini Kisi-Kisi generation fallback:', err.message);
-    }
+  if (parsed && Array.isArray(parsed.kisi_kisi)) {
+    generatedKisi = parsed.kisi_kisi;
   }
 
   // Fallback high-quality academic indicators
@@ -1138,14 +1297,7 @@ app.post(['/admin/api/generate_soal_kisi_kisi'], requireAdmin, async (req, res) 
 
   let generatedQuestions = [];
 
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const ai = new GoogleGenAI({
-        apiKey: process.env.GEMINI_API_KEY,
-        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-      });
-
-      const prompt = `Anda adalah dosen penyusun soal ujian universitas.
+  const prompt = `Anda adalah dosen penyusun soal ujian universitas.
 Buatkan ${count} butir soal pilihan ganda akademik berkualitas tinggi untuk mata kuliah "${courseName}".
 Setiap soal harus memiliki 5 pilihan jawaban (A, B, C, D, E), 1 kunci benar, penjelasan/pembahasan, CPMK, materi pokok, indikator, level kognitif (C1-C5), dan tingkat kesulitan (mudah/sedang/sulit).
 
@@ -1171,19 +1323,13 @@ Berikan respon HANYA berupa JSON valid:
   ]
 }`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-        config: { responseMimeType: 'application/json' }
-      });
+  const parsed = await generateWithAI({
+    prompt,
+    systemInstruction: 'Anda adalah dosen penyusun soal ujian universitas.'
+  });
 
-      const parsed = JSON.parse(response.text || '{}');
-      if (Array.isArray(parsed.soal)) {
-        generatedQuestions = parsed.soal;
-      }
-    } catch (err) {
-      console.warn('Gemini Soal generation fallback:', err.message);
-    }
+  if (parsed && Array.isArray(parsed.soal)) {
+    generatedQuestions = parsed.soal;
   }
 
   // Fallback high-quality questions
@@ -1273,8 +1419,18 @@ app.post(['/admin/fakultas', '/admin/fakultas.php'], requireAdminOnly, (req, res
   if (action === 'create' && kode_fakultas && nama_fakultas) {
     const newId = db.fakultas.length ? Math.max(...db.fakultas.map(f => f.id)) + 1 : 1;
     db.fakultas.push({ id: newId, kode_fakultas: kode_fakultas.trim(), nama_fakultas: nama_fakultas.trim() });
+    db.save();
+  } else if (action === 'edit' && id && kode_fakultas && nama_fakultas) {
+    const targetId = parseInt(id, 10);
+    const f = db.fakultas.find(x => x.id === targetId);
+    if (f) {
+      f.kode_fakultas = kode_fakultas.trim();
+      f.nama_fakultas = nama_fakultas.trim();
+      db.save();
+    }
   } else if (action === 'delete') {
     db.fakultas = db.fakultas.filter(f => f.id !== parseInt(id, 10));
+    db.save();
   }
   res.redirect('/admin/fakultas?msg=' + encodeURIComponent('Data fakultas berhasil diperbarui!'));
 });
@@ -2015,7 +2171,7 @@ app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdminOnly, (req,
   res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Pengaturan institusi berhasil disimpan!'));
 });
 
-// AI Question Generator API (Gemini Integration)
+// AI Question Generator API (Groq or Gemini Integration)
 app.post(['/admin/ai_generate_api', '/admin/ai_generate_api.php'], requireAdmin, async (req, res) => {
   const topic = req.body.topik || req.body.topic || 'Etika Profesi';
   const jenis = req.body.jenis || 'pg';
@@ -2024,10 +2180,7 @@ app.post(['/admin/ai_generate_api', '/admin/ai_generate_api.php'], requireAdmin,
   const kognitif = req.body.kognitif || 'C1';
   const poin = parseInt(req.body.poin, 10) || 4;
 
-  if (process.env.GEMINI_API_KEY) {
-    try {
-      const ai = new GoogleGenAI();
-      const prompt = `Buatkan ${count} butir soal ujian akademik tentang topik "${topic}".
+  const prompt = `Buatkan ${count} butir soal ujian akademik tentang topik "${topic}".
 Tingkat kesulitan: ${kesulitan}, Level kognitif: ${kognitif}, Jenis soal: ${jenis}.
 Format respon HANYA berupa JSON object:
 {
@@ -2049,17 +2202,14 @@ Format respon HANYA berupa JSON object:
     }
   ]
 }`;
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt
-      });
-      const text = response.text || '{}';
-      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanJson);
-      return res.json(parsed.soal || parsed);
-    } catch (err) {
-      console.warn('Gemini generation error, falling back to smart generator:', err.message);
-    }
+
+  const parsed = await generateWithAI({
+    prompt,
+    systemInstruction: 'Anda adalah dosen ahli penyusun butir soal ujian akademik perguruan tinggi.'
+  });
+
+  if (parsed && (parsed.soal || Array.isArray(parsed))) {
+    return res.json(parsed.soal || parsed);
   }
 
   // Fallback high-quality academic question generator

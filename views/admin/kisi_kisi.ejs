@@ -394,7 +394,7 @@
                                 <th style="width: 8%;">Level</th>
                                 <th style="width: 9%;">Kesulitan</th>
                                 <th style="width: 6%;">Bobot</th>
-                                <th style="width: 70px;">Aksi</th>
+                                <th style="width: 210px; text-align: center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -415,7 +415,7 @@
                                         <td><div style="font-size: 0.85rem; color: #334155;"><%= s.indikator || (s.pertanyaan ? s.pertanyaan.replace(/<[^>]*>?/gm, '').substring(0, 80) + '...' : '-') %></div></td>
                                         <td>
                                             <span class="badge badge-secondary" style="font-size: 0.75rem;">
-                                                <%= s.jenis_soal ? s.jenis_soal.toUpperCase() : 'PG' %>
+                                                 <%= s.jenis_soal ? s.jenis_soal.toUpperCase() : 'PG' %>
                                             </span>
                                         </td>
                                         <td>
@@ -435,10 +435,18 @@
                                             </span>
                                         </td>
                                         <td><strong><%= s.poin || 4 %></strong></td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewSoalDetail(<%= s.id %>)" title="Lihat Pertanyaan Lengkap">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                        <td style="text-align: center; white-space: nowrap;">
+                                            <div style="display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                                                <button type="button" class="btn btn-sm btn-outline-primary" style="padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" onclick="viewSoalDetail(<%= s.id %>)" title="Lihat Pertanyaan Lengkap">
+                                                    <i class="fas fa-eye"></i> Detail
+                                                </button>
+                                                <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #ffffff; border: none; padding: 5px 10px; font-size: 0.82rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit Kisi-Kisi &amp; Soal" onclick="openEditKisiModalById(<%= s.id %>)">
+                                                    <i class="fas fa-pen-to-square"></i> Edit
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" style="padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="Hapus Butir Kisi-Kisi" onclick="openConfirmDeleteKisi(<%= s.id %>, <%= idx + 1 %>)">
+                                                    <i class="fas fa-trash"></i> Hapus
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -571,6 +579,110 @@
         </div>
     </div>
 
+    <!-- MODAL 4: EDIT KISI-KISI / BUTIR SOAL -->
+    <div class="modal-overlay" id="modalEditKisiOverlay">
+        <div class="modal-content" style="max-width: 650px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 style="margin: 0; color: #1b4d3e; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-pen-to-square"></i> Edit Butir Kisi-Kisi Soal
+                </h3>
+                <button type="button" onclick="closeEditKisiModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+
+            <form method="POST" action="/admin/kisi_kisi">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="ujian_id" value="<%= selectedUjianId %>">
+                <input type="hidden" name="soal_id" id="edit_kisi_soal_id">
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Capaian Pembelajaran (CPMK / Kompetensi)</label>
+                    <input type="text" name="cpmk" id="edit_kisi_cpmk" required class="form-control" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Materi Pokok / Bahasan</label>
+                    <input type="text" name="materi_pokok" id="edit_kisi_materi_pokok" required class="form-control" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Indikator Soal</label>
+                    <textarea name="indikator" id="edit_kisi_indikator" rows="2" required class="form-control" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit;"></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Level Kognitif</label>
+                        <select name="level_kognitif" id="edit_kisi_kognitif" class="form-select" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                            <option value="C1">C1 - Mengingat</option>
+                            <option value="C2">C2 - Memahami</option>
+                            <option value="C3">C3 - Menerapkan</option>
+                            <option value="C4">C4 - Menganalisis</option>
+                            <option value="C5">C5 - Mengevaluasi</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Tingkat Kesulitan</label>
+                        <select name="tingkat_kesulitan" id="edit_kisi_kesulitan" class="form-select" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                            <option value="mudah">Mudah</option>
+                            <option value="sedang">Sedang</option>
+                            <option value="sulit">Sulit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Bobot Poin</label>
+                        <input type="number" name="poin" id="edit_kisi_poin" required class="form-control" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 18px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Teks Pertanyaan Soal</label>
+                    <textarea name="pertanyaan" id="edit_kisi_pertanyaan" rows="3" class="form-control" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditKisiModal()" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-check"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: KONFIRMASI HAPUS BUTIR KISI-KISI -->
+    <div class="modal-overlay" id="modalDeleteKisiOverlay">
+        <div class="modal-content" style="max-width: 440px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                <h3 style="margin: 0; color: #dc2626; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-trash"></i> Hapus Butir Kisi-Kisi
+                </h3>
+                <button type="button" onclick="closeConfirmDeleteKisi()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+
+            <p style="color: #334155; margin: 0 0 16px; font-size: 0.95rem; line-height: 1.5;">
+                Apakah Anda yakin ingin menghapus butir kisi-kisi <strong id="deleteKisiNumber"></strong> beserta butir soal terkait?
+            </p>
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; color: #991b1b; font-size: 0.85rem; margin-bottom: 20px;">
+                <i class="fas fa-triangle-exclamation" style="margin-right: 6px;"></i> Tindakan ini tidak dapat dibatalkan.
+            </div>
+
+            <form method="POST" action="/admin/kisi_kisi">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="ujian_id" value="<%= selectedUjianId %>">
+                <input type="hidden" name="soal_id" id="deleteKisiSoalId">
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeConfirmDeleteKisi()" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="background: #dc2626; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-trash"></i> Ya, Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const soalListDb = <%- JSON.stringify(soalList) %>;
 
@@ -629,6 +741,38 @@
             document.getElementById('modalViewSoal').style.display = 'flex';
         }
 
+        function openEditKisiModalById(soalId) {
+            const s = (typeof soalListDb !== 'undefined' ? soalListDb : []).find(item => item.id === Number(soalId));
+            if (!s) return;
+            openEditKisiModal(s);
+        }
+
+        function openEditKisiModal(soal) {
+            document.getElementById('edit_kisi_soal_id').value = soal.id;
+            document.getElementById('edit_kisi_cpmk').value = soal.cpmk || '';
+            document.getElementById('edit_kisi_materi_pokok').value = soal.materi_pokok || '';
+            document.getElementById('edit_kisi_indikator').value = soal.indikator || '';
+            document.getElementById('edit_kisi_kognitif').value = soal.level_kognitif || 'C2';
+            document.getElementById('edit_kisi_kesulitan').value = soal.tingkat_kesulitan || 'sedang';
+            document.getElementById('edit_kisi_poin').value = soal.poin || 4;
+            document.getElementById('edit_kisi_pertanyaan').value = (soal.pertanyaan || '').replace(/<[^>]*>?/gm, '');
+            document.getElementById('modalEditKisiOverlay').style.display = 'flex';
+        }
+
+        function closeEditKisiModal() {
+            document.getElementById('modalEditKisiOverlay').style.display = 'none';
+        }
+
+        function openConfirmDeleteKisi(id, no) {
+            document.getElementById('deleteKisiSoalId').value = id;
+            document.getElementById('deleteKisiNumber').innerText = 'Nomor ' + no;
+            document.getElementById('modalDeleteKisiOverlay').style.display = 'flex';
+        }
+
+        function closeConfirmDeleteKisi() {
+            document.getElementById('modalDeleteKisiOverlay').style.display = 'none';
+        }
+
         // Handle AI generation for Kisi-Kisi
         async function handleGenerateKisi(e) {
             e.preventDefault();
@@ -653,14 +797,13 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('Berhasil membuat kisi-kisi AI sebanyak ' + (data.count || payload.jumlah) + ' butir!');
-                    window.location.reload();
+                    window.location.href = '/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>&msg=' + encodeURIComponent('Berhasil membuat kisi-kisi AI sebanyak ' + (data.count || payload.jumlah) + ' butir!');
                 } else {
-                    alert(data.message || 'Gagal menghasilkan kisi-kisi');
+                    btn.disabled = false;
+                    loading.style.display = 'none';
                 }
             } catch (err) {
-                alert('Terjadi kesalahan saat memproses AI: ' + err.message);
-            } finally {
+                console.error(err);
                 btn.disabled = false;
                 loading.style.display = 'none';
             }
@@ -688,18 +831,29 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('Berhasil menghasilkan ' + (data.count || payload.jumlah) + ' butir soal baru dan disimpan ke bank soal!');
-                    window.location.reload();
+                    window.location.href = '/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>&msg=' + encodeURIComponent('Berhasil menghasilkan ' + (data.count || payload.jumlah) + ' butir soal baru dan disimpan ke bank soal!');
                 } else {
-                    alert(data.message || 'Gagal membuat soal');
+                    btn.disabled = false;
+                    loading.style.display = 'none';
                 }
             } catch (err) {
-                alert('Terjadi kesalahan saat memproses soal AI: ' + err.message);
-            } finally {
+                console.error(err);
                 btn.disabled = false;
                 loading.style.display = 'none';
             }
         }
+
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+            }
+        });
     </script>
 </body>
 </html>
