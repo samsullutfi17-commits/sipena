@@ -43,9 +43,9 @@
                 <h1>SIPENA – Sistem Penilaian Akademik</h1>
                 <p class="subtitle">Selamat datang, <strong><%= pesertaNama %></strong></p>
             </div>
-            <a href="/peserta_logout" class="btn btn-accent" style="white-space: nowrap;">
+            <button type="button" class="btn btn-accent" style="white-space: nowrap; border: none; cursor: pointer;" onclick="openLogoutModal()">
                 <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
+            </button>
         </div>
     </header>
 
@@ -92,6 +92,11 @@
                     <select id="kelas_id" name="kelas_id" required class="form-select" disabled>
                         <option value="">-- Pilih Grup / Kelas --</option>
                     </select>
+                    <% if (typeof pesertaKelasNama !== 'undefined' && pesertaKelasNama) { %>
+                        <div id="auto-kelas-badge" style="display: none; margin-top: 5px; font-size: 0.82rem; color: #166534; font-weight: 500;">
+                            <i class="fas fa-circle-check"></i> Kelas terdeteksi otomatis dari akun: <strong><%= pesertaKelasNama %></strong>
+                        </div>
+                    <% } %>
                 </div>
 
                 <div class="form-group">
@@ -213,6 +218,67 @@
                 ujianInfo.style.display = 'none';
             }
         });
+
+        // Smart automatic pre-selection of Program Studi & Kelas based on student account
+        document.addEventListener('DOMContentLoaded', function () {
+            const defaultProdiId = '<%= typeof pesertaProdiId !== "undefined" && pesertaProdiId ? pesertaProdiId : "" %>';
+            const defaultKelasId = '<%= typeof pesertaKelasId !== "undefined" && pesertaKelasId ? pesertaKelasId : "" %>';
+
+            if (defaultProdiId) {
+                prodiSelect.value = defaultProdiId;
+                fetch('/api?action=get_kelas&prodi_id=' + defaultProdiId)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success && data.data.length > 0) {
+                            kelasSelect.innerHTML = '<option value="">-- Pilih Grup / Kelas --</option>';
+                            data.data.forEach(k => {
+                                const opt = document.createElement('option');
+                                opt.value = k.id;
+                                opt.textContent = k.nama_kelas + ' (' + k.angkatan + ')';
+                                if (String(k.id) === String(defaultKelasId)) {
+                                    opt.selected = true;
+                                }
+                                kelasSelect.appendChild(opt);
+                            });
+                            kelasSelect.disabled = false;
+                            const badge = document.getElementById('auto-kelas-badge');
+                            if (badge) badge.style.display = 'block';
+
+                            if (defaultKelasId) {
+                                kelasSelect.value = defaultKelasId;
+                                kelasSelect.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    })
+                    .catch(err => console.error('Error preloading student class:', err));
+            }
+        });
+
+        function openLogoutModal() {
+            document.getElementById('modalConfirmLogout').style.display = 'flex';
+        }
+        function closeLogoutModal() {
+            document.getElementById('modalConfirmLogout').style.display = 'none';
+        }
     </script>
+
+    <!-- MODAL KONFIRMASI KELUAR / LOGOUT PESERTA -->
+    <div id="modalConfirmLogout" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center;" onclick="if(event.target===this)closeLogoutModal();">
+        <div style="background: white; border-radius: 16px; max-width: 400px; width: 90%; padding: 28px 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.25);">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 16px auto;">
+                <i class="fas fa-right-from-bracket"></i>
+            </div>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.25rem; color: #0f172a;">Konfirmasi Keluar</h3>
+            <p style="color: #64748b; font-size: 0.92rem; margin: 0 0 20px 0;">
+                Apakah Anda yakin ingin keluar dari aplikasi <strong>SIPENA</strong>?
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="closeLogoutModal()" style="padding: 9px 20px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; cursor: pointer;">Batal</button>
+                <a href="/peserta_logout" class="btn" style="background: #dc2626; color: white; padding: 9px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-right-from-bracket"></i> Ya, Keluar
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

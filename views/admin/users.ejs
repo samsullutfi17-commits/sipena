@@ -85,6 +85,64 @@
             transform: translateY(-1px);
         }
 
+        .btn-template-download {
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        .btn-template-download:hover {
+            background-color: #0369a1 !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-export-xlsx {
+            background-color: #0d9488 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-decoration: none;
+        }
+
+        .btn-export-xlsx:hover {
+            background-color: #0f766e !important;
+            transform: translateY(-1px);
+        }
+
+        .badge-user-kelas {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #ecfdf5;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            padding: 3px 9px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
         /* Tabs matching Screenshot */
         .users-tab-container {
             display: flex;
@@ -523,7 +581,6 @@
                 <h1>SIPENA – Manajemen Pengguna & Monitor Sesi</h1>
                 <p class="subtitle"><%= adminNama %></p>
             </div>
-            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </header>
 
@@ -547,6 +604,12 @@
                     <button type="button" class="btn-tambah-user" onclick="openAddModal()">
                         <i class="fas fa-plus"></i> Tambah Pengguna
                     </button>
+                    <a href="/admin/users/template_xlsx" class="btn-template-download" title="Unduh Template Excel dengan Kolom Kelas">
+                        <i class="fas fa-file-arrow-down"></i> Unduh Template Excel
+                    </a>
+                    <a href="/admin/users/export_xlsx" class="btn-export-xlsx" title="Ekspor Seluruh Data Pengguna & Kelas ke Excel">
+                        <i class="fas fa-file-export"></i> Ekspor Excel
+                    </a>
                     <button type="button" class="btn-import-xlsx" onclick="openImportModal()">
                         <i class="fas fa-file-excel"></i> Import XLSX
                     </button>
@@ -556,7 +619,7 @@
             <!-- Tab Container -->
             <div class="users-tab-container">
                 <button type="button" class="tab-btn <%= activeTab !== 'status' ? 'active' : '' %>" id="tabDaftarBtn" onclick="switchTab('daftar')">
-                    <i class="fas fa-list"></i> Daftar User
+                    <i class="fas fa-list"></i> Daftar User & Kelas
                 </button>
                 <button type="button" class="tab-btn <%= activeTab === 'status' ? 'active' : '' %>" id="tabStatusBtn" onclick="switchTab('status')">
                     <i class="fas fa-chart-line"></i> Monitor Aktivitas & Sesi Peserta
@@ -580,10 +643,10 @@
             <div id="sectionDaftarUser" style="<%= activeTab === 'status' ? 'display: none;' : '' %>">
                 <!-- Filter Box -->
                 <div class="filter-card">
-                    <div class="filter-grid">
+                    <div class="filter-grid" style="grid-template-columns: 2fr 1.2fr 1.2fr auto; align-items: flex-end;">
                         <div class="filter-group">
-                            <label class="filter-label" for="searchInput">Cari (Username / Nama)</label>
-                            <input type="text" id="searchInput" class="filter-control" placeholder="Ketikkan username atau nama..." oninput="filterUserTable()">
+                            <label class="filter-label" for="searchInput">Cari (Username / Nama / NIM / Kelas)</label>
+                            <input type="text" id="searchInput" class="filter-control" placeholder="Ketikkan username, nama, NIM, atau kelas..." oninput="filterUserTable()">
                         </div>
                         <div class="filter-group">
                             <label class="filter-label" for="roleFilter">Filter Role</label>
@@ -596,13 +659,18 @@
                             </select>
                         </div>
                         <div class="filter-group">
-                            <label class="filter-label" for="kelasFilter">Filter Kelas</label>
+                            <label class="filter-label" for="kelasFilter">Filter Kelas Peserta</label>
                             <select id="kelasFilter" class="filter-control" onchange="filterUserTable()">
                                 <option value="">-- Semua Kelas --</option>
                                 <% kelasList.forEach(function(k) { %>
                                     <option value="<%= k.id %>"><%= k.nama_kelas %></option>
                                 <% }); %>
                             </select>
+                        </div>
+                        <div class="filter-group">
+                            <button type="button" class="btn btn-secondary" onclick="resetUserTableFilter()" style="padding: 9px 14px; font-size: 0.88rem; font-weight: 600; white-space: nowrap;">
+                                <i class="fas fa-rotate-left"></i> Reset
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -613,11 +681,12 @@
                         <table class="users-table" id="usersTable">
                             <thead>
                                 <tr>
-                                    <th style="width: 20%;">Username</th>
-                                    <th style="width: 30%;">Nama Lengkap</th>
-                                    <th style="width: 15%;">Role</th>
-                                    <th style="width: 15%;">Dibuat</th>
-                                    <th style="width: 20%;">Aksi</th>
+                                    <th style="width: 17%;">Username</th>
+                                    <th style="width: 25%;">Nama Lengkap & NIM</th>
+                                    <th style="width: 12%;">Role</th>
+                                    <th style="width: 16%;">Kelas</th>
+                                    <th style="width: 12%;">Dibuat</th>
+                                    <th style="width: 18%;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -631,8 +700,10 @@
                                     %>
                                     <tr data-username="<%= (u.username || '').toLowerCase() %>" 
                                         data-nama="<%= (u.nama_lengkap || '').toLowerCase() %>" 
+                                        data-nim="<%= (u.nim || '').toLowerCase() %>"
                                         data-role="<%= (u.role || '').toLowerCase() %>"
-                                        data-kelas="<%= u.id_kelas || '' %>">
+                                        data-kelas="<%= u.id_kelas || '' %>"
+                                        data-namakelas="<%= (u.nama_kelas || '').toLowerCase() %>">
                                         <td>
                                             <strong style="font-weight: 500;"><%= u.username %></strong>
                                         </td>
@@ -651,6 +722,17 @@
                                                 <span class="role-badge-pengawas">Pengawas</span>
                                             <% } else { %>
                                                 <span class="role-badge-admin">Admin</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (u.role === 'peserta') { %>
+                                                <% if (u.nama_kelas) { %>
+                                                    <span class="badge-user-kelas"><i class="fas fa-graduation-cap"></i> <%= u.nama_kelas %></span>
+                                                <% } else { %>
+                                                    <span style="color: #94a3b8; font-size: 0.8rem; font-style: italic;">Belum Diatur</span>
+                                                <% } %>
+                                            <% } else { %>
+                                                <span style="color: #cbd5e1;">-</span>
                                             <% } %>
                                         </td>
                                         <td style="color: #475569;">
@@ -747,8 +829,14 @@
                     </div>
 
                     <!-- Search & Status Filters for Table -->
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-top: 16px;">
+                    <div style="display: grid; grid-template-columns: 2fr 1.2fr 1.2fr auto; gap: 12px; margin-top: 16px; align-items: center;">
                         <input type="text" id="statusSearchInput" class="filter-control" placeholder="Cari peserta ujian (NIM / Nama / Kelas)..." oninput="filterStatusPesertaTable()">
+                        <select id="statusKelasFilterSelect" class="filter-control" onchange="filterStatusPesertaTable()">
+                            <option value="">-- Semua Kelas Peserta --</option>
+                            <% kelasList.forEach(function(k) { %>
+                                <option value="<%= k.id %>"><%= k.nama_kelas %></option>
+                            <% }); %>
+                        </select>
                         <select id="statusFilterSelect" class="filter-control" onchange="filterStatusPesertaTable()">
                             <option value="">-- Semua Status Sesi --</option>
                             <option value="sedang_login">Sedang Login</option>
@@ -757,6 +845,9 @@
                             <option value="timeout">Waktu Habis</option>
                             <option value="belum">Belum Ujian</option>
                         </select>
+                        <button type="button" class="btn btn-secondary" onclick="resetStatusPesertaFilter()" style="padding: 9px 14px; font-size: 0.88rem; font-weight: 600; white-space: nowrap;">
+                            <i class="fas fa-rotate-left"></i> Reset
+                        </button>
                     </div>
                 </div>
 
@@ -769,7 +860,7 @@
                                     <th style="width: 45px;">No</th>
                                     <th style="width: 110px;">NIM</th>
                                     <th>Nama Peserta</th>
-                                    <th style="width: 90px;">Kelas</th>
+                                    <th style="width: 110px;">Kelas</th>
                                     <th style="width: 160px;">Status Ujian</th>
                                     <th style="width: 130px;">Waktu Mulai</th>
                                     <th style="width: 130px;">Waktu Selesai</th>
@@ -790,6 +881,7 @@
                                         <tr data-nim="<%= (sp.nim || '').toLowerCase() %>" 
                                             data-nama="<%= (sp.nama_lengkap || '').toLowerCase() %>" 
                                             data-kelas="<%= (sp.nama_kelas || '').toLowerCase() %>" 
+                                            data-idkelas="<%= sp.id_kelas || '' %>"
                                             data-status="<%= sp.status %>">
                                             <td><strong><%= idx + 1 %></strong></td>
                                             <td><code><%= sp.nim %></code></td>
@@ -799,7 +891,13 @@
                                                     <div style="font-size: 0.76rem; color: #64748b;"><%= sp.judul_ujian %></div>
                                                 <% } %>
                                             </td>
-                                            <td><%= sp.nama_kelas || '-' %></td>
+                                            <td>
+                                                <% if (sp.nama_kelas && sp.nama_kelas !== '-') { %>
+                                                    <span class="badge-user-kelas"><i class="fas fa-graduation-cap"></i> <%= sp.nama_kelas %></span>
+                                                <% } else { %>
+                                                    <span style="color: #94a3b8; font-size: 0.85rem;">-</span>
+                                                <% } %>
+                                            </td>
                                             <td>
                                                 <% if (sp.status === 'sedang_login') { %>
                                                     <span class="badge-sedang-login">
@@ -930,6 +1028,9 @@
                             <option value="<%= k.id %>"><%= k.nama_kelas %></option>
                         <% }); %>
                     </select>
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
+                        * Kelas peserta menentukan materi ujian yang dapat dikerjakan dan memudahkan filter monitor sesi.
+                    </small>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px;">
@@ -990,6 +1091,9 @@
                             <option value="<%= k.id %>"><%= k.nama_kelas %></option>
                         <% }); %>
                     </select>
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
+                        * Perubahan kelas mahasiswa akan otomatis memperbarui akses ujian dan sesi pengerjaan terkait.
+                    </small>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px;">
@@ -1002,7 +1106,7 @@
 
     <!-- MODAL 3: IMPORT PENGGUNA VIA XLSX -->
     <div class="modal-overlay" id="modalImportXlsx">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 620px;">
             <div class="modal-header">
                 <h3 class="modal-title" style="color: #ea580c;">
                     <i class="fas fa-file-excel"></i> Import Pengguna Massal (.XLSX)
@@ -1010,22 +1114,45 @@
                 <button type="button" class="close-btn" onclick="closeModal('modalImportXlsx')">&times;</button>
             </div>
 
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px;">
-                Tambahkan data pengguna atau peserta ujian dalam skala banyak sekaligus secara cepat menggunakan berkas Microsoft Excel (.xlsx / .xls) atau CSV.
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.5; margin-bottom: 14px;">
+                Tambahkan data pengguna dan peserta ujian dalam skala banyak sekaligus secara cepat menggunakan berkas Microsoft Excel (.xlsx / .xls) atau CSV. Kolom <strong>Kelas</strong> telah terintegrasi untuk filter dan hak akses ujian.
             </p>
 
-            <div style="background: #f0fdf4; border: 1.5px dashed #86efac; border-radius: 8px; padding: 14px 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Template Box with direct download links -->
+            <div style="background: #f0fdf4; border: 1.5px dashed #86efac; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <div>
                     <div style="font-weight: 700; color: #166534; font-size: 0.92rem;">
-                        <i class="fas fa-file-arrow-down"></i> Format Template Excel Tersedia
+                        <i class="fas fa-file-arrow-down"></i> Format Template Pengguna & Kelas
                     </div>
-                    <div style="font-size: 0.8rem; color: #15803d; margin-top: 2px;">
-                        Kolom: Username, Password, Nama Lengkap, Role, NIM, Kelas
+                    <div style="font-size: 0.8rem; color: #15803d; margin-top: 3px;">
+                        Kolom: <strong>Username, Password, Nama Lengkap, Role, NIM, Kelas</strong>
                     </div>
                 </div>
-                <a href="/admin/users/template_xlsx" class="btn btn-sm" style="background: #16a34a; color: #ffffff; text-decoration: none; padding: 7px 14px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fas fa-download"></i> Unduh Template
-                </a>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="/admin/users/template_xlsx" class="btn btn-sm" style="background: #16a34a; color: #ffffff; text-decoration: none; padding: 7px 12px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-file-excel"></i> Unduh Excel (.xlsx)
+                    </a>
+                    <a href="/admin/users/template_csv" class="btn btn-sm" style="background: #0284c7; color: #ffffff; text-decoration: none; padding: 7px 12px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-file-csv"></i> Unduh CSV (.csv)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Kelas Reference Info Box -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                <div style="font-weight: 700; color: #1e293b; font-size: 0.85rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-graduation-cap" style="color: #16a34a;"></i> Referensi Nama Kelas Terdaftar Saat Ini:
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    <% kelasList.forEach(function(k) { %>
+                        <span style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 3px 8px; font-size: 0.78rem; font-weight: 600; color: #334155;">
+                            <%= k.nama_kelas %> <small style="color: #64748b;">(ID: <%= k.id %>)</small>
+                        </span>
+                    <% }); %>
+                </div>
+                <small style="color: #64748b; font-size: 0.76rem; margin-top: 6px; display: block;">
+                    * Pada kolom <strong>Kelas</strong> di file Excel/CSV, Anda dapat mengisikan Nama Kelas (misal: <%= kelasList[0] ? kelasList[0].nama_kelas : 'TI-A' %>) atau ID Kelas. Bila nama kelas baru diinputkan, sistem otomatis membuat kelas tersebut.
+                </small>
             </div>
 
             <form method="POST" action="/admin/users/import_xlsx" enctype="multipart/form-data">
@@ -1400,6 +1527,7 @@
             if (!tbody) return;
 
             const q = (document.getElementById('statusSearchInput')?.value || '').toLowerCase().trim();
+            const filterKelas = (document.getElementById('statusKelasFilterSelect')?.value || '').trim();
             const filterStatus = (document.getElementById('statusFilterSelect')?.value || '').trim();
 
             if (list.length === 0) {
@@ -1414,11 +1542,13 @@
                 const nimLower = (sp.nim || '').toLowerCase();
                 const namaLower = (sp.nama_lengkap || '').toLowerCase();
                 const kelasLower = (sp.nama_kelas || '').toLowerCase();
+                const idKelasStr = sp.id_kelas ? String(sp.id_kelas) : '';
 
                 const matchQuery = !q || nimLower.includes(q) || namaLower.includes(q) || kelasLower.includes(q);
+                const matchKelas = !filterKelas || idKelasStr === filterKelas || kelasLower === filterKelas.toLowerCase();
                 const matchStatus = !filterStatus || sp.status === filterStatus;
 
-                if (!matchQuery || !matchStatus) return;
+                if (!matchQuery || !matchKelas || !matchStatus) return;
                 visibleCount++;
 
                 // Build status badge
@@ -1515,15 +1645,19 @@
 
                 const durasiColor = sp.status === 'berlangsung' ? '#b45309' : '#334155';
 
+                const kelasBadge = sp.nama_kelas && sp.nama_kelas !== '-' 
+                    ? `<span class="badge-user-kelas"><i class="fas fa-graduation-cap"></i> ${sp.nama_kelas}</span>` 
+                    : '<span style="color: #94a3b8; font-size: 0.82rem;">-</span>';
+
                 html += `
-                    <tr data-nim="${nimLower}" data-nama="${namaLower}" data-kelas="${kelasLower}" data-status="${sp.status}">
+                    <tr data-nim="${nimLower}" data-nama="${namaLower}" data-kelas="${kelasLower}" data-idkelas="${idKelasStr}" data-status="${sp.status}">
                         <td><strong>${sp.no || idx + 1}</strong></td>
                         <td><code>${sp.nim}</code></td>
                         <td>
                             <strong>${sp.nama_lengkap}</strong>
                             ${sp.judul_ujian && sp.judul_ujian !== '-' ? `<div style="font-size: 0.76rem; color: #64748b;">${sp.judul_ujian}</div>` : ''}
                         </td>
-                        <td>${sp.nama_kelas || '-'}</td>
+                        <td>${kelasBadge}</td>
                         <td>${statusBadge}</td>
                         <td style="font-size: 0.82rem; color: #475569;">${waktuMulaiDisplay}</td>
                         <td style="font-size: 0.82rem; color: #475569;">${waktuSelesaiDisplay}</td>
@@ -1547,6 +1681,16 @@
             }
         }
 
+        function resetStatusPesertaFilter() {
+            const searchInput = document.getElementById('statusSearchInput');
+            const kelasSelect = document.getElementById('statusKelasFilterSelect');
+            const statusSelect = document.getElementById('statusFilterSelect');
+            if (searchInput) searchInput.value = '';
+            if (kelasSelect) kelasSelect.value = '';
+            if (statusSelect) statusSelect.value = '';
+            filterStatusPesertaTable();
+        }
+
         // Live table filtering for Tab 1 (Daftar User)
         function filterUserTable() {
             const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
@@ -1560,12 +1704,14 @@
                 const tr = rows[i];
                 const uUsername = tr.getAttribute('data-username') || '';
                 const uNama = tr.getAttribute('data-nama') || '';
+                const uNim = tr.getAttribute('data-nim') || '';
                 const uRole = tr.getAttribute('data-role') || '';
                 const uKelas = tr.getAttribute('data-kelas') || '';
+                const uNamaKelas = tr.getAttribute('data-namakelas') || '';
 
-                const matchesQuery = !q || uUsername.includes(q) || uNama.includes(q);
+                const matchesQuery = !q || uUsername.includes(q) || uNama.includes(q) || uNim.includes(q) || uNamaKelas.includes(q);
                 const matchesRole = !role || uRole === role;
-                const matchesKelas = !kelas || uKelas === kelas;
+                const matchesKelas = !kelas || String(uKelas) === String(kelas) || uNamaKelas === kelas.toLowerCase();
 
                 if (matchesQuery && matchesRole && matchesKelas) {
                     tr.style.display = '';
@@ -1573,6 +1719,16 @@
                     tr.style.display = 'none';
                 }
             }
+        }
+
+        function resetUserTableFilter() {
+            const searchInput = document.getElementById('searchInput');
+            const roleSelect = document.getElementById('roleFilter');
+            const kelasSelect = document.getElementById('kelasFilter');
+            if (searchInput) searchInput.value = '';
+            if (roleSelect) roleSelect.value = '';
+            if (kelasSelect) kelasSelect.value = '';
+            filterUserTable();
         }
 
         // Modal Controls

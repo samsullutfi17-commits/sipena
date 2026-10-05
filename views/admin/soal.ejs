@@ -83,6 +83,96 @@
         .custom-modal-body {
             padding: 20px 24px;
         }
+
+        .dropdown-cetak {
+            position: relative;
+            display: inline-block;
+        }
+
+        .btn-cetak-soal {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1.5px solid #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-cetak-soal:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        .dropdown-menu-cetak {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            background: #ffffff;
+            min-width: 280px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            z-index: 100;
+            overflow: hidden;
+            animation: fadeInMenu 0.15s ease-out;
+        }
+
+        .dropdown-menu-cetak.show {
+            display: block;
+        }
+
+        @keyframes fadeInMenu {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item-cetak {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            color: #334155;
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dropdown-item-cetak:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item-cetak:hover {
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .quick-chip {
+            padding: 3px 9px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .quick-chip:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+            border-color: #94a3b8;
+        }
     </style>
 </head>
 <body>
@@ -92,7 +182,6 @@
                 <h1>SIPENA – Bank Soal</h1>
                 <p class="subtitle"><%= adminNama %> &bull; <%= currentUjian ? currentUjian.judul_ujian : '' %></p>
             </div>
-            <a href="/admin/logout" class="btn btn-accent"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </header>
 
@@ -118,7 +207,58 @@
                     </select>
                 </div>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <div class="dropdown-cetak">
+                        <button type="button" class="btn-cetak-soal" onclick="toggleCetakMenuSoal(event)">
+                            <i class="fas fa-print" style="color: #1b4d3e;"></i> Cetak / Export <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu-cetak" id="cetakDropdownSoal">
+                            <a href="/admin/soal/cetak_naskah?ujian_id=<%= selectedUjianId %>" target="_blank" class="dropdown-item-cetak">
+                                <i class="fas fa-file-pdf" style="color: #dc2626; font-size: 1.15rem;"></i>
+                                <div>
+                                    <strong style="color: #0f172a;">Cetak Naskah Soal (PDF)</strong>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Naskah lengkap terlampir kunci & kisi-kisi</div>
+                                </div>
+                            </a>
+                            <a href="/admin/soal/export_word?ujian_id=<%= selectedUjianId %>" class="dropdown-item-cetak">
+                                <i class="fas fa-file-word" style="color: #2563eb; font-size: 1.15rem;"></i>
+                                <div>
+                                    <strong style="color: #0f172a;">Unduh Naskah Soal (.docx)</strong>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Format Microsoft Word siap edit & terlampir kisi-kisi</div>
+                                </div>
+                            </a>
+                            <a href="/admin/soal/export_excel?ujian_id=<%= selectedUjianId %>" class="dropdown-item-cetak">
+                                <i class="fas fa-file-excel" style="color: #16a34a; font-size: 1.15rem;"></i>
+                                <div>
+                                    <strong style="color: #0f172a;">Unduh Matriks & Soal (.xlsx)</strong>
+                                    <div style="font-size: 0.74rem; color: #64748b;">2 Sheet: Matriks Kisi-Kisi & Naskah Soal</div>
+                                </div>
+                            </a>
+                            <a href="/admin/kisi_kisi/cetak_matriks?ujian_id=<%= selectedUjianId %>" target="_blank" class="dropdown-item-cetak">
+                                <i class="fas fa-table-cells" style="color: #059669; font-size: 1.15rem;"></i>
+                                <div>
+                                    <strong style="color: #0f172a;">Cetak Matriks Kisi-Kisi (PDF)</strong>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Tabel matriks sebaran kompetensi & butir soal</div>
+                                </div>
+                            </a>
+                            <a href="/admin/kisi_kisi/export_matrix_word?ujian_id=<%= selectedUjianId %>" class="dropdown-item-cetak">
+                                <i class="fas fa-table" style="color: #0d9488; font-size: 1.15rem;"></i>
+                                <div>
+                                    <strong style="color: #0f172a;">Unduh Matriks Kisi-Kisi (.docx)</strong>
+                                    <div style="font-size: 0.74rem; color: #64748b;">Format tabel matriks Microsoft Word</div>
+                                </div>
+                            </a>
+                            <div style="border-top: 1px solid #e2e8f0; margin: 4px 0;"></div>
+                            <a href="/admin/soal/cetak_naskah?ujian_id=<%= selectedUjianId %>&open_format=true" target="_blank" class="dropdown-item-cetak" style="background: #f0fdf4;">
+                                <i class="fas fa-sliders" style="color: #166534; font-size: 1.15rem;"></i>
+                                <div>
+                                    <strong style="color: #166534;">Sesuaikan Kop & Identitas Naskah</strong>
+                                    <div style="font-size: 0.74rem; color: #15803d;">Atur korps, logo, identitas (Dosen / Admin)</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
                     <button type="button" class="btn btn-accent" style="border-radius: 8px; font-weight: 600; padding: 10px 18px;" onclick="openModal('ai-modal')">
                         <i class="fas fa-wand-magic-sparkles"></i> AI Generate Soal
                     </button>
@@ -150,7 +290,34 @@
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                     <span class="badge" style="background: #1b4d3e; color: #ffffff; font-weight: 700;">No. <%= idx + 1 %></span>
-                                    <span class="badge badge-secondary"><%= s.jenis_soal.toUpperCase() %></span>
+                                    <% 
+                                        let jsoalLabel = 'Pilihan Ganda';
+                                        let jBadgeBg = '#e0e7ff';
+                                        let jBadgeColor = '#3730a3';
+                                        const jCode = (s.jenis_soal || '').toLowerCase();
+                                        if (jCode === 'pg_kompleks') {
+                                            jsoalLabel = 'PG Kompleks';
+                                            jBadgeBg = '#fef3c7';
+                                            jBadgeColor = '#92400e';
+                                        } else if (jCode === 'tf') {
+                                            jsoalLabel = 'Benar / Salah';
+                                            jBadgeBg = '#ccfbf1';
+                                            jBadgeColor = '#115e59';
+                                        } else if (jCode === 'menjodohkan') {
+                                            jsoalLabel = 'Menjodohkan';
+                                            jBadgeBg = '#ede9fe';
+                                            jBadgeColor = '#5b21b6';
+                                        } else if (jCode === 'short' || jCode === 'isian') {
+                                            jsoalLabel = 'Isian Singkat';
+                                            jBadgeBg = '#ffedd5';
+                                            jBadgeColor = '#9a3412';
+                                        } else if (jCode === 'esai' || jCode === 'essay') {
+                                            jsoalLabel = 'Uraian / Esai';
+                                            jBadgeBg = '#fee2e2';
+                                            jBadgeColor = '#991b1b';
+                                        }
+                                    %>
+                                    <span class="badge" style="background: <%= jBadgeBg %>; color: <%= jBadgeColor %>; font-weight: 600;"><%= jsoalLabel %></span>
                                     <span class="badge badge-info"><%= s.tingkat_kesulitan || 'sedang' %></span>
                                     <span class="badge badge-warning"><%= s.level_kognitif || 'C1' %></span>
                                 </div>
@@ -159,9 +326,14 @@
                                     <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #ffffff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;" title="Edit Soal" onclick="openEditSoalModalById(<%= s.id %>)">
                                         <i class="fas fa-pen-to-square"></i> Edit
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" style="padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem;" title="Hapus Soal" onclick="openConfirmDeleteSoal(<%= s.id %>, <%= idx + 1 %>)">
-                                        <i class="fas fa-trash"></i> Hapus
-                                    </button>
+                                    <form method="POST" action="/admin/soal" style="display: inline-block; margin: 0;" onsubmit="return confirmDelete('Apakah Anda yakin ingin menghapus butir soal No. <%= idx + 1 %> ini?');">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id_ujian" value="<%= selectedUjianId %>">
+                                        <input type="hidden" name="soal_id" value="<%= s.id %>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 6px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: 0.85rem; cursor: pointer;" title="Hapus Soal">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
 
@@ -173,15 +345,19 @@
                                 <div style="margin-left: 10px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px;">
                                     <% s.opsi.forEach(function(o, oIdx) { %>
                                         <div style="padding: 6px 12px; border-radius: 6px; background: <%= o.benar ? '#f0fdf4' : '#f8fafc' %>; border: 1px solid <%= o.benar ? '#bbf7d0' : '#e2e8f0' %>; color: <%= o.benar ? '#15803d' : '#334155' %>; font-weight: <%= o.benar ? '600' : 'normal' %>; font-size: 0.92rem;">
-                                            <strong><%= String.fromCharCode(65 + oIdx) %>.</strong> <%= o.teks_opsi %> <%= o.benar ? '✔ (Kunci Jawaban)' : '' %>
+                                            <strong><%= String.fromCharCode(65 + oIdx) %>.</strong> <%= o.teks || o.teks_opsi %> <%= o.benar ? '✔ (Kunci Jawaban)' : '' %>
                                         </div>
                                     <% }); %>
+                                </div>
+                            <% } else if (s.kunci_jawaban) { %>
+                                <div style="margin-left: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-size: 0.92rem;">
+                                    <strong><i class="fas fa-key"></i> Kunci Jawaban / Pedoman Penilaian:</strong> <%= s.kunci_jawaban %>
                                 </div>
                             <% } %>
 
                             <% if (s.pembahasan) { %>
                                 <div style="font-size: 0.88rem; color: #475569; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #1b4d3e;">
-                                    <strong style="color: #1b4d3e;">Pembahasan:</strong> <%= s.pembahasan %>
+                                    <strong style="color: #1b4d3e;">Pembahasan / Rubrik:</strong> <%= s.pembahasan %>
                                 </div>
                             <% } %>
                         </div>
@@ -355,67 +531,148 @@
         </div>
     </div>
 
-    <!-- MODAL 3: AI GENERATOR SOAL (CENTERED) -->
+    <!-- MODAL 3: AI GENERATOR SOAL (PRESISI TINGGI & PERMANEN) -->
     <div id="ai-modal" class="custom-modal-overlay">
-        <div class="custom-modal-card" style="max-width: 560px;">
+        <div class="custom-modal-card" style="max-width: 620px;">
             <div class="custom-modal-header">
-                <h3><i class="fas fa-wand-magic-sparkles" style="color: #f59e0b;"></i> AI Generator Soal</h3>
+                <h3><i class="fas fa-wand-magic-sparkles" style="color: #f59e0b;"></i> AI Generator Soal (Presisi Tinggi & Siap Uji)</h3>
                 <button type="button" class="close-modal-btn" onclick="closeModal('ai-modal')" title="Tutup">&times;</button>
             </div>
 
             <div class="custom-modal-body">
-                <p style="font-size: 0.9rem; color: #64748b; margin: 0 0 16px;">
-                    Hasilkan butir soal berkualitas secara otomatis menggunakan AI berstandar Taksonomi Bloom.
-                </p>
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 0.88rem; color: #166534; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-shield-halved" style="font-size: 1.1rem;"></i>
+                    <span>Butir soal disusun lengkap (5 pilihan A-E, 1 kunci valid, pembahasan) siap uji langsung dan tersimpan permanen.</span>
+                </div>
 
                 <form id="ai-generate-form" onsubmit="handleAiGenerate(event)">
                     <div class="form-group" style="margin-bottom: 14px;">
-                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Topik / Materi Ujian</label>
-                        <input type="text" id="ai-topic" required class="form-control" value="<%= currentUjian ? currentUjian.judul_ujian : 'Etika Profesi Komputer' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Topik / Materi Ujian <span style="color: #dc2626;">*</span></label>
+                        <input type="text" id="ai-topic" required class="form-control" value="<%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Etika Profesi Komputer' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-                        <div class="form-group">
-                            <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Jenis Soal</label>
-                            <select id="ai-jenis" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                                <option value="pg">Pilihan Ganda</option>
-                                <option value="tf">Benar / Salah</option>
-                                <option value="short">Jawaban Singkat</option>
-                                <option value="esai">Esai</option>
-                            </select>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>Sub-Topik / Batasan Pembahasan</span>
+                            <span style="font-size: 0.8rem; color: #0284c7; font-weight: 500;"><i class="fas fa-bullseye"></i> Menjaga Fokus Materi</span>
+                        </label>
+                        <textarea id="ai-subtopic" class="form-control" rows="2" placeholder="Contoh: Kode Etik ACM/IEEE, Hak Cipta Perangkat Lunak, Studi Kasus Pelanggaran Privasi Data" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"></textarea>
+                        <small style="color: #64748b; font-size: 0.78rem;">Batasan spesifik agar naskah soal akurat dan tidak melenceng ke materi di luar silabus.</small>
+                    </div>
+
+                    <!-- Pilihan Bentuk / Jenis Soal (Multi-select) -->
+                    <div style="margin-bottom: 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 12px 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                            <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; margin: 0;">
+                                <i class="fas fa-list-check" style="color: #1b4d3e; margin-right: 4px;"></i> Pilihan Bentuk / Jenis Soal <span style="font-weight: 500; font-size: 0.8rem; color: #64748b;">(Bisa pilih lebih dari satu)</span>
+                            </label>
+                            <div style="display: flex; gap: 4px;">
+                                <button type="button" class="quick-chip" onclick="setAllCheckboxes('cb-soal-jenis', true)">Semua</button>
+                                <button type="button" class="quick-chip" onclick="setOnlyCheckbox('cb-soal-jenis', 'pg')">Hanya PG</button>
+                                <button type="button" class="quick-chip" onclick="setPresetJenisSoal()">Campuran</button>
+                            </div>
                         </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-jenis" value="pg" checked style="transform: scale(1.15);">
+                                <span>Pilihan Ganda (5 Opsi A-E)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-jenis" value="pg_kompleks" checked style="transform: scale(1.15);">
+                                <span>Pilihan Ganda Kompleks</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-jenis" value="tf" style="transform: scale(1.15);">
+                                <span>Benar / Salah (True/False)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-jenis" value="menjodohkan" style="transform: scale(1.15);">
+                                <span>Menjodohkan (Matching)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-jenis" value="short" style="transform: scale(1.15);">
+                                <span>Isian Singkat (Short Answer)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-jenis" value="esai" style="transform: scale(1.15);">
+                                <span>Uraian / Esai (Essay)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px;">
                         <div class="form-group">
                             <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Jumlah Soal</label>
-                            <input type="number" id="ai-count" min="1" max="10" value="3" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                            <input type="number" id="ai-count" min="1" max="25" value="5" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                         </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div class="form-group">
+                            <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Poin per Soal</label>
+                            <input type="number" id="ai-poin" min="1" max="50" value="4" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                        </div>
                         <div class="form-group">
                             <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Tingkat Kesulitan</label>
                             <select id="ai-kesulitan" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                                <option value="proporsional" selected>Proporsional</option>
+                                <option value="sedang">Sedang</option>
+                                <option value="sulit">HOTS (Sulit)</option>
                                 <option value="mudah">Mudah</option>
-                                <option value="sedang" selected>Sedang</option>
-                                <option value="sulit">Sulit</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Taksonomi Bloom</label>
-                            <select id="ai-kognitif" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                                <option value="C1">C1 - Mengingat</option>
-                                <option value="C2" selected>C2 - Memahami</option>
-                                <option value="C3">C3 - Menerapkan</option>
-                                <option value="C4">C4 - Menganalisis</option>
-                            </select>
+                    </div>
+
+                    <!-- Level Kognitif Taksonomi Bloom (Multi-select) -->
+                    <div style="margin-bottom: 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 12px 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                            <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; margin: 0;">
+                                <i class="fas fa-layer-group" style="color: #0284c7; margin-right: 4px;"></i> Level Kognitif Bloom <span style="font-weight: 500; font-size: 0.8rem; color: #64748b;">(Bisa pilih lebih dari satu)</span>
+                            </label>
+                            <div style="display: flex; gap: 4px;">
+                                <button type="button" class="quick-chip" onclick="setAllCheckboxes('cb-soal-kognitif', true)">Semua</button>
+                                <button type="button" class="quick-chip" onclick="setHotsOnly('cb-soal-kognitif')">Hanya HOTS</button>
+                                <button type="button" class="quick-chip" onclick="setBasicApplied('cb-soal-kognitif')">C1-C3</button>
+                            </div>
                         </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-kognitif" value="C1" style="transform: scale(1.15);">
+                                <span><strong>C1</strong> - Mengingat (Remembering)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-kognitif" value="C2" checked style="transform: scale(1.15);">
+                                <span><strong>C2</strong> - Memahami (Understanding)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-kognitif" value="C3" checked style="transform: scale(1.15);">
+                                <span><strong>C3</strong> - Menerapkan (Applying)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-kognitif" value="C4" checked style="transform: scale(1.15);">
+                                <span><strong>C4</strong> - Menganalisis (HOTS)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-kognitif" value="C5" style="transform: scale(1.15);">
+                                <span><strong>C5</strong> - Mengevaluasi (HOTS)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
+                                <input type="checkbox" class="cb-soal-kognitif" value="C6" style="transform: scale(1.15);">
+                                <span><strong>C6</strong> - Mencipta / Kreasi (HOTS)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+                        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-size: 0.88rem; color: #334155; margin: 0;">
+                            <input type="checkbox" id="ai-auto-save" checked style="margin-top: 3px; transform: scale(1.15);">
+                            <span><strong>Langsung Simpan Permanen:</strong> Butir soal langsung disimpan ke database ujian ini secara otomatis, tidak akan hilang saat reload.</span>
+                        </label>
                     </div>
 
                     <div id="ai-status" style="display: none; padding: 12px; margin-top: 10px; border-radius: 8px; font-size: 0.9rem;"></div>
 
                     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 16px;">
                         <button type="button" class="btn btn-secondary" onclick="closeModal('ai-modal')" style="padding: 10px 18px; border-radius: 8px;">Tutup</button>
-                        <button type="submit" class="btn btn-accent" id="btn-generate-ai" style="padding: 10px 20px; border-radius: 8px; font-weight: 600;">
-                            <i class="fas fa-sparkles"></i> Generate Sekarang
+                        <button type="submit" class="btn btn-accent" id="btn-generate-ai" style="padding: 10px 22px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-sparkles"></i> Generate & Simpan Permanen
                         </button>
                     </div>
                 </form>
@@ -455,6 +712,14 @@
     </div>
 
     <script>
+        function confirmDelete(msg) {
+            try {
+                return window.confirm(msg);
+            } catch (e) {
+                return true;
+            }
+        }
+
         const soalListDb = <%- JSON.stringify(soalList) %>;
 
         function openEditSoalModalById(soalId) {
@@ -511,74 +776,104 @@
             openModal('edit-soal-modal');
         }
 
+        // Dropdown Cetak Handler
+        function toggleCetakMenuSoal(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('cetakDropdownSoal');
+            if (menu) menu.classList.toggle('show');
+        }
+
+        // Checkbox helpers for multi-select jenis soal & bloom levels
+        function setAllCheckboxes(className, checked) {
+            document.querySelectorAll('.' + className).forEach(cb => cb.checked = checked);
+        }
+
+        function setOnlyCheckbox(className, targetVal) {
+            document.querySelectorAll('.' + className).forEach(cb => {
+                cb.checked = (cb.value === targetVal);
+            });
+        }
+
+        function setPresetJenisSoal() {
+            document.querySelectorAll('.cb-soal-jenis').forEach(cb => {
+                cb.checked = ['pg', 'esai', 'tf'].includes(cb.value);
+            });
+        }
+
+        function setHotsOnly(className) {
+            document.querySelectorAll('.' + className).forEach(cb => {
+                cb.checked = ['C4', 'C5', 'C6'].includes(cb.value);
+            });
+        }
+
+        function setBasicApplied(className) {
+            document.querySelectorAll('.' + className).forEach(cb => {
+                cb.checked = ['C1', 'C2', 'C3'].includes(cb.value);
+            });
+        }
+
+        function getCheckedValues(className, defaultValues = []) {
+            const checked = Array.from(document.querySelectorAll('.' + className + ':checked')).map(cb => cb.value);
+            return checked.length > 0 ? checked : defaultValues;
+        }
+
         async function handleAiGenerate(e) {
             e.preventDefault();
             const btn = document.getElementById('btn-generate-ai');
             const status = document.getElementById('ai-status');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyusun Soal Akademik...';
             status.style.display = 'block';
             status.style.background = '#eef6fc';
             status.style.color = '#1e429f';
-            status.textContent = 'Menghasilkan soal dengan AI...';
+            status.innerHTML = '<i class="fas fa-brain fa-fade" style="margin-right: 6px;"></i> AI sedang menyusun naskah soal presisi tinggi dan kunci jawaban valid...';
+
+            const autoSave = document.getElementById('ai-auto-save') ? document.getElementById('ai-auto-save').checked : true;
+            const jenisSoalList = getCheckedValues('cb-soal-jenis', ['pg']);
+            const kognitifList = getCheckedValues('cb-soal-kognitif', ['C2', 'C3', 'C4']);
 
             try {
                 const res = await fetch('/admin/ai_generate_api', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        ujian_id: '<%= selectedUjianId %>',
                         topik: document.getElementById('ai-topic').value,
-                        jenis: document.getElementById('ai-jenis').value,
-                        jumlah: document.getElementById('ai-count').value,
+                        sub_topik: document.getElementById('ai-subtopic') ? document.getElementById('ai-subtopic').value : '',
+                        jenis_soal_list: jenisSoalList,
+                        kognitif_list: kognitifList,
+                        jumlah: parseInt(document.getElementById('ai-count').value, 10) || 5,
+                        poin: parseInt(document.getElementById('ai-poin').value, 10) || 4,
                         kesulitan: document.getElementById('ai-kesulitan').value,
-                        kognitif: document.getElementById('ai-kognitif').value
+                        apply: autoSave
                     })
                 });
-                const questions = await res.json();
-                if (Array.isArray(questions) && questions.length > 0) {
+                const result = await res.json();
+                if (result.success || (Array.isArray(result) && result.length > 0)) {
+                    const count = result.count || (Array.isArray(result) ? result.length : 1);
                     status.style.background = '#dcfce7';
                     status.style.color = '#15803d';
-                    status.textContent = `Berhasil menghasilkan ${questions.length} butir soal! Menyimpan...`;
-
-                    for (const q of questions) {
-                        const formData = new FormData();
-                        formData.append('action', 'create');
-                        formData.append('id_ujian', '<%= selectedUjianId %>');
-                        formData.append('jenis_soal', q.jenis_soal || 'pg');
-                        formData.append('pertanyaan', q.pertanyaan);
-                        formData.append('poin', q.poin || 4);
-                        formData.append('tingkat_kesulitan', q.tingkat_kesulitan || 'sedang');
-                        formData.append('level_kognitif', q.level_kognitif || 'C1');
-                        formData.append('pembahasan', q.pembahasan || '');
-
-                        if (q.opsi && Array.isArray(q.opsi)) {
-                            q.opsi.forEach((o, idx) => {
-                                formData.append('opsi_teks[]', o.teks);
-                                if (o.benar) formData.append('opsi_benar', idx);
-                            });
-                        }
-
-                        await fetch('/admin/soal', {
-                            method: 'POST',
-                            body: new URLSearchParams(formData)
-                        });
-                    }
-                    setTimeout(() => window.location.reload(), 800);
+                    status.innerHTML = `<i class="fas fa-circle-check" style="margin-right: 6px;"></i> Berhasil menghasilkan <strong>${count}</strong> butir soal siap uji dan tersimpan permanen! Memperbarui halaman...`;
+                    setTimeout(() => window.location.reload(), 850);
                 } else {
-                    throw new Error('Format output AI tidak valid');
+                    throw new Error(result.message || 'Format output AI tidak valid');
                 }
             } catch (err) {
                 status.style.background = '#fee2e2';
                 status.style.color = '#b91c1c';
-                status.textContent = 'Gagal menghasilkan soal: ' + err.message;
+                status.innerHTML = '<i class="fas fa-circle-exclamation" style="margin-right: 6px;"></i> Gagal menghasilkan soal: ' + err.message;
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-sparkles"></i> Generate Sekarang';
+                btn.innerHTML = '<i class="fas fa-sparkles"></i> Generate & Simpan Permanen';
             }
         }
 
         window.addEventListener('click', function(e) {
             if (e.target.classList.contains('custom-modal-overlay')) {
                 e.target.style.display = 'none';
+            }
+            const cetakMenu = document.getElementById('cetakDropdownSoal');
+            if (cetakMenu && cetakMenu.classList.contains('show') && !e.target.closest('.dropdown-cetak')) {
+                cetakMenu.classList.remove('show');
             }
         });
 

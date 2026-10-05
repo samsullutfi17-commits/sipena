@@ -64,7 +64,10 @@ class DataStore {
         riwayat_sesi_ujian: this.riwayat_sesi_ujian,
         pengaturan: this.pengaturan
       };
-      fs.writeFileSync(this.storagePath, JSON.stringify(payload, null, 2), 'utf-8');
+      const json = JSON.stringify(payload, null, 2);
+      const tempPath = this.storagePath + '.tmp';
+      fs.writeFileSync(tempPath, json, 'utf-8');
+      fs.renameSync(tempPath, this.storagePath);
     } catch (err) {
       console.error('Error saving db_persistence.json:', err);
     }

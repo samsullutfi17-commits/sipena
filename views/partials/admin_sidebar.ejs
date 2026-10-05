@@ -7,13 +7,140 @@
         <a href="/admin/hasil" class="nav-item <%= currentPath === '/admin/hasil' || currentPath === '/admin/detail_hasil' ? 'active' : '' %>"><i class="fas fa-chart-bar"></i> Laporan</a>
         <a href="/admin/arsip" class="nav-item <%= currentPath === '/admin/arsip' ? 'active' : '' %>"><i class="fas fa-history"></i> Riwayat</a>
         <% if (adminRole === 'admin') { %>
+        <div style="padding: 12px 22px 4px 22px; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Master Data</div>
         <a href="/admin/fakultas" class="nav-item <%= currentPath === '/admin/fakultas' ? 'active' : '' %>"><i class="fas fa-building"></i> Organisasi</a>
         <a href="/admin/prodi" class="nav-item <%= currentPath === '/admin/prodi' ? 'active' : '' %>"><i class="fas fa-sitemap"></i> Program</a>
         <a href="/admin/kelas" class="nav-item <%= currentPath === '/admin/kelas' ? 'active' : '' %>"><i class="fas fa-users-rectangle"></i> Kelas / Grup</a>
         <a href="/admin/matkul" class="nav-item <%= currentPath === '/admin/matkul' ? 'active' : '' %>"><i class="fas fa-book"></i> Materi</a>
         <a href="/admin/users" class="nav-item <%= currentPath === '/admin/users' ? 'active' : '' %>"><i class="fas fa-users"></i> Pengguna</a>
-        <a href="/admin/pengaturan" class="nav-item <%= currentPath === '/admin/pengaturan' ? 'active' : '' %>"><i class="fas fa-cog"></i> Pengaturan</a>
         <% } %>
-        <a href="/admin/ganti_password" class="nav-item <%= currentPath === '/admin/ganti_password' ? 'active' : '' %>"><i class="fas fa-key"></i> Ganti Password</a>
     </nav>
+
+    <!-- Bottom pinned User Card with Popup Menu -->
+    <div class="sidebar-bottom-section">
+        <% 
+            const userFullName = (typeof adminNama !== 'undefined' && adminNama) ? adminNama : ((typeof locals !== 'undefined' && locals.adminNama) ? locals.adminNama : 'Administrator');
+            const userInitial = userFullName.split(' ').filter(Boolean).map(n => n[0]).slice(0, 2).join('').toUpperCase() || 'AD';
+            const roleName = (typeof adminRole !== 'undefined' && adminRole) ? adminRole.toUpperCase() : ((typeof locals !== 'undefined' && locals.adminRole) ? locals.adminRole.toUpperCase() : 'ADMIN');
+        %>
+
+        <!-- Popover Menu situated directly ABOVE the user card -->
+        <div class="user-popover-menu" id="userPopoverMenu" role="menu" aria-label="Menu Pengguna">
+            <div class="user-popover-header">
+                <div class="user-popover-header-name" title="<%= userFullName %>"><%= userFullName %></div>
+                <div class="user-popover-header-role">
+                    <span class="role-dot"></span> <%= roleName === 'ADMIN' ? 'Administrator' : 'Dosen Pengampu' %>
+                </div>
+            </div>
+
+            <a href="/admin/pengaturan" class="user-popover-link <%= currentPath === '/admin/pengaturan' ? 'active' : '' %>" role="menuitem">
+                <i class="fas fa-gear"></i> <span>Pengaturan</span>
+            </a>
+
+            <a href="/admin/ganti_password" class="user-popover-link <%= currentPath === '/admin/ganti_password' ? 'active' : '' %>" role="menuitem">
+                <i class="fas fa-key"></i> <span>Ganti Password</span>
+            </a>
+
+            <div class="user-popover-divider"></div>
+
+            <button type="button" class="user-popover-link user-popover-logout" onclick="openLogoutModal(event)" role="menuitem">
+                <i class="fas fa-right-from-bracket"></i> <span>Keluar / Logout</span>
+            </button>
+        </div>
+
+        <!-- Clickable User Profile Trigger -->
+        <div class="sidebar-user-footer" id="sidebarUserTrigger" onclick="toggleUserMenu(event)" title="Klik untuk menu Pengaturan, Ganti Password, dan Logout">
+            <div class="sidebar-user-avatar" title="<%= userFullName %>">
+                <%= userInitial %>
+            </div>
+            <div class="sidebar-user-details">
+                <div class="sidebar-user-name" title="<%= userFullName %>"><%= userFullName %></div>
+                <div class="sidebar-user-badge">
+                    <span class="role-dot"></span> <%= roleName === 'ADMIN' ? 'Administrator' : 'Dosen' %>
+                </div>
+            </div>
+            <div class="sidebar-user-chevron">
+                <i class="fas fa-chevron-up"></i>
+            </div>
+        </div>
+    </div>
 </aside>
+
+<!-- MODAL KONFIRMASI KELUAR / LOGOUT -->
+<div id="modalConfirmLogout" class="logout-modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle">
+    <div class="logout-modal-card">
+        <div class="logout-modal-icon-wrapper">
+            <div class="logout-modal-icon">
+                <i class="fas fa-right-from-bracket"></i>
+            </div>
+        </div>
+        <h3 id="logoutModalTitle" class="logout-modal-title">Konfirmasi Keluar</h3>
+        <p class="logout-modal-text">
+            Apakah Anda yakin ingin keluar dari aplikasi <strong>SIPENA</strong>?
+        </p>
+        <p class="logout-modal-subtext">
+            Sesi Anda saat ini akan diakhiri. Pastikan semua perubahan atau penilaian telah tersimpan.
+        </p>
+        <div class="logout-modal-actions">
+            <button type="button" class="btn-logout-cancel" onclick="closeLogoutModal()">
+                <i class="fas fa-xmark"></i> Batal
+            </button>
+            <a href="/admin/logout" class="btn-logout-confirm">
+                <i class="fas fa-right-from-bracket"></i> Ya, Keluar
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleUserMenu(e) {
+        if (e) e.stopPropagation();
+        const menu = document.getElementById('userPopoverMenu');
+        const trigger = document.getElementById('sidebarUserTrigger');
+        if (!menu) return;
+        const isActive = menu.classList.toggle('active');
+        if (trigger) trigger.classList.toggle('active', isActive);
+    }
+
+    function closeUserMenu() {
+        const menu = document.getElementById('userPopoverMenu');
+        const trigger = document.getElementById('sidebarUserTrigger');
+        if (menu) menu.classList.remove('active');
+        if (trigger) trigger.classList.remove('active');
+    }
+
+    function openLogoutModal(e) {
+        if (e) e.stopPropagation();
+        closeUserMenu();
+        const modal = document.getElementById('modalConfirmLogout');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeLogoutModal() {
+        const modal = document.getElementById('modalConfirmLogout');
+        if (modal) modal.style.display = 'none';
+    }
+
+    // Close user popover when clicking outside
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('userPopoverMenu');
+        const trigger = document.getElementById('sidebarUserTrigger');
+        if (menu && menu.classList.contains('active')) {
+            if (!menu.contains(e.target) && !trigger.contains(e.target)) {
+                closeUserMenu();
+            }
+        }
+        const modal = document.getElementById('modalConfirmLogout');
+        if (modal && e.target === modal) {
+            closeLogoutModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeUserMenu();
+            closeLogoutModal();
+        }
+    });
+</script>

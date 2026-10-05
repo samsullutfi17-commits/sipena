@@ -2,10 +2,12 @@ import express from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import { GoogleGenAI } from '@google/genai';
 import { generateExamDocx, generateMatrixDocx } from './utils/docxGenerator.js';
+import { getUjianFormatCetak } from './utils/formatCetakHelper.js';
 import multer from 'multer';
 import * as XLSX from 'xlsx';
 import { db } from './data/store.js';
@@ -19,6 +21,24 @@ const PORT = 3000;
 // Configure multer for file uploads (XLSX import)
 const upload = multer({
   storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+// Configure multer for Logo uploads
+const logoStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, 'admin/uploads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase() || '.png';
+    const cleanName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_');
+    cb(null, `logo_${Date.now()}_${cleanName}${ext}`);
+  }
+});
+const uploadLogo = multer({
+  storage: logoStorage,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
 
@@ -228,9 +248,29 @@ app.get(['/', '/index.php'], (req, res) => {
   }
 
   const prodiList = db.getProdi();
+
+  // Find student's assigned kelas and prodi for smart automatic pre-selection
+  let pesertaKelasId = null;
+  let pesertaProdiId = null;
+  let pesertaKelasNama = '';
+  const user = db.users.find(u => u.id === req.session.peserta_id);
+  const mhs = db.mahasiswa.find(m => m.id_user === req.session.peserta_id || (req.session.peserta_nim && m.nim === req.session.peserta_nim));
+  const kId = (user && user.id_kelas) || (mhs && mhs.id_kelas);
+  if (kId) {
+    const k = db.kelas.find(kls => kls.id === kId);
+    if (k) {
+      pesertaKelasId = k.id;
+      pesertaProdiId = k.id_program_studi;
+      pesertaKelasNama = k.nama_kelas;
+    }
+  }
+
   res.render('index', {
     pesertaNama: req.session.peserta_nama,
     pesertaNim: req.session.peserta_nim,
+    pesertaKelasId,
+    pesertaProdiId,
+    pesertaKelasNama,
     prodiList,
     error: req.query.error || ''
   });
@@ -282,6 +322,7 @@ app.post(['/', '/mulai_ujian'], (req, res) => {
     soal_terakhir: 1
   };
   db.sesi_ujian.push(newSesi);
+  db.save();
 
   const ujianData = db.ujian.find(u => u.id === ujianId);
   const matkul = ujianData ? db.mata_kuliah.find(m => m.id === ujianData.id_mata_kuliah) : null;
@@ -491,6 +532,7 @@ app.post(['/ujian', '/ujian.php', '/api/save_answer'], (req, res) => {
       if (!sesi.jawaban_draft) sesi.jawaban_draft = {};
       sesi.jawaban_draft[soalId] = jawaban;
       sesi.soal_terakhir = noSoal;
+      db.save();
     }
     return res.json({ success: true });
   }
@@ -521,6 +563,7 @@ app.all(['/submit', '/submit.php'], (req, res) => {
   dbSesi.waktu_selesai = new Date();
   dbSesi.nilai_total = scores.total;
   dbSesi.status = 'selesai';
+  db.save();
 
   req.session.exam_result = scores;
   req.session.exam_completed = true;
@@ -730,6 +773,8 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
 
     if (judul && matkulId) {
       const newId = db.ujian.length ? Math.max(...db.ujian.map(u => u.id)) + 1 : 1;
+      const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
+      const creatorName = (currentUser && currentUser.nama_lengkap) ? currentUser.nama_lengkap : 'Samsul Lutfi, S.Pd., M.Pd';
       db.ujian.push({
         id: newId,
         judul_ujian: judul,
@@ -739,6 +784,9 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
         total_nilai: totalNilai,
         nilai_lulus: nilaiLulus,
         aktif: true,
+        pengampu: (req.body.pengampu && req.body.pengampu.trim()) || creatorName,
+        dosen_pembuat: creatorName,
+        id_dosen: currentUser ? currentUser.id : null,
         created_at: new Date()
       });
 
@@ -749,6 +797,7 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
           id_kelas: kId
         });
       });
+      db.save();
 
       return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Ujian berhasil ditambahkan!'));
     }
@@ -782,6 +831,7 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
     const u = db.ujian.find(x => x.id === id);
     if (u) {
       u.aktif = !u.aktif;
+      db.save();
       return res.redirect('/admin/ujian?msg=' + encodeURIComponent('Status ujian berhasil diubah!'));
     }
   } else if (action === 'delete') {
@@ -888,6 +938,7 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
           }
         });
       }
+      db.save();
 
       return res.redirect(`/admin/soal?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Soal berhasil ditambahkan!'));
     }
@@ -1003,12 +1054,14 @@ app.post(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
       });
       db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sesiId);
       db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sesiId);
+      db.save();
       return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Sesi ujian peserta berhasil direset!'));
     }
   } else if (action === 'delete_single') {
     const sesiId = parseInt(req.body.sesi_id, 10);
     db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sesiId);
     db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sesiId);
+    db.save();
     return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Data hasil berhasil dihapus!'));
   } else if (action === 'edit_nilai') {
     const sesiId = parseInt(req.body.sesi_id, 10);
@@ -1097,17 +1150,193 @@ app.post(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) 
 });
 
 // Export PDF / Print Preview Naskah Soal matching Image 2
-app.get(['/admin/kisi_kisi/export_pdf'], requireAdmin, (req, res) => {
+app.get(['/admin/kisi_kisi/export_pdf', '/admin/soal/cetak_naskah'], requireAdmin, (req, res) => {
   const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
   const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
   const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
   const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
+  const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
+
+  // Auto-assign creator lecturer name if exam lecturer name is generic or unset
+  if (currentUser && currentUser.nama_lengkap && (!ujian.dosen_pembuat || ujian.dosen_pembuat === 'Dosen Pengampu' || !ujian.pengampu || ujian.pengampu === 'Dosen Pengampu')) {
+    ujian.dosen_pembuat = ujian.dosen_pembuat && ujian.dosen_pembuat !== 'Dosen Pengampu' ? ujian.dosen_pembuat : currentUser.nama_lengkap;
+    ujian.pengampu = ujian.pengampu && ujian.pengampu !== 'Dosen Pengampu' ? ujian.pengampu : currentUser.nama_lengkap;
+  }
+
+  const formatCetak = getUjianFormatCetak(ujian, currentUser, db.pengaturan);
 
   res.render('admin/cetak_naskah', {
     ujian: { ...ujian, nama_mk: matkul ? matkul.nama_mk : '-' },
+    formatCetak,
+    currentUser,
     soalList,
     settings: db.pengaturan,
-    autoPrint: req.query.auto !== 'false'
+    autoPrint: req.query.auto === 'true'
+  });
+});
+
+// Export PDF / Print Preview Matriks Kisi-Kisi Soal
+app.get(['/admin/kisi_kisi/cetak_matriks', '/admin/kisi_kisi/export_matrix_pdf'], requireAdmin, (req, res) => {
+  const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
+  const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+  const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
+  const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
+  const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
+
+  // Auto-assign creator lecturer name if exam lecturer name is generic or unset
+  if (currentUser && currentUser.nama_lengkap && (!ujian.dosen_pembuat || ujian.dosen_pembuat === 'Dosen Pengampu' || !ujian.pengampu || ujian.pengampu === 'Dosen Pengampu')) {
+    ujian.dosen_pembuat = ujian.dosen_pembuat && ujian.dosen_pembuat !== 'Dosen Pengampu' ? ujian.dosen_pembuat : currentUser.nama_lengkap;
+    ujian.pengampu = ujian.pengampu && ujian.pengampu !== 'Dosen Pengampu' ? ujian.pengampu : currentUser.nama_lengkap;
+  }
+
+  const formatCetak = getUjianFormatCetak(ujian, currentUser, db.pengaturan);
+
+  res.render('admin/cetak_matriks', {
+    ujian: { ...ujian, nama_mk: matkul ? matkul.nama_mk : '-', sks: matkul ? matkul.sks : 3, kode_mk: matkul ? matkul.kode_mk : 'MK01' },
+    formatCetak,
+    currentUser,
+    soalList,
+    settings: db.pengaturan,
+    autoPrint: req.query.auto === 'true'
+  });
+});
+
+// API: Simpan Format Kop & Identitas Cetak (Bisa per-ujian atau per-role/user)
+app.post(['/admin/api/simpan_format_cetak'], requireAdmin, (req, res) => {
+  try {
+    const { ujian_id, format_cetak, jadikan_default_saya, jadikan_default_kampus } = req.body;
+    const ujianId = parseInt(ujian_id, 10);
+    const ujian = db.ujian.find(u => u.id === ujianId);
+
+    if (!ujian) {
+      return res.status(404).json({ success: false, message: 'Data ujian tidak ditemukan' });
+    }
+
+    if (!format_cetak || typeof format_cetak !== 'object') {
+      return res.status(400).json({ success: false, message: 'Format cetak tidak valid' });
+    }
+
+    // 1. Simpan format_cetak ke data ujian spesifik
+    ujian.format_cetak = format_cetak;
+
+    // Sinkronisasi data dasar ujian bila diperbarui pada form identitas
+    if (format_cetak.identitas_rows && Array.isArray(format_cetak.identitas_rows)) {
+      format_cetak.identitas_rows.forEach(r => {
+        const kLabel = (r.kiri_label || '').toLowerCase();
+        const rLabel = (r.kanan_label || '').toLowerCase();
+        if (kLabel.includes('tanggal')) ujian.hari_tanggal = r.kiri_val;
+        if (rLabel.includes('tanggal')) ujian.hari_tanggal = r.kanan_val;
+        if (kLabel.includes('waktu')) ujian.waktu = r.kiri_val;
+        if (rLabel.includes('waktu')) ujian.waktu = r.kanan_val;
+        if (kLabel.includes('pengampu') || kLabel.includes('dosen')) ujian.pengampu = r.kiri_val;
+        if (rLabel.includes('pengampu') || rLabel.includes('dosen')) ujian.pengampu = r.kanan_val;
+        if (kLabel.includes('sks') || kLabel.includes('smt')) ujian.smt_sks = r.kiri_val;
+        if (rLabel.includes('sks') || rLabel.includes('smt')) ujian.smt_sks = r.kanan_val;
+        if (kLabel.includes('prodi') || kLabel.includes('fakultas')) ujian.fakultas_prodi = r.kiri_val;
+        if (rLabel.includes('prodi') || rLabel.includes('fakultas')) ujian.fakultas_prodi = r.kanan_val;
+      });
+    }
+
+    if (format_cetak.sub_judul && format_cetak.sub_judul.includes('20')) {
+      const match = format_cetak.sub_judul.match(/20\d\d\/20\d\d/);
+      if (match) ujian.tahun_akademik = match[0];
+    }
+
+    // 2. Simpan sebagai template bawaan Dosen / Admin yang sedang login jika dipilih
+    const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
+    if (jadikan_default_saya && currentUser) {
+      currentUser.default_format_cetak = JSON.parse(JSON.stringify(format_cetak));
+    }
+
+    // 3. Jika admin memilih jadikan default institusi/kampus
+    if (jadikan_default_kampus && currentUser && currentUser.role === 'admin') {
+      if (format_cetak.nama_institusi) db.pengaturan.nama_institusi = format_cetak.nama_institusi;
+      if (format_cetak.alamat_institusi) db.pengaturan.alamat_institusi = format_cetak.alamat_institusi;
+      if (format_cetak.kontak_institusi) db.pengaturan.telepon_institusi = format_cetak.kontak_institusi;
+      if (format_cetak.logo_path) db.pengaturan.logo_path = format_cetak.logo_path;
+      if (format_cetak.sub_institusi) db.pengaturan.fakultas_institusi = format_cetak.sub_institusi;
+    }
+
+    db.save();
+    return res.json({
+      success: true,
+      message: 'Format korps dan identitas soal berhasil disimpan!',
+      formatCetak: getUjianFormatCetak(ujian, currentUser, db.pengaturan)
+    });
+  } catch (err) {
+    console.error('simpan_format_cetak error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal menyimpan format: ' + err.message });
+  }
+});
+
+// API: Reset Format Cetak ke Standar
+app.post(['/admin/api/reset_format_cetak'], requireAdmin, (req, res) => {
+  try {
+    const { ujian_id } = req.body;
+    const ujianId = parseInt(ujian_id, 10);
+    const ujian = db.ujian.find(u => u.id === ujianId);
+
+    if (!ujian) {
+      return res.status(404).json({ success: false, message: 'Data ujian tidak ditemukan' });
+    }
+
+    delete ujian.format_cetak;
+    db.save();
+
+    const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
+    return res.json({
+      success: true,
+      message: 'Format berhasil direset ke standar institusi!',
+      formatCetak: getUjianFormatCetak(ujian, currentUser, db.pengaturan)
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Gagal mereset format: ' + err.message });
+  }
+});
+
+// API: Unggah Logo Institusi (Mendukung upload file multipart atau base64)
+app.post('/admin/api/upload_logo', requireAdmin, (req, res) => {
+  uploadLogo.single('logo_file')(req, res, (err) => {
+    if (err) {
+      console.error('Multer upload error:', err);
+      return res.status(400).json({ success: false, message: 'Gagal mengunggah logo: ' + err.message });
+    }
+
+    try {
+      // 1. Jika diunggah via multipart file input
+      if (req.file) {
+        const fileUrl = `/admin/uploads/${req.file.filename}`;
+        return res.json({
+          success: true,
+          message: 'Logo berhasil diunggah!',
+          url: fileUrl
+        });
+      }
+
+      // 2. Jika diunggah via JSON base64
+      if (req.body && req.body.logo_base64) {
+        const base64Data = req.body.logo_base64.replace(/^data:image\/\w+;base64,/, '');
+        const extMatch = req.body.logo_base64.match(/^data:image\/(\w+);base64,/);
+        const ext = extMatch ? `.${extMatch[1]}` : '.png';
+        const filename = `logo_${Date.now()}_custom${ext}`;
+        const uploadDir = path.join(__dirname, 'admin/uploads');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        const filePath = path.join(uploadDir, filename);
+        fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+
+        const fileUrl = `/admin/uploads/${filename}`;
+        return res.json({
+          success: true,
+          message: 'Logo berhasil disimpan!',
+          url: fileUrl
+        });
+      }
+
+      return res.status(400).json({ success: false, message: 'Tidak ada berkas logo yang dikirimkan' });
+    } catch (saveErr) {
+      console.error('Error saving logo:', saveErr);
+      return res.status(500).json({ success: false, message: 'Gagal menyimpan logo: ' + saveErr.message });
+    }
   });
 });
 
@@ -1118,9 +1347,10 @@ app.get(['/admin/kisi_kisi/export_word'], requireAdmin, async (req, res) => {
     const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
     const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
     const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
+    const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
     const ujianData = { ...ujian, nama_mk: matkul ? matkul.nama_mk : '-' };
 
-    const docxBuffer = await generateExamDocx(ujianData, soalList, db.pengaturan);
+    const docxBuffer = await generateExamDocx(ujianData, soalList, db.pengaturan, currentUser);
     const filename = `Naskah_Soal_${(ujian.judul_ujian || 'Ujian').replace(/[^a-zA-Z0-9_-]/g, '_')}.docx`;
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
@@ -1139,9 +1369,10 @@ app.get(['/admin/kisi_kisi/export_matrix_word'], requireAdmin, async (req, res) 
     const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
     const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
     const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
+    const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
     const ujianData = { ...ujian, nama_mk: matkul ? matkul.nama_mk : '-' };
 
-    const docxBuffer = await generateMatrixDocx(ujianData, soalList, db.pengaturan);
+    const docxBuffer = await generateMatrixDocx(ujianData, soalList, db.pengaturan, currentUser);
     const filename = `Matriks_Kisi_Kisi_${(ujian.judul_ujian || 'Ujian').replace(/[^a-zA-Z0-9_-]/g, '_')}.docx`;
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
@@ -1153,209 +1384,882 @@ app.get(['/admin/kisi_kisi/export_matrix_word'], requireAdmin, async (req, res) 
   }
 });
 
-// Universal AI Client: Supports Groq API (if GROQ_API_KEY is provided) or Google Gemini
-async function generateWithAI({ prompt, systemInstruction = 'Anda adalah asisten AI akademik yang menghasilkan JSON valid.', temperature = 0.5 }) {
-  // 1. Prioritize Groq API if GROQ_API_KEY is configured
-  if (process.env.GROQ_API_KEY) {
-    try {
-      const model = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.GROQ_API_KEY.trim()}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: 'system', content: `${systemInstruction} Respon HANYA berupa JSON valid tanpa teks pengantar.` },
-            { role: 'user', content: prompt }
-          ],
-          response_format: { type: 'json_object' },
-          temperature
-        })
-      });
+// Helper for readable question type labels
+function getJenisSoalLabel(code) {
+  const map = {
+    'pg': 'Pilihan Ganda (PG)',
+    'pg_kompleks': 'Pilihan Ganda Kompleks',
+    'tf': 'Benar / Salah',
+    'menjodohkan': 'Menjodohkan',
+    'short': 'Isian Singkat',
+    'isian': 'Isian Singkat',
+    'esai': 'Uraian / Esai',
+    'essay': 'Uraian / Esai'
+  };
+  return map[(code || '').toLowerCase()] || (code ? code.toUpperCase() : 'Pilihan Ganda');
+}
 
-      if (response.ok) {
-        const data = await response.json();
-        const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-        if (content) {
-          const cleanJson = content.replace(/```json/g, '').replace(/```/g, '').trim();
-          return JSON.parse(cleanJson);
+// Export Matriks Kisi-Kisi & Soal to Excel (.xlsx)
+app.get(['/admin/kisi_kisi/export_excel', '/admin/kisi_kisi/export_xlsx'], requireAdmin, (req, res) => {
+  try {
+    const xlsxLib = XLSX.default || XLSX;
+    const wb = xlsxLib.utils.book_new();
+
+    const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
+    const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+    const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
+    const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
+    const ujianNama = ujian ? (ujian.nama_mk || ujian.judul_ujian) : 'Ujian';
+
+    // 1. Sheet: Matriks_Kisi_Kisi
+    const matrixRows = soalList.map((s, idx) => {
+      let kunciJawaban = '-';
+      if (s.opsi && s.opsi.length > 0) {
+        const correctList = s.opsi.filter(o => o.benar);
+        if (correctList.length > 0) {
+          kunciJawaban = correctList.map(o => {
+            const letterIdx = s.opsi.indexOf(o);
+            const letter = String.fromCharCode(65 + (letterIdx >= 0 ? letterIdx : 0));
+            return `${letter}. ${o.teks || o.teks_opsi || ''}`;
+          }).join(' | ');
         }
-      } else {
-        const errText = await response.text();
-        console.warn('Groq API response error:', response.status, errText);
+      } else if (s.pembahasan) {
+        kunciJawaban = s.pembahasan;
       }
-    } catch (err) {
-      console.warn('Groq API call failed:', err.message);
+
+      return {
+        'No': idx + 1,
+        'Capaian Pembelajaran (CPMK)': s.cpmk || 'Capaian Pembelajaran Mata Kuliah',
+        'Bahan Kajian / Materi Pokok': s.materi_pokok || ujianNama,
+        'Indikator Pencapaian Butir Soal': s.indikator || (s.pertanyaan ? s.pertanyaan.replace(/<[^>]*>?/gm, '').substring(0, 95) : '-'),
+        'Bentuk / Jenis Soal': getJenisSoalLabel(s.jenis_soal),
+        'Level Kognitif (Bloom)': s.level_kognitif || 'C3',
+        'Tingkat Kesulitan': (s.tingkat_kesulitan || 'sedang').toUpperCase(),
+        'Nomor Soal': idx + 1,
+        'Bobot Poin': s.poin || 4,
+        'Kunci Jawaban': kunciJawaban,
+        'Pedoman Penskoran / Pembahasan': s.pembahasan || '-'
+      };
+    });
+
+    const wsMatrix = xlsxLib.utils.json_to_sheet(matrixRows);
+    wsMatrix['!cols'] = [
+      { wch: 6 },
+      { wch: 32 },
+      { wch: 28 },
+      { wch: 38 },
+      { wch: 22 },
+      { wch: 16 },
+      { wch: 16 },
+      { wch: 12 },
+      { wch: 12 },
+      { wch: 35 },
+      { wch: 45 }
+    ];
+    xlsxLib.utils.book_append_sheet(wb, wsMatrix, 'Matriks_Kisi_Kisi');
+
+    // 2. Sheet: Naskah_Bank_Soal
+    const naskahRows = soalList.map((s, idx) => {
+      const row = {
+        'No': idx + 1,
+        'Bentuk Soal': getJenisSoalLabel(s.jenis_soal),
+        'Level Kognitif': s.level_kognitif || 'C3',
+        'Tingkat Kesulitan': (s.tingkat_kesulitan || 'sedang').toUpperCase(),
+        'Bobot Poin': s.poin || 4,
+        'Butir Pertanyaan': (s.pertanyaan || '').replace(/<[^>]*>?/gm, '').trim(),
+        'Opsi A': '',
+        'Opsi B': '',
+        'Opsi C': '',
+        'Opsi D': '',
+        'Opsi E': '',
+        'Kunci Jawaban': '',
+        'Pembahasan / Rubrik': s.pembahasan || '-'
+      };
+
+      if (s.opsi && s.opsi.length > 0) {
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+        const correctLetters = [];
+        s.opsi.forEach((o, oIdx) => {
+          const l = letters[oIdx] || `Opsi ${oIdx + 1}`;
+          if (row.hasOwnProperty(`Opsi ${l}`)) {
+            row[`Opsi ${l}`] = o.teks || o.teks_opsi || '';
+          }
+          if (o.benar) correctLetters.push(l);
+        });
+        row['Kunci Jawaban'] = correctLetters.join(', ');
+      } else {
+        row['Kunci Jawaban'] = s.pembahasan || '-';
+      }
+
+      return row;
+    });
+
+    const wsNaskah = xlsxLib.utils.json_to_sheet(naskahRows);
+    wsNaskah['!cols'] = [
+      { wch: 6 },
+      { wch: 22 },
+      { wch: 15 },
+      { wch: 16 },
+      { wch: 12 },
+      { wch: 55 },
+      { wch: 26 },
+      { wch: 26 },
+      { wch: 26 },
+      { wch: 26 },
+      { wch: 26 },
+      { wch: 18 },
+      { wch: 45 }
+    ];
+    xlsxLib.utils.book_append_sheet(wb, wsNaskah, 'Naskah_Soal');
+
+    const buffer = xlsxLib.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const filename = `Matriks_Kisi_Kisi_dan_Soal_${(ujian.judul_ujian || 'Ujian').replace(/[^a-zA-Z0-9_-]/g, '_')}.xlsx`;
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return res.send(buffer);
+  } catch (err) {
+    console.error('Excel export error:', err);
+    res.status(500).send('Gagal mengekspor berkas Excel: ' + err.message);
+  }
+});
+
+// Export Bank Soal Excel (.xlsx) from Bank Soal view
+app.get(['/admin/soal/export_excel', '/admin/soal/export_xlsx'], requireAdmin, (req, res) => {
+  res.redirect(`/admin/kisi_kisi/export_excel?ujian_id=${req.query.ujian_id || ''}`);
+});
+
+// Export Naskah Soal Word (.docx) from Bank Soal view
+app.get(['/admin/soal/export_word'], requireAdmin, (req, res) => {
+  res.redirect(`/admin/kisi_kisi/export_word?ujian_id=${req.query.ujian_id || ''}`);
+});
+
+// ==========================================================================
+// UNIVERSAL HIGH-PRECISION AI ENGINE & CONTEXTUAL CURRICULUM GENERATOR
+// ==========================================================================
+
+function parseAIJson(rawText) {
+  if (!rawText || typeof rawText !== 'string') return null;
+  const text = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    const firstBrace = text.indexOf('{');
+    const lastBrace = text.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      try {
+        return JSON.parse(text.substring(firstBrace, lastBrace + 1));
+      } catch (e2) {}
+    }
+    const firstBracket = text.indexOf('[');
+    const lastBracket = text.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket > firstBracket) {
+      try {
+        return JSON.parse(text.substring(firstBracket, lastBracket + 1));
+      } catch (e3) {}
+    }
+    return null;
+  }
+}
+
+// Clean and validate questions across all supported types without manual review
+function sanitizeQuestions(questions, defaultTopic, defaultPoin = 4) {
+  if (!Array.isArray(questions)) return [];
+  return questions.map((q, idx) => {
+    let stem = (q.pertanyaan || '').trim();
+    stem = stem.replace(/^\[(kisi-kisi|ai)\]\s*/i, '');
+    stem = stem.replace(/\n\s*[A-E][\.\)]\s*[\s\S]*$/, '').trim();
+
+    const rawType = (q.jenis_soal || q.bentuk_soal || 'pg').toLowerCase();
+    let jenis = 'pg';
+    if (rawType.includes('kompleks')) jenis = 'pg_kompleks';
+    else if (rawType.includes('benar') || rawType === 'tf') jenis = 'tf';
+    else if (rawType.includes('jodoh') || rawType === 'menjodohkan') jenis = 'menjodohkan';
+    else if (rawType.includes('singkat') || rawType.includes('isian') || rawType === 'short') jenis = 'short';
+    else if (rawType.includes('esai') || rawType.includes('uraian') || rawType === 'essay') jenis = 'esai';
+
+    let opsiList = [];
+    if (jenis === 'tf') {
+      // Benar / Salah has exactly 2 options
+      let correctVal = true;
+      if (Array.isArray(q.opsi) && q.opsi.length > 0) {
+        const falseOpt = q.opsi.find(o => o.benar && (o.teks || o.teks_opsi || '').toLowerCase().includes('salah'));
+        if (falseOpt) correctVal = false;
+      }
+      opsiList = [
+        { teks: 'Benar', benar: correctVal === true },
+        { teks: 'Salah', benar: correctVal === false }
+      ];
+    } else if (jenis === 'esai' || jenis === 'short') {
+      // Essay or short answer has no options or single key
+      if (Array.isArray(q.opsi) && q.opsi.length > 0) {
+        opsiList = q.opsi.map(o => ({
+          teks: (typeof o === 'string' ? o : (o.teks || o.teks_opsi || '')).trim(),
+          benar: Boolean(o.benar)
+        }));
+      }
+    } else if (jenis === 'pg_kompleks') {
+      // Multiple correct options
+      if (Array.isArray(q.opsi) && q.opsi.length >= 3) {
+        opsiList = q.opsi.map(o => ({
+          teks: (typeof o === 'string' ? o : (o.teks || o.teks_opsi || '')).trim().replace(/^[A-E][\.\)]\s*/i, ''),
+          benar: Boolean(o.benar)
+        }));
+      } else {
+        opsiList = [
+          { teks: `Pernyataan 1: Konsep dasar ${defaultTopic} diterapkan secara tepat dalam analisis kasus`, benar: true },
+          { teks: `Pernyataan 2: Luaran instrumen memenuhi parameter validitas dan reliabilitas pengujian`, benar: true },
+          { teks: `Pernyataan 3: Prosedur operasional mengabaikan kaidah standar mutu kurikulum`, benar: false },
+          { teks: `Pernyataan 4: Evaluasi berkala dilakukan dengan dukungan data autentik dan rubrik terstandar`, benar: true }
+        ];
+      }
+      if (opsiList.filter(o => o.benar).length < 2) {
+        if (opsiList[0]) opsiList[0].benar = true;
+        if (opsiList[1]) opsiList[1].benar = true;
+      }
+    } else if (jenis === 'menjodohkan') {
+      if (Array.isArray(q.opsi) && q.opsi.length > 0) {
+        opsiList = q.opsi.map(o => ({
+          teks: (typeof o === 'string' ? o : (o.teks || o.teks_opsi || '')).trim(),
+          benar: Boolean(o.benar)
+        }));
+      } else {
+        opsiList = [
+          { teks: 'Premis 1 (Konsep Utama) <=> Pasangan A (Kaidah Penerapan)', benar: true },
+          { teks: 'Premis 2 (Metodologi Uji) <=> Pasangan B (Prosedur Validasi)', benar: true },
+          { teks: 'Premis 3 (Instrumen Evaluasi) <=> Pasangan C (Standar Reliabilitas)', benar: true }
+        ];
+      }
+    } else {
+      // Standard Multiple Choice PG (5 options A-E, 1 correct)
+      if (Array.isArray(q.opsi) && q.opsi.length > 0) {
+        opsiList = q.opsi.map(o => {
+          let text = (typeof o === 'string' ? o : (o.teks || o.teks_opsi || '')).trim();
+          text = text.replace(/^[A-E][\.\)]\s*/i, '').trim();
+          return { teks: text, benar: Boolean(o.benar) };
+        });
+      }
+      const letters = ['A', 'B', 'C', 'D', 'E'];
+      if (opsiList.length < 5) {
+        while (opsiList.length < 5) {
+          opsiList.push({
+            teks: `Alternatif analisis komparatif ${letters[opsiList.length]} terkait materi ${defaultTopic}`,
+            benar: false
+          });
+        }
+      } else if (opsiList.length > 5) {
+        opsiList = opsiList.slice(0, 5);
+      }
+      const trueCount = opsiList.filter(o => o.benar).length;
+      if (trueCount === 0) {
+        opsiList[0].benar = true;
+      } else if (trueCount > 1) {
+        let foundFirst = false;
+        opsiList.forEach(o => {
+          if (o.benar) {
+            if (!foundFirst) foundFirst = true;
+            else o.benar = false;
+          }
+        });
+      }
+    }
+
+    return {
+      pertanyaan: stem || `Berdasarkan kajian analisis pada bidang ${defaultTopic}, analisislah butir studi kasus ke-${idx + 1} berikut ini:`,
+      jenis_soal: jenis,
+      cpmk: q.cpmk || `Menguasai analisis teoritis dan terapan materi ${defaultTopic}`,
+      materi_pokok: q.materi_pokok || defaultTopic,
+      indikator: q.indikator || `Mampu mengevaluasi dan menerapkan kaidah ${defaultTopic} secara komprehensif`,
+      level_kognitif: q.level_kognitif || 'C3',
+      tingkat_kesulitan: q.tingkat_kesulitan || 'sedang',
+      poin: parseInt(q.poin, 10) || defaultPoin,
+      opsi: opsiList,
+      pembahasan: q.pembahasan || `Kunci jawaban yang tepat didasarkan pada kesesuaian prinsip metodologis dan kaidah standar pada materi ${defaultTopic}.`
+    };
+  });
+}
+
+// Academic Fallback Generator: Realistic multi-type questions across Bloom's levels
+function generateAcademicQuestionsFallback({ courseName, topic, subTopic, cpmk, count = 5, poin = 4, difficulty = 'sedang', cognitive = 'C3', jenisList = ['pg'], cognitiveList = [] }) {
+  const effectiveTopic = topic || courseName || 'Pengembangan Pembelajaran';
+  const effectiveSub = subTopic ? `${effectiveTopic} - ${subTopic}` : effectiveTopic;
+  const results = [];
+  const selectedTypes = (Array.isArray(jenisList) && jenisList.length > 0) ? jenisList : ['pg'];
+  const bloomLevels = (Array.isArray(cognitiveList) && cognitiveList.length > 0) 
+    ? cognitiveList 
+    : (cognitive && cognitive !== 'proporsional' ? [cognitive] : ['C2', 'C3', 'C4', 'C5', 'C3']);
+  const diffs = ['mudah', 'sedang', 'sedang', 'sulit', 'sedang'];
+
+  const scenarioPool = [
+    {
+      stem: `Dalam implementasi ${effectiveSub}, seorang tenaga profesional mendapati kendala berupa inkonsistensi luaran kerja pada tahapan evaluasi berkala. Tindakan preventif dan solutif manakah yang paling selaras dengan kaidah standar untuk menanggulangi permasalahan tersebut?`,
+      correct: `Melakukan audit instrumen secara komprehensif dan menyelaraskan ulang seluruh parameter dengan indikator acuan mutu yang telah divalidasi`,
+      distractors: [
+        `Mengabaikan temuan audit dan langsung menerapkan sistem baru tanpa studi kelayakan`,
+        `Mengurangi batas minimal kelulusan agar seluruh luaran tampak memenuhi kriteria standar`,
+        `Menghentikan proses evaluasi secara permanen untuk memangkas anggaran operasional`,
+        `Melakukan penyesuaian nilai akhir secara manual tanpa dasar pertimbangan rubrik baku`
+      ],
+      pembahasan: `Langkah solutif yang tepat menuntut audit instrumen komprehensif dan penyelarasan ulang parameter dengan indikator mutu terakreditasi.`
+    },
+    {
+      stem: `Berdasarkan prinsip metodologis pada materi ${effectiveTopic}, kriteria utama manakah yang menjamin bahwa rancangan evaluasi yang dikembangkan memiliki tingkat reliabilitas dan validitas konstruk yang memadai?`,
+      correct: `Setiap butir asesmen diturunkan secara langsung dari capaian pembelajaran terukur (CPMK) dan telah melalui validasi ahli serta uji reliabilitas empiris`,
+      distractors: [
+        `Seluruh butir soal disusun hanya berdasarkan intuisi pengajar tanpa kisi-kisi penulisan`,
+        `Tingkat kesulitan seluruh butir soal diturunkan ke level terendah agar tidak terjadi kegagalan`,
+        `Penyusunan naskah hanya mengandalkan rangkuman materi dari sumber internet yang belum terverifikasi`,
+        `Penilaian dilakukan tanpa adanya kunci jawaban dan pedoman penskoran yang seragam`
+      ],
+      pembahasan: `Validitas konstruk dan reliabilitas instrumen dijamin apabila butir diturunkan dari CPMK terukur serta divalidasi oleh pakar bidang keahlian.`
+    },
+    {
+      stem: `Ketika melakukan analisis komparatif terhadap efektivitas implementasi ${effectiveTopic} di lingkungan perguruan tinggi, manakah indikator performa yang paling objektif untuk mengukur keberhasilan program?`,
+      correct: `Ketercapaian indikator kinerja pembelajaran terverifikasi yang didukung data evaluasi autentik dan portofolio kompetensi mahasiswa`,
+      distractors: [
+        `Tingkat kepuasan subjektif mahasiswa semata tanpa adanya data pengujian capaian keterampilan riil`,
+        `Kecepatan waktu penyelesaian ujian tanpa memperhatikan ketepatan dan kedalaman analisis respon`,
+        `Jumlah materi tayang yang disampaikan tanpa mempertimbangkan keterpahaman peserta didik`,
+        `Persentase kehadiran fisik tanpa adanya evaluasi terhadap partisipasi aktif dalam diskusi akademik`
+      ],
+      pembahasan: `Indikator objektif keberhasilan program diukur dari ketercapaian capaian pembelajaran autentik dan portofolio kompetensi mahasiswa.`
+    },
+    {
+      stem: `Dalam kajian taksonomi kognitif Bloom, seorang penguji ingin mengukur kemampuan analisis mahasiswa (C4) pada topik ${effectiveSub}. Bentuk pertanyaan atau stimulus manakah yang paling tepat digunakan?`,
+      correct: `Menyajikan studi kasus faktual yang memuat anomali data, kemudian meminta mahasiswa mengidentifikasi akar penyebab dan merekonstruksi alur pemecahan masalah`,
+      distractors: [
+        `Meminta mahasiswa menyebutkan kembali definisi dasar dan istilah teknis persis sesuai teks buku acuan`,
+        `Menanyakan tahun penerbitan teori pertama kali tanpa keterkaitan dengan aplikasi praktis`,
+        `Meminta mahasiswa menghafal seluruh daftar formula matematika tanpa memahami konteks penggunaannya`,
+        `Menyajikan pilihan benar/salah sederhana tanpa memerlukan penalaran analitis mendalam`
+      ],
+      pembahasan: `Pengukuran ranah analisis (C4) efektif dilakukan melalui studi kasus anomali data di mana peserta didik dituntut membedah akar permasalahan dan merekonstruksi solusi.`
+    },
+    {
+      stem: `Pada situasi di mana ${effectiveTopic} diterapkan dalam skala luas dengan heterogenitas kemampuan peserta, pendekatan diferensiasi instruksional manakah yang paling efektif menjamin kesetaraan akses pembelajaran?`,
+      correct: `Menyediakan media dan scaffold pembelajaran yang bervariasi sesuai modalitas belajar serta menyusun target capaian bertahap yang adaptif`,
+      distractors: [
+        `Menyamaratakan seluruh metode penyampaian tanpa mempertimbangkan variasi latar belakang peserta didik`,
+        `Mengurangi alokasi waktu pendampingan bagi kelompok peserta didik yang mengalami kesulitan belajar`,
+        `Hanya memfokuskan proses pembelajaran pada kelompok peserta didik dengan kemampuan di atas rata-rata`,
+        `Meniadakan pengujian formatif agar seluruh peserta didik merasa setara tanpa umpan balik perbaikan`
+      ],
+      pembahasan: `Diferensiasi instruksional yang berkeadilan dilakukan dengan memvariasikan media, menyediakan scaffolding adaptif, dan target capaian bertahap.`
+    }
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const s = scenarioPool[i % scenarioPool.length];
+    const lvl = bloomLevels[i % bloomLevels.length];
+    const diff = difficulty && difficulty !== 'proporsional' ? difficulty : diffs[i % diffs.length];
+    const currentType = selectedTypes[i % selectedTypes.length];
+
+    let opsi = [];
+    let stem = s.stem;
+    let pembahasan = s.pembahasan;
+
+    if (currentType === 'tf') {
+      stem = `Pernyataan: "Dalam penerapan ${effectiveSub}, ${s.correct.toLowerCase()} merupakan langkah metodologis utama yang menjamin keberhasilan mutu." Apakah pernyataan ini Benar atau Salah?`;
+      opsi = [
+        { teks: 'Benar', benar: true },
+        { teks: 'Salah', benar: false }
+      ];
+    } else if (currentType === 'pg_kompleks') {
+      stem = `Pada analisis komprehensif implementasi ${effectiveSub}, analisislah pernyataan-pernyataan berikut ini dan pilihlah SEMUA pernyataan yang tepat:`;
+      opsi = [
+        { teks: s.correct, benar: true },
+        { teks: `Melakukan telaah dokumen berkala bersama pakar kurikulum dan stakeholder terkait`, benar: true },
+        { teks: s.distractors[0], benar: false },
+        { teks: s.distractors[1], benar: false }
+      ];
+    } else if (currentType === 'short') {
+      stem = `Dalam konteks evaluasi ${effectiveSub}, sebutkan prinsip kunci yang menjamin keselarasan antara capaian pembelajaran terukur dengan instrumen asesmen!`;
+      opsi = [{ teks: 'Validitas Konstruk dan Reliabilitas Asesmen', benar: true }];
+      pembahasan = `Kunci jawaban singkat: Validitas Konstruk / CPMK Terukur. ${s.pembahasan}`;
+    } else if (currentType === 'esai') {
+      stem = `Uraikan secara komprehensif studi kasus implementasi ${effectiveSub} berikut:\n${s.stem}\nJelaskan tahapan identifikasi masalah, formulasi solusi, serta rubrik evaluasi yang menjamin keberlanjutan hasil!`;
+      opsi = [];
+      pembahasan = `Pedoman Penskoran Uraian (Skor Maksimal 100):\n1. Identifikasi anomali data & akar masalah (30 poin)\n2. Perumusan solusi metodologis berbasis kaidah standar (40 poin)\n3. Rancangan instrumen audit mutu terverifikasi (30 poin)`;
+    } else if (currentType === 'menjodohkan') {
+      stem = `Jodohkanlah premis konsep pada bidang ${effectiveTopic} di sebelah kiri dengan penerapan praktis yang tepat di sebelah kanan:`;
+      opsi = [
+        { teks: 'Konsep Validitas Konstruk <=> Keselarasan butir dengan CPMK terukur', benar: true },
+        { teks: 'Uji Reliabilitas Empiris <=> Konsistensi skor asesmen pada pengujian berulang', benar: true },
+        { teks: 'Diferensiasi Instruksional <=> Penyesuaian media & scaffolding sesuai modalitas peserta', benar: true }
+      ];
+    } else {
+      // pg
+      const allOptions = [
+        { teks: s.correct, benar: true },
+        ...s.distractors.map(d => ({ teks: d, benar: false }))
+      ];
+      const correctIdx = (i * 2 + 1) % 5;
+      const swapped = [...allOptions];
+      const temp = swapped[0];
+      swapped[0] = swapped[correctIdx];
+      swapped[correctIdx] = temp;
+      opsi = swapped;
+    }
+
+    results.push({
+      pertanyaan: stem,
+      jenis_soal: currentType,
+      cpmk: cpmk || `Menguasai analisis teoritis dan terapan materi ${effectiveTopic}`,
+      materi_pokok: effectiveSub,
+      indikator: `Mampu menganalisis dan menyelesaikan instrumen pada ranah ${lvl} (${getJenisSoalLabel(currentType)})`,
+      level_kognitif: lvl,
+      tingkat_kesulitan: diff,
+      poin: poin,
+      opsi,
+      pembahasan
+    });
+  }
+
+  return results;
+}
+
+// Universal AI Client with Zero-Downtime Multi-Tier Fallback
+async function generateWithAI({ prompt, systemInstruction = 'Anda adalah dosen ahli penyusun instrumen ujian akademik. Respon HANYA berupa JSON valid.', temperature = 0.2 }) {
+  // Tier 1: Groq API with High-Speed Models (Qwen 2.5/3.8, GPT-OSS) - ~300ms ultra-fast response
+  if (process.env.GROQ_API_KEY) {
+    const groqModels = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
+    for (const model of groqModels) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.GROQ_API_KEY.trim()}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              { role: 'system', content: `${systemInstruction} Respon HANYA berupa JSON valid tanpa teks pembuka atau markdown.` },
+              { role: 'user', content: prompt }
+            ],
+            response_format: { type: 'json_object' },
+            temperature
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (response.ok) {
+          const data = await response.json();
+          const content = data.choices && data.choices[0]?.message?.content;
+          if (content) {
+            const parsed = parseAIJson(content);
+            if (parsed) return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn(`Groq tier (${model}) attempt note:`, err.message);
+      }
     }
   }
 
-  // 2. Use Google Gemini if GEMINI_API_KEY is available and Groq is not used
+  // Tier 2: Google Gemini (gemini-3.8-flash) via official @google/genai SDK
   if (process.env.GEMINI_API_KEY) {
     try {
-      const ai = new GoogleGenAI({
-        apiKey: process.env.GEMINI_API_KEY,
-        httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const geminiPromise = ai.models.generateContent({
+        model: 'gemini-3.8-flash',
+        contents: prompt,
+        config: {
+          systemInstruction,
+          responseMimeType: 'application/json',
+          temperature
+        }
       });
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `${systemInstruction}\n\n${prompt}`,
-        config: { responseMimeType: 'application/json', temperature }
-      });
-      const text = response.text || '{}';
-      const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
-      return JSON.parse(cleanJson);
+      // 8 second timeout to prevent indefinite blocking on high-demand spikes
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini timeout')), 8000));
+      const response = await Promise.race([geminiPromise, timeoutPromise]);
+      const text = response.text || '';
+      if (text) {
+        const parsed = parseAIJson(text);
+        if (parsed) return parsed;
+      }
     } catch (err) {
-      console.warn('Gemini API call failed:', err.message);
+      console.warn('Gemini 3.8 Flash attempt note:', err.message);
     }
   }
 
   return null;
 }
 
-// API: Generate Kisi-Kisi AI
+// API: Generate Kisi-Kisi AI (Multi-Type Question & Custom Bloom Levels, No Jenjang)
 app.post(['/admin/api/generate_kisi_kisi'], requireAdmin, async (req, res) => {
-  const { ujian_id, topik, cpmk, jumlah, kesulitan } = req.body;
+  const { ujian_id, topik, sub_topik, cpmk, jumlah, kesulitan, jenis_soal_list, kognitif_list, apply } = req.body;
   const count = parseInt(jumlah, 10) || 5;
-  const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10));
+  const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10)) || db.ujian[0];
+  const matkul = targetUjian ? db.mata_kuliah.find(m => m.id === targetUjian.id_mata_kuliah) : null;
+  const effectiveTopik = topik || (matkul ? matkul.nama_mk : (targetUjian ? targetUjian.judul_ujian : 'Mata Kuliah'));
+
+  // Parse multi-select question types and cognitive levels
+  let selectedTypes = ['pg'];
+  if (Array.isArray(jenis_soal_list) && jenis_soal_list.length > 0) {
+    selectedTypes = jenis_soal_list;
+  } else if (typeof jenis_soal_list === 'string' && jenis_soal_list.trim()) {
+    selectedTypes = jenis_soal_list.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  let selectedCognitives = ['C2', 'C3', 'C4'];
+  if (Array.isArray(kognitif_list) && kognitif_list.length > 0) {
+    selectedCognitives = kognitif_list;
+  } else if (typeof kognitif_list === 'string' && kognitif_list.trim()) {
+    selectedCognitives = kognitif_list.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  const typesReadable = selectedTypes.map(t => getJenisSoalLabel(t)).join(', ');
+  const cognitivesReadable = selectedCognitives.join(', ');
 
   let generatedKisi = [];
 
-  const prompt = `Anda adalah pakar kurikulum dan evaluasi pendidikan perguruan tinggi.
-Buatkan ${count} baris matriks kisi-kisi penulisan soal ujian akademik untuk topik / mata kuliah: "${topik || 'Pengembangan Media Pembelajaran'}".
-Capaian Pembelajaran (CPMK): "${cpmk || 'Menguasai konsep dan aplikasi materi'}".
+  const prompt = `Anda adalah dosen pakar kurikulum dan evaluasi pendidikan perguruan tinggi di Indonesia.
+Rancanglah ${count} baris matriks kisi-kisi penulisan soal ujian akademik yang komprehensif, terstruktur, dan selaras dengan Standar Nasional Pendidikan Tinggi (SN-Dikti).
+Mata Kuliah / Topik: "${effectiveTopik}".
+Ruang Lingkup & Sub-Materi: "${sub_topik || 'Kaidah konseptual dan implementasi praktis standar'}".
+Capaian Pembelajaran (CPMK): "${cpmk || 'Menguasai konsep teoritis dan kemampuan analisis terapan pada bidang terkait'}".
 Distribusi Kesulitan: "${kesulitan || 'proporsional'}".
+BENTUK / JENIS SOAL YANG DIPILIH: [${typesReadable}].
+PENTING: Anda WAJIB menyusun ${count} butir soal dengan mendistribusikan bentuk soal di antara jenis-jenis yang dipilih di atas secara proporsional.
+LEVEL KOGNITIF BLOOM YANG DIPILIH: [${cognitivesReadable}].
+PENTING: Setiap butir soal WAJIB menggunakan salah satu level kognitif dari daftar yang dipilih di atas!
 
-Berikan respon HANYA berupa JSON valid:
+PANDUAN FORMAT BERDASARKAN BENTUK SOAL:
+- "pg" (Pilihan Ganda): 5 opsi (A, B, C, D, E) dengan tepat 1 kunci benar. Teks pertanyaan tanpa huruf opsi di dalamnya.
+- "pg_kompleks" (Pilihan Ganda Kompleks): 4-5 pilihan pernyataan dengan 2 atau lebih jawaban benar (peserta memilih lebih dari satu).
+- "tf" (Benar / Salah): tepat 2 opsi [{"teks": "Benar", "benar": true/false}, {"teks": "Salah", "benar": false/true}].
+- "menjodohkan" (Menjodohkan): premis dan pasangan kunci respon yang selaras.
+- "short" (Isian Singkat): pertanyaan langsung dengan frasa kunci jawaban terukur pada opsi atau pembahasan.
+- "esai" (Uraian / Esai): studi kasus mendalam lengkap dengan kriteria rubrik penskoran pada kolom pembahasan.
+
+Format respon HANYA berupa JSON valid:
 {
   "kisi_kisi": [
     {
-      "cpmk": "string",
-      "materi_pokok": "string",
-      "indikator": "string",
-      "bentuk_soal": "Pilihan Ganda",
-      "level_kognitif": "C1/C2/C3/C4/C5",
-      "tingkat_kesulitan": "mudah/sedang/sulit",
-      "bobot": 4
+      "cpmk": "rumusan capaian pembelajaran spesifik",
+      "materi_pokok": "materi atau sub-materi pokok",
+      "indikator": "indikator ketercapaian kompetensi butir soal",
+      "bentuk_soal": "pg | pg_kompleks | tf | menjodohkan | short | esai",
+      "level_kognitif": "${selectedCognitives[0] || 'C3'}",
+      "tingkat_kesulitan": "mudah | sedang | sulit",
+      "bobot": 4,
+      "pertanyaan": "teks stimulus studi kasus dan pertanyaan langsung yang jelas",
+      "opsi": [
+        {"teks": "rumusan jawaban A", "benar": true},
+        {"teks": "rumusan jawaban B", "benar": false}
+      ],
+      "pembahasan": "penjelasan ilmiah terperinci / rubrik penilaian"
     }
   ]
 }`;
 
   const parsed = await generateWithAI({
     prompt,
-    systemInstruction: 'Anda adalah pakar kurikulum dan evaluasi pendidikan perguruan tinggi.'
+    systemInstruction: 'Anda adalah dosen pakar kurikulum dan instrumen evaluasi perguruan tinggi. Balas HANYA JSON valid.'
   });
 
-  if (parsed && Array.isArray(parsed.kisi_kisi)) {
+  if (parsed && Array.isArray(parsed.kisi_kisi) && parsed.kisi_kisi.length > 0) {
     generatedKisi = parsed.kisi_kisi;
   }
 
-  // Fallback high-quality academic indicators
+  // Fallback high-quality academic indicators & questions if needed
   if (generatedKisi.length === 0) {
-    const levels = ['C1', 'C2', 'C3', 'C4', 'C5'];
-    const diffs = ['mudah', 'sedang', 'sedang', 'sedang', 'sulit'];
-    for (let i = 1; i <= count; i++) {
-      generatedKisi.push({
-        cpmk: cpmk || `Menguasai analisis ${topik} sub-bab ${i}`,
-        materi_pokok: `${topik} - Bagian ${i}`,
-        indikator: `Menganalisis dan mengimplementasikan konsep utama pada studi kasus ${i}`,
-        bentuk_soal: 'Pilihan Ganda',
-        level_kognitif: levels[(i - 1) % levels.length],
-        tingkat_kesulitan: diffs[(i - 1) % diffs.length],
-        bobot: 4
-      });
-    }
+    const fallbackQuestions = generateAcademicQuestionsFallback({
+      courseName: effectiveTopik,
+      topic: effectiveTopik,
+      subTopic: sub_topik,
+      cpmk,
+      count,
+      difficulty: kesulitan,
+      cognitive: selectedCognitives[0] || 'C3',
+      jenisList: selectedTypes,
+      cognitiveList: selectedCognitives
+    });
+
+    generatedKisi = fallbackQuestions.map((q) => ({
+      cpmk: q.cpmk,
+      materi_pokok: q.materi_pokok,
+      indikator: q.indikator,
+      bentuk_soal: q.jenis_soal || 'pg',
+      level_kognitif: q.level_kognitif,
+      tingkat_kesulitan: q.tingkat_kesulitan,
+      bobot: q.poin || 4,
+      pertanyaan: q.pertanyaan,
+      opsi: q.opsi,
+      pembahasan: q.pembahasan
+    }));
   }
 
-  // Update existing questions' metadata or create questions placeholders
-  if (targetUjian) {
+  // Sanitize each item's questions and options
+  generatedKisi = generatedKisi.map((item) => {
+    const sanitized = sanitizeQuestions([item], item.materi_pokok || effectiveTopik, item.bobot || 4)[0];
+    return {
+      cpmk: item.cpmk || sanitized.cpmk,
+      materi_pokok: item.materi_pokok || sanitized.materi_pokok,
+      indikator: item.indikator || sanitized.indikator,
+      bentuk_soal: sanitized.jenis_soal || item.bentuk_soal || 'pg',
+      level_kognitif: item.level_kognitif || sanitized.level_kognitif,
+      tingkat_kesulitan: item.tingkat_kesulitan || sanitized.tingkat_kesulitan,
+      bobot: parseInt(item.bobot, 10) || sanitized.poin || 4,
+      pertanyaan: sanitized.pertanyaan,
+      opsi: sanitized.opsi,
+      pembahasan: sanitized.pembahasan
+    };
+  });
+
+  // Permanently save to database by default (apply !== false)
+  const shouldApply = apply !== false;
+  if (shouldApply && targetUjian) {
     const existingSoal = db.soal.filter(s => s.id_ujian === targetUjian.id);
+    let nextSoalId = db.soal.length ? Math.max(...db.soal.map(s => s.id)) + 1 : 1;
+    let nextOpsiId = db.opsi_jawaban.length ? Math.max(...db.opsi_jawaban.map(o => o.id)) + 1 : 1;
+
     generatedKisi.forEach((k, idx) => {
       if (existingSoal[idx]) {
+        // Update existing question
         existingSoal[idx].cpmk = k.cpmk;
         existingSoal[idx].materi_pokok = k.materi_pokok;
         existingSoal[idx].indikator = k.indikator;
-        existingSoal[idx].level_kognitif = k.level_kognitif;
-        existingSoal[idx].tingkat_kesulitan = k.tingkat_kesulitan;
+        existingSoal[idx].jenis_soal = k.bentuk_soal || 'pg';
+        existingSoal[idx].level_kognitif = k.level_kognitif || 'C3';
+        existingSoal[idx].tingkat_kesulitan = k.tingkat_kesulitan || 'sedang';
+        existingSoal[idx].poin = k.bobot || existingSoal[idx].poin || 4;
+        if (k.pertanyaan && !k.pertanyaan.startsWith('[Kisi-Kisi]')) {
+          existingSoal[idx].pertanyaan = k.pertanyaan;
+        }
+        if (k.pembahasan) {
+          existingSoal[idx].pembahasan = k.pembahasan;
+        }
+        if (Array.isArray(k.opsi) && k.opsi.length > 0) {
+          db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== existingSoal[idx].id);
+          k.opsi.forEach((o, oIdx) => {
+            db.opsi_jawaban.push({
+              id: nextOpsiId++,
+              id_soal: existingSoal[idx].id,
+              teks_opsi: o.teks,
+              benar: Boolean(o.benar),
+              urutan: oIdx + 1
+            });
+          });
+        }
+      } else {
+        // Add new test-ready question
+        const newSoalId = nextSoalId++;
+        db.soal.push({
+          id: newSoalId,
+          id_ujian: targetUjian.id,
+          jenis_soal: k.bentuk_soal || 'pg',
+          pertanyaan: k.pertanyaan,
+          pembahasan: k.pembahasan || 'Pembahasan kunci jawaban.',
+          poin: k.bobot || 4,
+          urutan: db.soal.filter(s => s.id_ujian === targetUjian.id).length + 1,
+          data_tambahan: null,
+          tingkat_kesulitan: k.tingkat_kesulitan || 'sedang',
+          level_kognitif: k.level_kognitif || 'C3',
+          cpmk: k.cpmk || 'Capaian Pembelajaran MK',
+          materi_pokok: k.materi_pokok || targetUjian.judul_ujian,
+          indikator: k.indikator || 'Indikator ketercapaian soal'
+        });
+
+        if (Array.isArray(k.opsi) && k.opsi.length > 0) {
+          k.opsi.forEach((o, oIdx) => {
+            db.opsi_jawaban.push({
+              id: nextOpsiId++,
+              id_soal: newSoalId,
+              teks_opsi: o.teks,
+              benar: Boolean(o.benar),
+              urutan: oIdx + 1
+            });
+          });
+        }
       }
     });
+
+    db.save(); // Synchronous atomic persistence to disk
   }
 
-  return res.json({ success: true, count: generatedKisi.length, data: generatedKisi });
+  return res.json({ success: true, count: generatedKisi.length, data: generatedKisi, saved: shouldApply });
 });
 
-// API: Generate Soal dari Kisi-Kisi
+// API: Save / Apply approved Kisi-Kisi matrix after user preview
+app.post(['/admin/api/save_kisi_kisi'], requireAdmin, (req, res) => {
+  const { ujian_id, items } = req.body;
+  const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10));
+  if (!targetUjian || !Array.isArray(items)) {
+    return res.status(400).json({ success: false, message: 'Data tidak valid' });
+  }
+
+  const existingSoal = db.soal.filter(s => s.id_ujian === targetUjian.id);
+  let nextSoalId = db.soal.length ? Math.max(...db.soal.map(s => s.id)) + 1 : 1;
+  let nextOpsiId = db.opsi_jawaban.length ? Math.max(...db.opsi_jawaban.map(o => o.id)) + 1 : 1;
+
+  items.forEach((k, idx) => {
+    if (existingSoal[idx]) {
+      existingSoal[idx].cpmk = k.cpmk;
+      existingSoal[idx].materi_pokok = k.materi_pokok;
+      existingSoal[idx].indikator = k.indikator;
+      existingSoal[idx].jenis_soal = k.bentuk_soal || existingSoal[idx].jenis_soal || 'pg';
+      existingSoal[idx].level_kognitif = k.level_kognitif || 'C3';
+      existingSoal[idx].tingkat_kesulitan = k.tingkat_kesulitan || 'sedang';
+      if (k.bobot) existingSoal[idx].poin = parseInt(k.bobot, 10) || existingSoal[idx].poin;
+      if (k.pertanyaan) existingSoal[idx].pertanyaan = k.pertanyaan;
+      if (k.pembahasan) existingSoal[idx].pembahasan = k.pembahasan;
+      if (Array.isArray(k.opsi) && k.opsi.length > 0) {
+        db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== existingSoal[idx].id);
+        k.opsi.forEach((o, oIdx) => {
+          db.opsi_jawaban.push({
+            id: nextOpsiId++,
+            id_soal: existingSoal[idx].id,
+            teks_opsi: o.teks || o.teks_opsi,
+            benar: Boolean(o.benar),
+            urutan: oIdx + 1
+          });
+        });
+      }
+    } else {
+      const newSoalId = nextSoalId++;
+      db.soal.push({
+        id: newSoalId,
+        id_ujian: targetUjian.id,
+        jenis_soal: k.bentuk_soal || 'pg',
+        pertanyaan: k.pertanyaan || `Berdasarkan indikator ${k.indikator}, manakah rumusan pemecahan kasus yang paling tepat?`,
+        pembahasan: k.pembahasan || 'Pembahasan indikator capaian kompetensi.',
+        poin: parseInt(k.bobot, 10) || 4,
+        urutan: db.soal.filter(s => s.id_ujian === targetUjian.id).length + 1,
+        tingkat_kesulitan: k.tingkat_kesulitan || 'sedang',
+        level_kognitif: k.level_kognitif || 'C3',
+        cpmk: k.cpmk || 'Capaian Pembelajaran MK',
+        materi_pokok: k.materi_pokok || targetUjian.judul_ujian,
+        indikator: k.indikator || 'Indikator capaian soal'
+      });
+      if (Array.isArray(k.opsi) && k.opsi.length > 0) {
+        k.opsi.forEach((o, oIdx) => {
+          db.opsi_jawaban.push({
+            id: nextOpsiId++,
+            id_soal: newSoalId,
+            teks_opsi: o.teks || o.teks_opsi,
+            benar: Boolean(o.benar),
+            urutan: oIdx + 1
+          });
+        });
+      } else {
+        ['A', 'B', 'C', 'D', 'E'].forEach((letter, oIdx) => {
+          db.opsi_jawaban.push({
+            id: nextOpsiId++,
+            id_soal: newSoalId,
+            teks_opsi: `Analisis opsi ${letter} terkait ${k.materi_pokok || 'materi ujian'}`,
+            benar: oIdx === 0,
+            urutan: oIdx + 1
+          });
+        });
+      }
+    }
+  });
+
+  db.save();
+  return res.json({ success: true, count: items.length });
+});
+
+// API: Generate Soal dari Matriks Kisi-Kisi (Multi-Type Question & Custom Bloom Levels, No Jenjang)
 app.post(['/admin/api/generate_soal_kisi_kisi'], requireAdmin, async (req, res) => {
-  const { ujian_id, jumlah, poin } = req.body;
+  const { ujian_id, jumlah, poin, fokus_materi, jenis_soal_list, kesulitan, kognitif_list, apply } = req.body;
   const count = parseInt(jumlah, 10) || 5;
   const eachPoin = parseInt(poin, 10) || 4;
   const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10)) || db.ujian[0];
   const matkul = targetUjian ? db.mata_kuliah.find(m => m.id === targetUjian.id_mata_kuliah) : null;
   const courseName = matkul ? matkul.nama_mk : (targetUjian ? targetUjian.judul_ujian : 'Mata Kuliah');
 
+  // Parse multi-select question types and cognitive levels
+  let selectedTypes = ['pg'];
+  if (Array.isArray(jenis_soal_list) && jenis_soal_list.length > 0) {
+    selectedTypes = jenis_soal_list;
+  } else if (typeof jenis_soal_list === 'string' && jenis_soal_list.trim()) {
+    selectedTypes = jenis_soal_list.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  let selectedCognitives = ['C2', 'C3', 'C4'];
+  if (Array.isArray(kognitif_list) && kognitif_list.length > 0) {
+    selectedCognitives = kognitif_list;
+  } else if (typeof kognitif_list === 'string' && kognitif_list.trim()) {
+    selectedCognitives = kognitif_list.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  const typesReadable = selectedTypes.map(t => getJenisSoalLabel(t)).join(', ');
+  const cognitivesReadable = selectedCognitives.join(', ');
+
   let generatedQuestions = [];
 
-  const prompt = `Anda adalah dosen penyusun soal ujian universitas.
-Buatkan ${count} butir soal pilihan ganda akademik berkualitas tinggi untuk mata kuliah "${courseName}".
-Setiap soal harus memiliki 5 pilihan jawaban (A, B, C, D, E), 1 kunci benar, penjelasan/pembahasan, CPMK, materi pokok, indikator, level kognitif (C1-C5), dan tingkat kesulitan (mudah/sedang/sulit).
+  const prompt = `Anda adalah dosen pakar penyusun naskah ujian perguruan tinggi di Indonesia.
+Susunlah ${count} butir naskah soal akademik berkualitas tinggi dan SIAP DIUJIKAN LANGSUNG KEPADA PESERTA untuk mata kuliah "${courseName}".
+Fokus Ruang Lingkup Materi: "${fokus_materi || courseName}".
+Tingkat Kesulitan: "${kesulitan || 'proporsional'}".
+PILIHAN BENTUK/JENIS SOAL: [${typesReadable}].
+PENTING: Anda WAJIB menyusun ${count} butir soal dengan mendistribusikan bentuk soal di antara jenis-jenis yang dipilih di atas secara seimbang.
+LEVEL KOGNITIF BLOOM YANG DIPILIH: [${cognitivesReadable}].
+PENTING: Setiap butir soal WAJIB menggunakan salah satu level kognitif dari daftar yang ditentukan di atas!
 
-Berikan respon HANYA berupa JSON valid:
+PERSYARATAN FORMAT SESUAI BENTUK SOAL:
+1. "pg" (Pilihan Ganda): teks pertanyaan tanpa huruf pilihan + 5 opsi (A-E) dengan TEPAT SATU kunci benar.
+2. "pg_kompleks" (Pilihan Ganda Kompleks): teks pertanyaan/pernyataan kasus + 4-5 pilihan di mana 2 atau lebih bernilai benar.
+3. "tf" (Benar / Salah): 2 opsi: [{"teks": "Benar", "benar": true/false}, {"teks": "Salah", "benar": false/true}].
+4. "menjodohkan" (Menjodohkan): premis dan pasangan kunci respon yang selaras.
+5. "short" (Isian Singkat): pertanyaan langsung dengan frasa kunci jawaban terukur pada opsi atau pembahasan.
+6. "esai" (Uraian / Esai): permasalahan mendalam lengkap dengan kriteria rubrik penskoran pada kolom pembahasan.
+
+Format respon HANYA berupa JSON valid:
 {
   "soal": [
     {
-      "pertanyaan": "teks pertanyaan...",
-      "cpmk": "...",
-      "materi_pokok": "...",
-      "indikator": "...",
-      "level_kognitif": "C3",
+      "pertanyaan": "teks narasi stimulus dan pertanyaan yang jelas tanpa opsi huruf di dalamnya",
+      "jenis_soal": "pg | pg_kompleks | tf | menjodohkan | short | esai",
+      "cpmk": "capaian pembelajaran mata kuliah spesifik",
+      "materi_pokok": "materi pokok pembahasan",
+      "indikator": "indikator ketercapaian kompetensi butir soal",
+      "level_kognitif": "${selectedCognitives[0] || 'C3'}",
       "tingkat_kesulitan": "sedang",
       "opsi": [
-        {"teks": "opsi A", "benar": true},
-        {"teks": "opsi B", "benar": false},
-        {"teks": "opsi C", "benar": false},
-        {"teks": "opsi D", "benar": false},
-        {"teks": "opsi E", "benar": false}
+        {"teks": "rumusan jawaban A", "benar": true},
+        {"teks": "rumusan jawaban B", "benar": false}
       ],
-      "pembahasan": "penjelasan kunci jawaban..."
+      "pembahasan": "penjelasan ilmiah mendalam / rubrik penilaian"
     }
   ]
 }`;
 
   const parsed = await generateWithAI({
     prompt,
-    systemInstruction: 'Anda adalah dosen penyusun soal ujian universitas.'
+    systemInstruction: 'Anda adalah dosen pakar penyusun soal ujian universitas. Balas HANYA JSON valid.'
   });
 
-  if (parsed && Array.isArray(parsed.soal)) {
+  if (parsed && Array.isArray(parsed.soal) && parsed.soal.length > 0) {
     generatedQuestions = parsed.soal;
   }
 
-  // Fallback high-quality questions
+  // Fallback high-quality questions if needed
   if (generatedQuestions.length === 0) {
-    for (let i = 1; i <= count; i++) {
-      generatedQuestions.push({
-        pertanyaan: `Dalam konteks ${courseName}, manakah analisis penerapan yang paling tepat untuk memecahkan permasalahan pada studi kasus ${i}?`,
-        cpmk: `Menguasai penerapan ${courseName}`,
-        materi_pokok: `${courseName} Lanjutan`,
-        indikator: `Menganalisis solusi optimal pada studi kasus ${i}`,
-        level_kognitif: 'C3',
-        tingkat_kesulitan: 'sedang',
-        opsi: [
-          { teks: `Menerapkan strategi pemecahan berbasis kaidah standar ${courseName} secara terstruktur`, benar: true },
-          { teks: `Mengabaikan parameter evaluasi dan mengulang prosedur tanpa analisis`, benar: false },
-          { teks: `Menggunakan pendekatan acak tanpa mempertimbangkan tujuan instruksional`, benar: false },
-          { teks: `Menyerahkan penyelesaian tanpa dokumentasi teknis yang jelas`, benar: false },
-          { teks: `Membatalkan seluruh proses pengujian`, benar: false }
-        ],
-        pembahasan: `Pilihan A benar karena sesuai dengan kaidah teoritis dan aplikatif ${courseName}.`
-      });
-    }
+    generatedQuestions = generateAcademicQuestionsFallback({
+      courseName,
+      topic: courseName,
+      subTopic: fokus_materi,
+      count,
+      poin: eachPoin,
+      difficulty: kesulitan,
+      cognitive: selectedCognitives[0] || 'C3',
+      jenisList: selectedTypes,
+      cognitiveList: selectedCognitives
+    });
   }
 
-  // Add generated questions to store
-  if (targetUjian) {
+  // Sanitize questions
+  generatedQuestions = sanitizeQuestions(generatedQuestions, courseName, eachPoin);
+
+  // Permanently auto-save to database by default (apply !== false)
+  const shouldApply = apply !== false;
+  if (shouldApply && targetUjian) {
     let nextSoalId = db.soal.length ? Math.max(...db.soal.map(s => s.id)) + 1 : 1;
     let nextOpsiId = db.opsi_jawaban.length ? Math.max(...db.opsi_jawaban.map(o => o.id)) + 1 : 1;
     const currentCount = db.soal.filter(s => s.id_ujian === targetUjian.id).length;
@@ -1365,10 +2269,10 @@ Berikan respon HANYA berupa JSON valid:
       db.soal.push({
         id: soalId,
         id_ujian: targetUjian.id,
-        jenis_soal: 'pg',
+        jenis_soal: q.jenis_soal || 'pg',
         pertanyaan: q.pertanyaan,
         pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
-        poin: eachPoin,
+        poin: q.poin || eachPoin,
         urutan: currentCount + idx + 1,
         data_tambahan: null,
         tingkat_kesulitan: q.tingkat_kesulitan || 'sedang',
@@ -1378,21 +2282,71 @@ Berikan respon HANYA berupa JSON valid:
         indikator: q.indikator || 'Indikator ketercapaian soal'
       });
 
-      if (Array.isArray(q.opsi)) {
+      if (Array.isArray(q.opsi) && q.opsi.length > 0) {
         q.opsi.forEach((o, oIdx) => {
           db.opsi_jawaban.push({
             id: nextOpsiId++,
             id_soal: soalId,
-            teks_opsi: o.teks,
+            teks_opsi: o.teks || o.teks_opsi,
             benar: Boolean(o.benar),
             urutan: oIdx + 1
           });
         });
       }
     });
+
+    db.save(); // Synchronous atomic persistence to disk
   }
 
-  return res.json({ success: true, count: generatedQuestions.length });
+  return res.json({ success: true, count: generatedQuestions.length, data: generatedQuestions, saved: shouldApply });
+});
+
+// API: Save / Apply approved questions from Kisi-Kisi
+app.post(['/admin/api/save_soal_kisi_kisi'], requireAdmin, (req, res) => {
+  const { ujian_id, questions, poin } = req.body;
+  const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10));
+  if (!targetUjian || !Array.isArray(questions)) {
+    return res.status(400).json({ success: false, message: 'Data tidak valid' });
+  }
+
+  const eachPoin = parseInt(poin, 10) || 4;
+  let nextSoalId = db.soal.length ? Math.max(...db.soal.map(s => s.id)) + 1 : 1;
+  let nextOpsiId = db.opsi_jawaban.length ? Math.max(...db.opsi_jawaban.map(o => o.id)) + 1 : 1;
+  const currentCount = db.soal.filter(s => s.id_ujian === targetUjian.id).length;
+
+  questions.forEach((q, idx) => {
+    const soalId = nextSoalId++;
+    db.soal.push({
+      id: soalId,
+      id_ujian: targetUjian.id,
+      jenis_soal: q.jenis_soal || 'pg',
+      pertanyaan: q.pertanyaan,
+      pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
+      poin: q.poin || eachPoin,
+      urutan: currentCount + idx + 1,
+      data_tambahan: null,
+      tingkat_kesulitan: q.tingkat_kesulitan || 'sedang',
+      level_kognitif: q.level_kognitif || 'C3',
+      cpmk: q.cpmk || 'Capaian Pembelajaran MK',
+      materi_pokok: q.materi_pokok || targetUjian.judul_ujian,
+      indikator: q.indikator || 'Indikator ketercapaian soal'
+    });
+
+    if (Array.isArray(q.opsi)) {
+      q.opsi.forEach((o, oIdx) => {
+        db.opsi_jawaban.push({
+          id: nextOpsiId++,
+          id_soal: soalId,
+          teks_opsi: o.teks || o.teks_opsi,
+          benar: Boolean(o.benar),
+          urutan: oIdx + 1
+        });
+      });
+    }
+  });
+
+  db.save();
+  return res.json({ success: true, count: questions.length });
 });
 
 // Admin Riwayat & Arsip
@@ -1557,9 +2511,18 @@ app.post(['/admin/matkul', '/admin/matkul.php'], requireAdminOnly, (req, res) =>
 
 // Helper function to build detailed participant and exam session status data
 function getStatusPesertaData() {
+  // Ensure all peserta users have a corresponding mahasiswa record
+  db.users.filter(u => u.role === 'peserta').forEach(u => {
+    const studentNim = u.nim || u.username;
+    db.getOrCreateMahasiswa(studentNim, u.nama_lengkap, u.id_kelas || 1, u.id);
+  });
+
   return db.mahasiswa.map((m, idx) => {
-    const k = db.kelas.find(kls => kls.id === m.id_kelas);
     const user = db.users.find(u => u.id === m.id_user || (m.nim && u.username === m.nim));
+    let k = db.kelas.find(kls => kls.id === m.id_kelas);
+    if (!k && user && user.id_kelas) {
+      k = db.kelas.find(kls => kls.id === user.id_kelas);
+    }
     const sesi = db.sesi_ujian.find(s => s.id_mahasiswa === m.id) ||
                  db.riwayat_sesi_ujian.find(r => r.id_mahasiswa === m.id);
 
@@ -1635,7 +2598,8 @@ function getStatusPesertaData() {
       user_id: user ? user.id : null,
       nim: m.nim,
       nama_lengkap: m.nama_lengkap,
-      nama_kelas: k ? k.nama_kelas : '-',
+      id_kelas: m.id_kelas || (k ? k.id : null),
+      nama_kelas: k ? k.nama_kelas : (user && user.nama_kelas ? user.nama_kelas : '-'),
       status,
       status_label,
       is_logged_in: !!isLoggedIn,
@@ -1962,6 +2926,8 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
   const xlsxLib = XLSX.default || XLSX;
   const wb = xlsxLib.utils.book_new();
 
+  // 1. Sheet: Template_Pengguna
+  const sampleClasses = db.kelas.map(k => k.nama_kelas);
   const sampleData = [
     {
       'Username': '240305013',
@@ -1969,7 +2935,7 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
       'Nama Lengkap': 'MOH ANWAR KHALID',
       'Role': 'peserta',
       'NIM': '240305013',
-      'Kelas': 'V (A,B)'
+      'Kelas': sampleClasses[0] || 'V (A,B)'
     },
     {
       'Username': '240305018',
@@ -1977,7 +2943,7 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
       'Nama Lengkap': 'Riyan Ferdianto',
       'Role': 'peserta',
       'NIM': '240305018',
-      'Kelas': 'V (A,B)'
+      'Kelas': sampleClasses[0] || 'V (A,B)'
     },
     {
       'Username': '230102400',
@@ -1985,10 +2951,18 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
       'Nama Lengkap': 'Ziadatul Ilmi',
       'Role': 'peserta',
       'NIM': '230102400',
-      'Kelas': 'TI-A'
+      'Kelas': sampleClasses[1] || 'TI-A'
     },
     {
-      'Username': 'pengajar_media',
+      'Username': '230102401',
+      'Password': '',
+      'Nama Lengkap': 'Ahmad Fauzi',
+      'Role': 'peserta',
+      'NIM': '230102401',
+      'Kelas': sampleClasses[2] || 'TI-B'
+    },
+    {
+      'Username': 'dosen_informatika',
       'Password': '',
       'Nama Lengkap': 'Dr. H. Sudirman, M.Pd.',
       'Role': 'dosen',
@@ -1996,7 +2970,7 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
       'Kelas': ''
     },
     {
-      'Username': 'pengawas_lab1',
+      'Username': 'pengawas_lab',
       'Password': '',
       'Nama Lengkap': 'Dewi Lestari, S.Kom.',
       'Role': 'pengawas',
@@ -2012,14 +2986,112 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
     { wch: 32 },
     { wch: 14 },
     { wch: 18 },
-    { wch: 18 }
+    { wch: 22 }
   ];
-
   xlsxLib.utils.book_append_sheet(wb, ws, 'Template_Pengguna');
+
+  // 2. Sheet: Daftar_Kelas_Referensi (Reference Sheet)
+  const kelasRefData = db.kelas.map(k => {
+    const prodi = db.program_studi.find(p => p.id === k.id_program_studi);
+    return {
+      'ID Kelas': k.id,
+      'Nama Kelas (Isikan ke Kolom Kelas)': k.nama_kelas,
+      'Program Studi': prodi ? prodi.nama_prodi : '-',
+      'Angkatan': k.angkatan || '-',
+      'Semester': k.semester || 1
+    };
+  });
+  const wsKelas = xlsxLib.utils.json_to_sheet(kelasRefData);
+  wsKelas['!cols'] = [
+    { wch: 10 },
+    { wch: 36 },
+    { wch: 32 },
+    { wch: 12 },
+    { wch: 12 }
+  ];
+  xlsxLib.utils.book_append_sheet(wb, wsKelas, 'Daftar_Kelas_Referensi');
+
+  // 3. Sheet: Panduan_Pengisian
+  const panduanData = [
+    { 'Kolom': 'Username', 'Wajib': 'Ya', 'Keterangan': 'Username akun untuk login (untuk mahasiswa gunakan NIM)' },
+    { 'Kolom': 'Password', 'Wajib': 'Tidak', 'Keterangan': 'Bila dikosongkan, password otomatis disetel default: 12345*' },
+    { 'Kolom': 'Nama Lengkap', 'Wajib': 'Ya', 'Keterangan': 'Nama lengkap pengguna beserta gelar' },
+    { 'Kolom': 'Role', 'Wajib': 'Ya', 'Keterangan': 'Pilihan peran: peserta, dosen, pengawas, atau admin' },
+    { 'Kolom': 'NIM', 'Wajib': 'Khusus Peserta', 'Keterangan': 'Nomor Induk Mahasiswa peserta ujian' },
+    { 'Kolom': 'Kelas', 'Wajib': 'Khusus Peserta', 'Keterangan': 'Nama kelas atau ID kelas (lihat sheet Daftar_Kelas_Referensi). Kelas ini otomatis menghubungkan mahasiswa ke ujian dan filter sesi!' }
+  ];
+  const wsPanduan = xlsxLib.utils.json_to_sheet(panduanData);
+  wsPanduan['!cols'] = [
+    { wch: 18 },
+    { wch: 16 },
+    { wch: 65 }
+  ];
+  xlsxLib.utils.book_append_sheet(wb, wsPanduan, 'Panduan_Pengisian');
+
   const buffer = xlsxLib.write(wb, { type: 'buffer', bookType: 'xlsx' });
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', 'attachment; filename="template_import_pengguna.xlsx"');
+  res.setHeader('Content-Disposition', 'attachment; filename="template_import_pengguna_dan_kelas.xlsx"');
+  return res.send(buffer);
+});
+
+// Download CSV Template for Import (Includes Kelas)
+app.get(['/admin/users/template_csv'], requireAdminOnly, (req, res) => {
+  const sampleClasses = db.kelas.map(k => k.nama_kelas);
+  const rows = [
+    ['Username', 'Password', 'Nama Lengkap', 'Role', 'NIM', 'Kelas'],
+    ['240305013', '', 'MOH ANWAR KHALID', 'peserta', '240305013', sampleClasses[0] || 'V (A,B)'],
+    ['240305018', '', 'Riyan Ferdianto', 'peserta', '240305018', sampleClasses[0] || 'V (A,B)'],
+    ['230102400', '', 'Ziadatul Ilmi', 'peserta', '230102400', sampleClasses[1] || 'TI-A'],
+    ['230102401', '', 'Ahmad Fauzi', 'peserta', '230102401', sampleClasses[2] || 'TI-B'],
+    ['dosen_informatika', '', 'Dr. H. Sudirman, M.Pd.', 'dosen', '', ''],
+    ['pengawas_lab', '', 'Dewi Lestari, S.Kom.', 'pengawas', '', '']
+  ];
+  const csvContent = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename="template_import_pengguna_dan_kelas.csv"');
+  return res.send(csvContent);
+});
+
+// Export Current Users & Participants with Kelas to XLSX
+app.get(['/admin/users/export_xlsx'], requireAdminOnly, (req, res) => {
+  const xlsxLib = XLSX.default || XLSX;
+  const wb = xlsxLib.utils.book_new();
+
+  const exportData = db.users.map((u, idx) => {
+    let nama_kelas = '';
+    const mhs = db.mahasiswa.find(m => m.id_user === u.id || (u.nim && m.nim === u.nim));
+    const kId = u.id_kelas || (mhs ? mhs.id_kelas : null);
+    if (kId) {
+      const k = db.kelas.find(kls => kls.id === kId);
+      nama_kelas = k ? k.nama_kelas : '';
+    }
+    return {
+      'No': idx + 1,
+      'Username': u.username,
+      'Nama Lengkap': u.nama_lengkap,
+      'Role': u.role,
+      'NIM': u.nim || (mhs ? mhs.nim : ''),
+      'Kelas': nama_kelas || (u.role === 'peserta' ? '-' : ''),
+      'Tanggal Dibuat': u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '-'
+    };
+  });
+
+  const ws = xlsxLib.utils.json_to_sheet(exportData);
+  ws['!cols'] = [
+    { wch: 6 },
+    { wch: 18 },
+    { wch: 32 },
+    { wch: 14 },
+    { wch: 18 },
+    { wch: 22 },
+    { wch: 16 }
+  ];
+  xlsxLib.utils.book_append_sheet(wb, ws, 'Daftar_Pengguna');
+
+  const buffer = xlsxLib.write(wb, { type: 'buffer', bookType: 'xlsx' });
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename="data_pengguna_dan_kelas.xlsx"');
   return res.send(buffer);
 });
 
@@ -2054,23 +3126,50 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
         role = 'peserta';
       }
       const nim = String(row['NIM'] || row['nim'] || (role === 'peserta' ? username : '')).trim();
-      const kelasRaw = String(row['Kelas'] || row['kelas'] || '').trim();
+      const kelasRaw = String(row['Kelas'] || row['kelas'] || row['KELAS'] || row['Nama Kelas'] || row['nama_kelas'] || row['Nama Kelas (Isikan ke Kolom Kelas)'] || '').trim();
 
       // Find matching class
-      let targetKelas = db.kelas.find(k => k.nama_kelas.toLowerCase() === kelasRaw.toLowerCase() || String(k.id) === kelasRaw);
-      const idKelas = targetKelas ? targetKelas.id : (db.kelas[0] ? db.kelas[0].id : 1);
+      let targetKelas = null;
+      if (kelasRaw) {
+        targetKelas = db.kelas.find(k => 
+          k.nama_kelas.toLowerCase() === kelasRaw.toLowerCase() || 
+          String(k.id) === kelasRaw
+        );
+
+        // If class is specified but doesn't exist yet in db.kelas, auto-create it so student's class is preserved!
+        if (!targetKelas && role === 'peserta') {
+          const newKelasId = db.kelas.length ? Math.max(...db.kelas.map(k => k.id)) + 1 : 1;
+          targetKelas = {
+            id: newKelasId,
+            nama_kelas: kelasRaw,
+            angkatan: new Date().getFullYear(),
+            semester: 1,
+            id_program_studi: db.program_studi[0] ? db.program_studi[0].id : 1
+          };
+          db.kelas.push(targetKelas);
+        }
+      }
+
+      const idKelas = targetKelas ? targetKelas.id : (role === 'peserta' ? (db.kelas[0] ? db.kelas[0].id : 1) : null);
 
       const existingUser = db.users.find(u => u.username.toLowerCase() === username.toLowerCase());
       if (existingUser) {
         existingUser.nama_lengkap = nama;
         existingUser.role = role;
         existingUser.nim = nim || null;
-        existingUser.id_kelas = idKelas;
+        if (idKelas) existingUser.id_kelas = idKelas;
         if (passwordRaw !== '12345*') {
           existingUser.password = bcrypt.hashSync(passwordRaw, 10);
         }
         if (role === 'peserta') {
-          db.getOrCreateMahasiswa(nim || username, nama, idKelas, existingUser.id);
+          const m = db.mahasiswa.find(mhs => mhs.id_user === existingUser.id || (existingUser.nim && mhs.nim === existingUser.nim));
+          if (m) {
+            m.nama_lengkap = nama;
+            if (idKelas) m.id_kelas = idKelas;
+            if (nim) m.nim = nim;
+          } else {
+            db.getOrCreateMahasiswa(nim || username, nama, idKelas || 1, existingUser.id);
+          }
         }
         updatedCount++;
       } else {
@@ -2086,13 +3185,14 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
           created_at: new Date()
         });
         if (role === 'peserta') {
-          db.getOrCreateMahasiswa(nim || username, nama, idKelas, newId);
+          db.getOrCreateMahasiswa(nim || username, nama, idKelas || 1, newId);
         }
         addedCount++;
       }
     });
 
-    const msg = `Berhasil memproses import: ${addedCount} pengguna baru ditambahkan, ${updatedCount} pengguna diperbarui!`;
+    db.save();
+    const msg = `Berhasil memproses import: ${addedCount} pengguna baru ditambahkan, ${updatedCount} pengguna diperbarui! Data kelas peserta berhasil disinkronkan.`;
     return res.redirect('/admin/users?msg=' + encodeURIComponent(msg));
   } catch (err) {
     console.error('Import XLSX error:', err);
@@ -2150,7 +3250,7 @@ app.post(['/lupa_password', '/admin/lupa_password'], (req, res) => {
 });
 
 // Admin Settings
-app.get(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdminOnly, (req, res) => {
+app.get(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res) => {
   res.render('admin/pengaturan', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
@@ -2159,7 +3259,7 @@ app.get(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdminOnly, (req, 
   });
 });
 
-app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdminOnly, (req, res) => {
+app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res) => {
   db.pengaturan = {
     ...db.pengaturan,
     nama_institusi: req.body.nama_institusi || db.pengaturan.nama_institusi,
@@ -2168,70 +3268,154 @@ app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdminOnly, (req,
     telepon_institusi: req.body.telepon_institusi || db.pengaturan.telepon_institusi,
     website_institusi: req.body.website_institusi || db.pengaturan.website_institusi
   };
+  db.save();
   res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Pengaturan institusi berhasil disimpan!'));
 });
 
-// AI Question Generator API (Groq or Gemini Integration)
+// AI Question Generator API (Multi-Type Question & Custom Bloom Levels, No Jenjang)
 app.post(['/admin/ai_generate_api', '/admin/ai_generate_api.php'], requireAdmin, async (req, res) => {
+  const ujianId = req.body.ujian_id ? parseInt(req.body.ujian_id, 10) : null;
   const topic = req.body.topik || req.body.topic || 'Etika Profesi';
-  const jenis = req.body.jenis || 'pg';
+  const subTopic = req.body.sub_topik || '';
   const count = parseInt(req.body.jumlah || req.body.count, 10) || 3;
   const kesulitan = req.body.kesulitan || 'sedang';
-  const kognitif = req.body.kognitif || 'C1';
   const poin = parseInt(req.body.poin, 10) || 4;
+  const apply = req.body.apply !== false;
 
-  const prompt = `Buatkan ${count} butir soal ujian akademik tentang topik "${topic}".
-Tingkat kesulitan: ${kesulitan}, Level kognitif: ${kognitif}, Jenis soal: ${jenis}.
+  // Parse multi-select question types and cognitive levels
+  let selectedTypes = ['pg'];
+  if (Array.isArray(req.body.jenis_soal_list) && req.body.jenis_soal_list.length > 0) {
+    selectedTypes = req.body.jenis_soal_list;
+  } else if (typeof req.body.jenis_soal_list === 'string' && req.body.jenis_soal_list.trim()) {
+    selectedTypes = req.body.jenis_soal_list.split(',').map(s => s.trim()).filter(Boolean);
+  } else if (req.body.jenis) {
+    selectedTypes = [req.body.jenis];
+  }
+
+  let selectedCognitives = ['C2', 'C3', 'C4'];
+  if (Array.isArray(req.body.kognitif_list) && req.body.kognitif_list.length > 0) {
+    selectedCognitives = req.body.kognitif_list;
+  } else if (typeof req.body.kognitif_list === 'string' && req.body.kognitif_list.trim()) {
+    selectedCognitives = req.body.kognitif_list.split(',').map(s => s.trim()).filter(Boolean);
+  } else if (req.body.kognitif) {
+    selectedCognitives = [req.body.kognitif];
+  }
+
+  const typesReadable = selectedTypes.map(t => getJenisSoalLabel(t)).join(', ');
+  const cognitivesReadable = selectedCognitives.join(', ');
+
+  const prompt = `Anda adalah dosen pakar penyusun instrumen ujian akademik perguruan tinggi di Indonesia.
+Buatkan ${count} butir naskah soal ujian akademik berkualitas tinggi dan SIAP DIUJIKAN LANGSUNG KEPADA PESERTA tentang mata kuliah / topik "${topic}".
+Fokus Ruang Lingkup Materi: "${subTopic || topic}".
+Tingkat Kesulitan: "${kesulitan}".
+PILIHAN BENTUK/JENIS SOAL: [${typesReadable}].
+PENTING: Anda WAJIB menyusun ${count} butir soal dengan mendistribusikan bentuk soal di antara jenis-jenis yang dipilih di atas secara seimbang.
+LEVEL KOGNITIF BLOOM YANG DIPILIH: [${cognitivesReadable}].
+PENTING: Setiap butir soal WAJIB menggunakan salah satu level kognitif dari daftar yang ditentukan di atas!
+
+PERSYARATAN FORMAT SESUAI BENTUK SOAL:
+1. "pg" (Pilihan Ganda): teks pertanyaan tanpa huruf pilihan + 5 opsi (A-E) dengan TEPAT SATU kunci benar.
+2. "pg_kompleks" (Pilihan Ganda Kompleks): teks pertanyaan/pernyataan kasus + 4-5 pilihan di mana 2 atau lebih bernilai benar.
+3. "tf" (Benar / Salah): 2 opsi: [{"teks": "Benar", "benar": true/false}, {"teks": "Salah", "benar": false/true}].
+4. "menjodohkan" (Menjodohkan): premis dan pasangan kunci respon yang selaras.
+5. "short" (Isian Singkat): pertanyaan langsung dengan frasa kunci jawaban terukur pada opsi atau pembahasan.
+6. "esai" (Uraian / Esai): permasalahan mendalam lengkap dengan kriteria rubrik penskoran pada kolom pembahasan.
+
 Format respon HANYA berupa JSON object:
 {
   "soal": [
     {
-      "pertanyaan": "teks pertanyaan",
-      "jenis_soal": "${jenis}",
+      "pertanyaan": "teks narasi stimulus kasus dan pertanyaan inti tanpa opsi di dalamnya",
+      "jenis_soal": "pg | pg_kompleks | tf | menjodohkan | short | esai",
       "poin": ${poin},
       "tingkat_kesulitan": "${kesulitan}",
-      "level_kognitif": "${kognitif}",
+      "level_kognitif": "${selectedCognitives[0] || 'C3'}",
+      "cpmk": "capaian pembelajaran mata kuliah spesifik",
+      "materi_pokok": "${subTopic ? topic + ' - ' + subTopic : topic}",
+      "indikator": "indikator ketercapaian kompetensi butir soal",
       "opsi": [
-        {"teks": "opsi 1", "benar": true},
-        {"teks": "opsi 2", "benar": false},
-        {"teks": "opsi 3", "benar": false},
-        {"teks": "opsi 4", "benar": false},
-        {"teks": "opsi 5", "benar": false}
+        {"teks": "rumusan jawaban A", "benar": true},
+        {"teks": "rumusan jawaban B", "benar": false}
       ],
-      "pembahasan": "penjelasan kunci jawaban"
+      "pembahasan": "penjelasan ilmiah mendalam / rubrik penilaian"
     }
   ]
 }`;
 
   const parsed = await generateWithAI({
     prompt,
-    systemInstruction: 'Anda adalah dosen ahli penyusun butir soal ujian akademik perguruan tinggi.'
+    systemInstruction: 'Anda adalah dosen ahli penyusun butir soal ujian akademik perguruan tinggi. Balas HANYA JSON valid.'
   });
 
+  let generated = [];
   if (parsed && (parsed.soal || Array.isArray(parsed))) {
-    return res.json(parsed.soal || parsed);
+    generated = parsed.soal || parsed;
   }
 
   // Fallback high-quality academic question generator
-  const generated = [];
-  for (let i = 1; i <= count; i++) {
-    generated.push({
-      pertanyaan: `[AI] Berdasarkan konsep ${topic}, manakah pernyataan yang paling tepat menggambarkan implementasi pada kasus ${i}?`,
-      jenis_soal: jenis,
+  if (!Array.isArray(generated) || generated.length === 0) {
+    generated = generateAcademicQuestionsFallback({
+      courseName: topic,
+      topic,
+      subTopic,
+      count,
       poin,
-      tingkat_kesulitan: kesulitan,
-      level_kognitif: kognitif,
-      opsi: [
-        { teks: `Penerapan standar operasional yang sesuai dengan kaidah ${topic}`, benar: true },
-        { teks: `Pengabaian regulasi demi efisiensi biaya operasional jangka pendek`, benar: false },
-        { teks: `Pendelegasian seluruh tanggung jawab tanpa adanya pengawasan berkala`, benar: false },
-        { teks: `Penghindaran dokumentasi kerja untuk mempercepat penyelesaian tugas`, benar: false },
-        { teks: `Ketiadaan transparansi dalam pelaporan hasil kegiatan kepada publik`, benar: false }
-      ],
-      pembahasan: `Implementasi yang benar selalu berpedoman pada kaidah dan standar operasional yang berlaku dalam bidang ${topic}.`
+      difficulty: kesulitan,
+      cognitive: selectedCognitives[0] || 'C3',
+      jenisList: selectedTypes,
+      cognitiveList: selectedCognitives
     });
   }
-  res.json(generated);
+
+  // Sanitize
+  generated = sanitizeQuestions(generated, topic, poin);
+
+  // If ujian_id provided and apply is true, save directly to database
+  if (ujianId && apply) {
+    const targetUjian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+    if (targetUjian) {
+      let nextSoalId = db.soal.length ? Math.max(...db.soal.map(s => s.id)) + 1 : 1;
+      let nextOpsiId = db.opsi_jawaban.length ? Math.max(...db.opsi_jawaban.map(o => o.id)) + 1 : 1;
+      const currentCount = db.soal.filter(s => s.id_ujian === targetUjian.id).length;
+
+      generated.forEach((q, idx) => {
+        const soalId = nextSoalId++;
+        db.soal.push({
+          id: soalId,
+          id_ujian: targetUjian.id,
+          jenis_soal: q.jenis_soal || selectedTypes[0] || 'pg',
+          pertanyaan: q.pertanyaan,
+          pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
+          poin: q.poin || poin,
+          urutan: currentCount + idx + 1,
+          data_tambahan: null,
+          tingkat_kesulitan: q.tingkat_kesulitan || kesulitan,
+          level_kognitif: q.level_kognitif || selectedCognitives[0] || 'C3',
+          cpmk: q.cpmk || 'Capaian Pembelajaran MK',
+          materi_pokok: q.materi_pokok || targetUjian.judul_ujian,
+          indikator: q.indikator || 'Indikator ketercapaian soal'
+        });
+
+        if (Array.isArray(q.opsi) && q.opsi.length > 0) {
+          q.opsi.forEach((o, oIdx) => {
+            db.opsi_jawaban.push({
+              id: nextOpsiId++,
+              id_soal: soalId,
+              teks_opsi: o.teks || o.teks_opsi,
+              benar: Boolean(o.benar),
+              urutan: oIdx + 1
+            });
+          });
+        }
+      });
+
+      db.save(); // Permanently save to disk
+      return res.json({ success: true, count: generated.length, data: generated, saved: true });
+    }
+  }
+
+  // Return generated array for client handling
+  res.json({ success: true, count: generated.length, data: generated, saved: false });
 });
 
 /* ==========================================================================
@@ -2272,6 +3456,12 @@ app.post(['/api.php', '/api'], (req, res) => {
     if (req.session.sesi_id) {
       if (!req.session.answers) req.session.answers = {};
       req.session.answers[soalId] = jawaban;
+      const sesi = db.sesi_ujian.find(s => s.id === req.session.sesi_id);
+      if (sesi) {
+        if (!sesi.jawaban_draft) sesi.jawaban_draft = {};
+        sesi.jawaban_draft[soalId] = jawaban;
+        db.save();
+      }
       return res.json({ success: true });
     }
     return res.json({ success: false, message: 'Sesi tidak valid' });

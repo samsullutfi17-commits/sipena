@@ -9,8 +9,8 @@
       "nim": "240305013",
       "id_kelas": 1,
       "created_at": "2026-07-29T09:00:00.000Z",
-      "is_logged_in": false,
-      "last_login": "2026-10-01T12:07:49.390Z"
+      "is_logged_in": true,
+      "last_login": "2026-10-04T07:41:05.915Z"
     },
     {
       "id": 3,
@@ -39,13 +39,44 @@
       "nama_lengkap": "Administrator Utama",
       "role": "admin",
       "nim": null,
-      "created_at": "2026-01-01T07:00:00.000Z"
+      "created_at": "2026-01-01T07:00:00.000Z",
+      "default_format_cetak": {
+        "tampilkan_kop": true,
+        "tampilkan_logo": true,
+        "nama_institusi": "UNIVERSITAS HAMZANWADI",
+        "sub_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
+        "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
+        "kontak_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
+        "tampilkan_garis": true,
+        "judul_utama": "UJIAN AKHIR SEMESTER (UAS)",
+        "sub_judul": "TAHUN AKADEMIK 2024/2025",
+        "identitas_rows": [
+          {
+            "kiri_label": "Mata Kuliah",
+            "kiri_val": "Pemrograman Web Lanjut",
+            "kanan_label": "Dosen Pengampu",
+            "kanan_val": "Samsul Lutfi, S.Pd., M.Pd"
+          },
+          {
+            "kiri_label": "Hari/Tanggal",
+            "kiri_val": "Senin, 15 Juli 2024",
+            "kanan_label": "Waktu / Ruang",
+            "kanan_val": "08:00 - 10:00 / Lab 02"
+          }
+        ],
+        "tampilkan_petunjuk": true,
+        "petunjuk_items": [
+          "Berdoalah sebelum mengerjakan!",
+          "Dilarang bekerja sama!"
+        ],
+        "tampilkan_ttd": true
+      }
     },
     {
       "id": 6,
-      "username": "samsul",
+      "username": "samsullutfi",
       "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
-      "nama_lengkap": "Samsul Lutfi, S.Kom., M.Kom.",
+      "nama_lengkap": "Samsul Lutfi, S.Pd., M.Pd.",
       "role": "admin",
       "nim": null,
       "created_at": "2026-01-15T07:00:00.000Z"
@@ -188,25 +219,31 @@
     },
     {
       "id": 11,
-      "kode_prodi": "PTI",
-      "nama_prodi": "Pendidikan Informatika",
+      "kode_prodi": "PI",
+      "nama_prodi": "S1 Pendidikan Informatika",
+      "id_fakultas": 5
+    },
+    {
+      "id": 12,
+      "kode_prodi": "BIO",
+      "nama_prodi": "S1 Pendidikan Biologi",
       "id_fakultas": 5
     }
   ],
   "kelas": [
     {
       "id": 1,
-      "nama_kelas": "V (A,B)",
-      "angkatan": 2021,
+      "nama_kelas": "V (A)",
+      "angkatan": 2024,
       "semester": 5,
-      "id_program_studi": 11
+      "id_program_studi": 12
     },
     {
       "id": 2,
-      "nama_kelas": "TI-A",
-      "angkatan": 2023,
-      "semester": 3,
-      "id_program_studi": 2
+      "nama_kelas": "PI-A",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 11
     },
     {
       "id": 3,
@@ -214,6 +251,13 @@
       "angkatan": 2023,
       "semester": 3,
       "id_program_studi": 2
+    },
+    {
+      "id": 4,
+      "nama_kelas": "PGSD",
+      "angkatan": 2024,
+      "semester": 5,
+      "id_program_studi": 6
     }
   ],
   "mata_kuliah": [
@@ -221,7 +265,7 @@
       "id": 1,
       "kode_mk": "EP101",
       "nama_mk": "Etika Profesi",
-      "sks": 3
+      "sks": 2
     },
     {
       "id": 2,
@@ -287,14 +331,45 @@
       "total_nilai": 105,
       "nilai_lulus": 65,
       "aktif": true,
-      "hari_tanggal": "Senin, 14 November 2022",
-      "waktu": "08:00 - 09:30",
+      "hari_tanggal": "Senin, 15 Juli 2024",
+      "waktu": "08:00 - 10:00 / Lab 02",
       "pengampu": "Samsul Lutfi, S.Pd., M.Pd",
       "smt_sks": "V (A,B) / 3 sks",
       "fakultas_prodi": "MIPA / Pend. Informatika",
-      "tahun_akademik": "2022/2023",
+      "tahun_akademik": "2024/2025",
       "petunjuk": "a. Berdo'a sebelum mengerjakan soal !\nb. Isi identitas Anda terlebih dahulu !\nc. Soal Ujian ini kerjakan dengan teliti dan jujur.\nd. Terakhir, semoga Anda selamat & Sukses dari ujian ini.",
-      "created_at": "2026-10-01T11:43:23.054Z"
+      "created_at": "2026-10-01T11:43:23.054Z",
+      "format_cetak": {
+        "tampilkan_kop": true,
+        "tampilkan_logo": true,
+        "nama_institusi": "UNIVERSITAS HAMZANWADI",
+        "sub_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
+        "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
+        "kontak_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
+        "tampilkan_garis": true,
+        "judul_utama": "UJIAN AKHIR SEMESTER (UAS)",
+        "sub_judul": "TAHUN AKADEMIK 2024/2025",
+        "identitas_rows": [
+          {
+            "kiri_label": "Mata Kuliah",
+            "kiri_val": "Pemrograman Web Lanjut",
+            "kanan_label": "Dosen Pengampu",
+            "kanan_val": "Samsul Lutfi, S.Pd., M.Pd"
+          },
+          {
+            "kiri_label": "Hari/Tanggal",
+            "kiri_val": "Senin, 15 Juli 2024",
+            "kanan_label": "Waktu / Ruang",
+            "kanan_val": "08:00 - 10:00 / Lab 02"
+          }
+        ],
+        "tampilkan_petunjuk": true,
+        "petunjuk_items": [
+          "Berdoalah sebelum mengerjakan!",
+          "Dilarang bekerja sama!"
+        ],
+        "tampilkan_ttd": true
+      }
     },
     {
       "id": 2,
@@ -304,7 +379,7 @@
       "durasi_menit": 150,
       "total_nilai": 100,
       "nilai_lulus": 60,
-      "aktif": true,
+      "aktif": false,
       "hari_tanggal": "Sabtu, 21 Januari 2023",
       "waktu": "09:15-11:45",
       "pengampu": "Samsul Lutfi, S.Pd., M.Pd",
@@ -351,66 +426,6 @@
     }
   ],
   "soal": [
-    {
-      "id": 2,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Fungsi utama media pembelajaran dalam proses komunikasi instruksional adalah sebagai...",
-      "pembahasan": "Media berfungsi menyalurkan pesan dari sumber (pendidik) ke penerima pesan (peserta didik).",
-      "poin": 4,
-      "urutan": 2,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": "Memahami fungsi media pembelajaran",
-      "materi_pokok": "Fungsi Media",
-      "indikator": "Mengidentifikasi fungsi utama media dalam komunikasi"
-    },
-    {
-      "id": 3,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Berdasarkan indera penerima, media seperti siaran radio edukatif dan rekaman podcast dikelompokkan ke dalam jenis media...",
-      "pembahasan": "Media audio mengandalkan indera pendengaran untuk menerima informasi pesan.",
-      "poin": 4,
-      "urutan": 3,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": "Mengklasifikasikan jenis media pembelajaran",
-      "materi_pokok": "Klasifikasi Media",
-      "indikator": "Mengelompokkan media berdasarkan indera penerima"
-    },
-    {
-      "id": 4,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Media pembelajaran visual dua dimensi yang menyajikan ringkasan kronologis peristiwa atau alur proses kerja disebut...",
-      "pembahasan": "Bagan (chart) digunakan untuk menyajikan alur proses, hierarki struktural, atau kronologi.",
-      "poin": 4,
-      "urutan": 4,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": "Mengklasifikasikan jenis media grafis",
-      "materi_pokok": "Media Grafis Dua Dimensi",
-      "indikator": "Menyebutkan karakteristik bagan (chart)"
-    },
-    {
-      "id": 5,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Salah satu kelebihan utama pemanfaatan media audio pembelajaran bagi peserta didik adalah...",
-      "pembahasan": "Media audio melatih daya konsentrasi menyimak dan imajinasi kognitif.",
-      "poin": 4,
-      "urutan": 5,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C2",
-      "cpmk": "Memahami kelebihan media instruksional",
-      "materi_pokok": "Karakteristik Media Audio",
-      "indikator": "Menjelaskan kelebihan media audio"
-    },
     {
       "id": 6,
       "id_ujian": 1,
@@ -728,86 +743,6 @@
       "indikator": "Mengidentifikasi struktur package dan class utama pada IDE NetBeans"
     },
     {
-      "id": 27,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Jelaskan perbedaan mendasar antara paradigma pemrograman terstruktur dengan pemrograman sekuensial tak terstruktur! Berikan contoh struktur kontrol perulangan (looping) yang efisien untuk membaca array satu dimensi.",
-      "gambar_soal": null,
-      "pembahasan": "Pemrograman terstruktur menekankan pemecahan masalah secara top-down dengan modularisasi fungsi dan kontrol aliran yang disiplin.",
-      "poin": 15,
-      "urutan": 2,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Memahami prinsip modularitas dan kendali aliran",
-      "materi_pokok": "Struktur Kontrol & Perulangan",
-      "indikator": "Menjelaskan perbedaan paradigma dan implementasi loop array"
-    },
-    {
-      "id": 28,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Sebuah fungsi pada bahasa pemrograman terstruktur didefinisikan untuk menghitung faktorial bilangan bulat positif secara rekursif. Karakteristik utama dari algoritma rekursif yang benar adalah...",
-      "gambar_soal": null,
-      "pembahasan": "Fungsi rekursif harus memiliki base case (kondisi henti) dan recursive case yang mendekati base case untuk mencegah infinite recursion.",
-      "poin": 15,
-      "urutan": 3,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sulit",
-      "level_kognitif": "C4",
-      "cpmk": "Merancang fungsi modular dan algoritma rekursif",
-      "materi_pokok": "Fungsi dan Rekursi",
-      "indikator": "Menganalisis syarat batas (base case) algoritma rekursif"
-    },
-    {
-      "id": 29,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Perhatikan potongan algoritma berikut:\nfor(int i=0; i<5; i++) {\n  for(int j=0; j<=i; j++) {\n    print(\"*\");\n  }\n  println();\n}\nBentuk pola output yang dihasilkan pada layar konsol adalah...",
-      "gambar_soal": null,
-      "pembahasan": "Pola yang dihasilkan adalah segitiga siku-siku bertambah satu bintang setiap baris.",
-      "poin": 15,
-      "urutan": 4,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menganalisis nested loop dalam pembentukan pola data",
-      "materi_pokok": "Nested Loop",
-      "indikator": "Menentukan output dari perulangan bersarang"
-    },
-    {
-      "id": 30,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Pada tugas ujian Take Home ini, Anda diminta membuat program pengelolaan data mahasiswa menggunakan struct/record yang memuat NIM, Nama, dan IPK, lalu mengurutkan data tersebut berdasarkan IPK tertinggi. Algoritma pengurutan manakah yang paling tepat diimplementasikan dengan efisiensi memori optimal untuk jumlah data kecil?",
-      "gambar_soal": null,
-      "pembahasan": "Bubble Sort atau Selection Sort sangat sederhana untuk dataset kecil dengan kompleksitas ruang O(1).",
-      "poin": 20,
-      "urutan": 5,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sulit",
-      "level_kognitif": "C5",
-      "cpmk": "Merancang struktur data bentukan dan algoritma sorting",
-      "materi_pokok": "Struct dan Algoritma Pengurutan",
-      "indikator": "Memilih algoritma pengurutan yang tepat untuk struktur data komposit"
-    },
-    {
-      "id": 31,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Jelaskan perbedaan antara passing parameter \"by value\" dan \"by reference\" pada pemrograman terstruktur serta implikasinya terhadap nilai variabel asli di luar fungsi!",
-      "gambar_soal": null,
-      "pembahasan": "Pass by value menyalin nilai tanpa mengubah variabel asal, sedangkan pass by reference memberikan alamat memori sehingga perubahan di dalam fungsi mempengaruhi variabel pemanggil.",
-      "poin": 25,
-      "urutan": 6,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C4",
-      "cpmk": "Menguasai mekanisme transfer argumen pada fungsi modular",
-      "materi_pokok": "Parameter Passing",
-      "indikator": "Membandingkan mekanisme call by value dan call by reference"
-    },
-    {
       "id": 32,
       "id_ujian": 1,
       "jenis_soal": "pg",
@@ -824,157 +759,124 @@
       "id": 33,
       "id_ujian": 1,
       "jenis_soal": "pg",
-      "pertanyaan": "Kisi Test Soal",
-      "pembahasan": "",
+      "pertanyaan": "Seorang pengembang media pembelajaran berbasis web sedang mengimplementasikan fitur pencarian materi ajar. Kode PHP awal yang digunakan adalah: $query = \"SELECT * FROM materi WHERE judul LIKE '%\" . $_GET['q'] . \"%'\"; kemudian dieksekusi menggunakan mysqli_query(). Seorang auditor keamanan menemukan bahwa input 'q' = \"' OR '1'='1\" dapat menyebabkan seluruh tabel materi terbaca tanpa autentikasi. Untuk mencegah serangan SQL Injection tersebut secara fundamental dan paling efektif, langkah teknis apa yang harus diterapkan oleh pengembang pada proses penanganan input tersebut?",
+      "pembahasan": "Kunci jawaban yang benar adalah opsi B. Prepared statements (prepared statements) adalah metode pencegahan SQL Injection yang paling direkomendasikan dan fundamental karena memisahkan logika SQL (struktur query) dari data (input pengguna). Dengan menggunakan mysqli_prepare() dan mysqli_stmt_bind_param(), database engine akan mengompilasi struktur query terlebih dahulu, dan data input hanya diperlakukan sebagai nilai literal, bukan sebagai bagian dari sintaks SQL. Hal ini membuat serangan seperti ' OR '1'='1 tidak dapat mengubah alur eksekusi query.\n\nOpsi A salah karena htmlspecialchars() digunakan untuk mencegah Cross-Site Scripting (XSS) dengan mengubah karakter menjadi entitas HTML, bukan untuk sanitasi SQL. Opsi C salah karena meskipun validasi regex dan addslashes() dapat membantu, addslashes() tidak selalu aman terhadap semua jenis serangan SQL Injection (terutama jika karakter set database tidak sesuai) dan bukan solusi paling fundamental dibandingkan prepared statements. Opsi D salah karena mengubah operator LIKE menjadi = tidak menyelesaikan masalah injeksi, dan trim() hanya menghapus spasi, bukan karakter berbahaya. Opsi E salah karena mysql_real_escape_string() (atau mysqli_real_escape_string()) adalah metode lama yang rentan terhadap error jika karakter set tidak disetel dengan benar, dan penggunaan fungsi mysql_* (tanpa i) sudah deprecated. Prepared statements lebih aman dan modern.",
       "poin": 4,
       "urutan": 26,
       "data_tambahan": null,
       "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Mahasiswa mampu menganalisis kerentanan keamanan pada sistem berbasis web dan merancang strategi mitigasi SQL Injection menggunakan teknik sanitasi input dan prepared statements.",
+      "materi_pokok": "Keamanan Database SQL Injection dan Pencegahan Sanitasi Input",
+      "indikator": "Mampu mengidentifikasi teknik pencegahan SQL Injection yang paling tepat melalui penggunaan prepared statements dan parameterisasi query."
+    },
+    {
+      "id": 34,
+      "id_ujian": 1,
+      "jenis_soal": "pg",
+      "pertanyaan": "Dalam pengembangan modul e-learning, sebuah form login menggunakan query: $sql = \"SELECT * FROM users WHERE username = '\" . $_POST['username'] . \"' AND password = '\" . $_POST['password'] . \"'\"; Seorang pengujian keamanan menemukan bahwa dengan memasukkan username: admin' -- dan password kosong, sistem dapat login sebagai admin tanpa verifikasi password. Jika pengembang ingin mempertahankan penggunaan string concatenation (tanpa beralih ke prepared statements) karena keterbatasan framework, teknik sanitasi input mana yang paling tepat dan minimal untuk memitigasi serangan SQL Injection pada kolom username tersebut?",
+      "pembahasan": "Kunci jawaban yang benar adalah opsi B. mysqli_real_escape_string() adalah fungsi yang dirancang khusus untuk meng-escape karakter khusus dalam string yang akan digunakan dalam query MySQL. Fungsi ini menambahkan backslash (\\) di depan karakter seperti kutip tunggal ('), kutip ganda (\"), backslash (\\), NULL byte, dan karakter lain yang dapat mengubah sintaks SQL. Dengan demikian, input admin' -- akan menjadi admin\\' --, yang akan dianggap sebagai bagian dari string literal, bukan sebagai penutup string dan komentar SQL. Ini adalah teknik sanitasi yang tepat jika prepared statements tidak dapat digunakan.\n\nOpsi A salah karena FILTER_SANITIZE_STRING (atau FILTER_SANITIZE_STRIPPED) terutama digunakan untuk membersihkan input dari tag HTML, bukan untuk meng-escape karakter SQL. Opsi C salah karena str_replace() untuk menghapus kutip tunggal dapat menyebabkan error pada data yang legitimately mengandung kutip (misalnya nama 'O'Brien') dan tidak menangani karakter berbahaya lainnya seperti backslash. Opsi D salah karena base64_encode() hanya mengubah format data, bukan meng-escape karakter SQL; jika input di-decode di sisi server, serangan tetap dapat terjadi, dan jika tidak di-decode, query tidak akan berfungsi. Opsi E salah karena md5() menghasilkan hash, yang akan mengubah nilai username secara permanen dan tidak cocok untuk pencarian langsung pada kolom username yang menyimpan teks asli, kecuali jika database juga menyimpan hash, yang bukan kasus di sini.",
+      "poin": 4,
+      "urutan": 27,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Mahasiswa mampu mengevaluasi efektivitas berbagai teknik sanitasi input dalam konteks mitigasi SQL Injection pada sistem manajemen basis data.",
+      "materi_pokok": "Keamanan Database SQL Injection dan Pencegahan Sanitasi Input",
+      "indikator": "Mampu memilih teknik escaping karakter khusus yang tepat untuk mencegah manipulasi sintaks SQL pada input string."
+    },
+    {
+      "id": 35,
+      "id_ujian": 1,
+      "jenis_soal": "pg",
+      "pertanyaan": "Tim pengembangan aplikasi mobile XYZ menggunakan Scrum. Pada pertemuan Sprint Planning, mereka harus menentukan Sprint Goal dan memilih item backlog yang akan dikerjakan. Manakah pernyataan berikut yang paling tepat menggambarkan praktik yang benar dalam menetapkan Sprint Goal dan Sprint Backlog?",
+      "pembahasan": "Dalam Scrum, Sprint Goal harus didefinisikan terlebih dahulu pada awal Sprint Planning karena menjadi panduan utama bagi tim selama sprint. Setelah tujuan jelas, tim kemudian memilih item Product Backlog yang dapat membantu mencapai tujuan tersebut, membentuk Sprint Backlog. Opsi A salah karena urutan terbalik; Opsi B salah karena semua item Sprint Backlog harus berasal dari Product Backlog yang telah diprioritaskan; Opsi D melanggar prinsip stabilitas sprint, yang menyatakan bahwa perubahan pada Sprint Backlog hanya dapat dilakukan dengan kesepakatan tim; Opsi E salah karena Sprint Goal bersifat tetap selama sprint untuk menjaga fokus. Oleh karena itu, opsi C adalah jawaban yang benar.",
+      "poin": 4,
+      "urutan": 28,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Menganalisis penerapan Scrum dalam proyek pengembangan perangkat lunak",
+      "materi_pokok": "Rekayasa Perangkat Lunak - Penerapan Metodologi Scrum dan Manajemen Sprint",
+      "indikator": "Mahasiswa dapat menjelaskan urutan dan tujuan penetapan Sprint Goal serta pemilihan item Sprint Backlog secara tepat"
+    },
+    {
+      "id": 36,
+      "id_ujian": 1,
+      "jenis_soal": "pg",
+      "pertanyaan": "Pada minggu kedua sprint dua tim pengembangan sistem informasi ABC, muncul bug kritis yang memengaruhi fungsi utama sistem. Menurut panduan Scrum, apa langkah yang tepat untuk menangani bug tersebut terkait Sprint Backlog?",
+      "pembahasan": "Scrum memperbolehkan penyesuaian Sprint Backlog hanya bila seluruh tim setuju dan dengan persetujuan Product Owner, terutama bila muncul pekerjaan yang bernilai tinggi seperti bug kritis. Oleh karena itu, tim harus berdiskusi dengan Product Owner; jika bug dianggap penting, satu atau lebih item dalam Sprint Backlog dapat diganti dengan bug tersebut, menjaga total ruang lingkup tetap realistis. Opsi A menambah ruang lingkup tanpa kontrol, melanggar prinsip stabilitas sprint. Opsi B mengasumsikan penggantian otomatis tanpa mempertimbangkan nilai bisnis. Opsi D mengabaikan urgensi bug kritis. Opsi E tidak sesuai karena menghentikan sprint bertentangan dengan aturan Scrum yang menekankan kontinuitas sprint. Jadi, opsi C adalah jawaban yang tepat.",
+      "poin": 4,
+      "urutan": 29,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Menganalisis penerapan Scrum dalam proyek pengembangan perangkat lunak",
+      "materi_pokok": "Rekayasa Perangkat Lunak - Penerapan Metodologi Scrum dan Manajemen Sprint",
+      "indikator": "Mahasiswa dapat menentukan prosedur penanganan perubahan pada Sprint Backlog sesuai peran Product Owner dan tim Scrum"
+    },
+    {
+      "id": 38,
+      "id_ujian": 2,
+      "jenis_soal": "tf",
+      "pertanyaan": "Diberikan pernyataan logika berikut: \"Jika suhu ruangan di atas 30 derajat Celcius ATAU kelembapan di atas 80%, maka sistem pendingin akan menyala.\" Jika suhu ruangan adalah 25 derajat Celcius dan kelembapan adalah 85%, maka pernyataan tersebut bernilai:",
+      "pembahasan": "Operator OR (ATAU) menghasilkan nilai Benar jika minimal salah satu operand bernilai Benar. Suhu 25 > 30 adalah Salah (False). Kelembapan 85 > 80 adalah Benar (True). Karena salah satu kondisi terpenuhi (True OR False = True), maka pernyataan keseluruhan bernilai Benar.",
+      "poin": 20,
+      "urutan": 8,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "proporsional",
       "level_kognitif": "C2",
-      "cpmk": "CPMK Awal"
+      "cpmk": "Mampu menerapkan operator logika OR dalam konteks pengambilan keputusan sistem.",
+      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
+      "indikator": "Menentukan nilai kebenaran pernyataan majemuk yang menggunakan operator OR."
+    },
+    {
+      "id": 39,
+      "id_ujian": 2,
+      "jenis_soal": "pg",
+      "pertanyaan": "Perhatikan tabel kebenaran berikut untuk dua variabel boolean X dan Y:\n\n| X | Y | Hasil |\n|---|---|-------|\n| 0 | 0 | 1     |\n| 0 | 1 | 0     |\n| 1 | 0 | 0     |\n| 1 | 1 | 1     |\n\nOperator logika apa yang direpresentasikan oleh tabel kebenaran di atas?",
+      "pembahasan": "Tabel kebenaran menunjukkan output 1 hanya ketika input berbeda (0,1 atau 1,0) dan output 0 ketika input sama (0,0 atau 1,1). Ini adalah karakteristik unik dari operator Exclusive OR (XOR). AND menghasilkan 1 hanya jika keduanya 1. OR menghasilkan 1 jika minimal satu 1. NAND adalah negasi AND. NOR adalah negasi OR.",
+      "poin": 20,
+      "urutan": 9,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "proporsional",
+      "level_kognitif": "C3",
+      "cpmk": "Mampu mengidentifikasi jenis operator logika berdasarkan tabel kebenaran.",
+      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
+      "indikator": "Mengidentifikasi operator XOR dari pola output tabel kebenaran."
+    },
+    {
+      "id": 40,
+      "id_ujian": 2,
+      "jenis_soal": "pg_kompleks",
+      "pertanyaan": "Sebuah algoritma validasi data menggunakan logika berikut: Data dianggap VALID jika (Nilai >= 70) DAN (Kehadiran >= 80%). Jika data dianggap VALID, maka status mahasiswa adalah LULUS. Jika data TIDAK VALID, maka status mahasiswa adalah TIDAK LULUS.\r\n\r\nDiketahui:\r\n1. Mahasiswa A: Nilai 80, Kehadiran 75%\r\n2. Mahasiswa B: Nilai 65, Kehadiran 90%\r\n3. Mahasiswa C: Nilai 75, Kehadiran 85%\r\n4. Mahasiswa D: Nilai 90, Kehadiran 95%\r\n\r\nBerdasarkan logika di atas, manakah pasangan mahasiswa dan status yang BENAR?",
+      "pembahasan": "Kondisi VALID: (Nilai >= 70) AND (Kehadiran >= 80%).\r\n1. Mahasiswa A: Nilai 80 (True) AND Kehadiran 75 (False) -> False (TIDAK LULUS). Benar.\r\n2. Mahasiswa B: Nilai 65 (False) AND Kehadiran 90 (True) -> False (TIDAK LULUS). Opsi mengatakan LULUS, jadi Salah.\r\n3. Mahasiswa C: Nilai 75 (True) AND Kehadiran 85 (True) -> True (LULUS). Benar.\r\n4. Mahasiswa D: Nilai 90 (True) AND Kehadiran 95 (True) -> True (LULUS). Opsi mengatakan TIDAK LULUS, jadi Salah.\r\nJadi, jawaban yang benar adalah Mahasiswa A (TIDAK LULUS) dan Mahasiswa C (LULUS).",
+      "poin": 25,
+      "urutan": 10,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "proporsional",
+      "level_kognitif": "C4",
+      "cpmk": "Mampu mengevaluasi kompleksitas logika multi-kondisi untuk menentukan status akhir sistem.",
+      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
+      "indikator": "Menganalisis kebenaran status mahasiswa berdasarkan kombinasi kondisi logika AND."
+    },
+    {
+      "id": 41,
+      "id_ujian": 2,
+      "jenis_soal": "menjodohkan",
+      "pertanyaan": "Jodohkan operator logika di bawah ini dengan deskripsi perilaku evaluasinya yang tepat dalam pemrograman terstruktur.",
+      "pembahasan": "Kunci jawaban yang tepat didasarkan pada kesesuaian prinsip metodologis dan kaidah standar pada materi KUIS – Pemrograman Terstruktur.",
+      "poin": 25,
+      "urutan": 11,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Mampu membedakan karakteristik evaluasi operator logika AND, OR, dan NOT.",
+      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
+      "indikator": "Mengasosiasikan operator logika dengan aturan evaluasi short-circuit dan nilai kebenaran."
     }
   ],
   "opsi_jawaban": [
-    {
-      "id": 6,
-      "id_soal": 2,
-      "teks_opsi": "Pengganti mutlak kehadiran guru di kelas",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 7,
-      "id_soal": 2,
-      "teks_opsi": "Penyalur pesan dari pengirim ke penerima pesan",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 8,
-      "id_soal": 2,
-      "teks_opsi": "Alat penghibur saat jenuh",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 9,
-      "id_soal": 2,
-      "teks_opsi": "Dekorasi pelengkap ruang kelas",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 10,
-      "id_soal": 2,
-      "teks_opsi": "Instrumen evaluasi mutlak",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 11,
-      "id_soal": 3,
-      "teks_opsi": "Media Visual",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 12,
-      "id_soal": 3,
-      "teks_opsi": "Media Audio",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 13,
-      "id_soal": 3,
-      "teks_opsi": "Media Audiovisual",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 14,
-      "id_soal": 3,
-      "teks_opsi": "Media Realia",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 15,
-      "id_soal": 3,
-      "teks_opsi": "Media Proyeksi Diam",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 16,
-      "id_soal": 4,
-      "teks_opsi": "Poster",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 17,
-      "id_soal": 4,
-      "teks_opsi": "Bagan (Chart)",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 18,
-      "id_soal": 4,
-      "teks_opsi": "Flashcard",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 19,
-      "id_soal": 4,
-      "teks_opsi": "Diorama",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 20,
-      "id_soal": 4,
-      "teks_opsi": "Komik Edukasi",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 21,
-      "id_soal": 5,
-      "teks_opsi": "Mampu menampilkan detail gerak visual",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 22,
-      "id_soal": 5,
-      "teks_opsi": "Melatih konsentrasi daya dengar dan imajinasi siswa",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 23,
-      "id_soal": 5,
-      "teks_opsi": "Tidak membutuhkan pemutar suara",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 24,
-      "id_soal": 5,
-      "teks_opsi": "Dapat menampilkan teks narasi otomatis",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 25,
-      "id_soal": 5,
-      "teks_opsi": "Selalu lebih murah dibanding cetak",
-      "benar": false,
-      "urutan": 5
-    },
     {
       "id": 26,
       "id_soal": 6,
@@ -1711,181 +1613,6 @@
       "urutan": 5
     },
     {
-      "id": 131,
-      "id_soal": 27,
-      "teks_opsi": "Pemrograman terstruktur hanya menggunakan perintah GOTO tak bersyarat",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 132,
-      "id_soal": 27,
-      "teks_opsi": "Pemrograman terstruktur menggunakan modul fungsi terpisah dan struktur kontrol runtunan, pemilihan, serta perulangan (for/while)",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 133,
-      "id_soal": 27,
-      "teks_opsi": "Pemrograman terstruktur tidak mendukung array",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 134,
-      "id_soal": 27,
-      "teks_opsi": "Perulangan while tidak dapat membaca elemen array",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 135,
-      "id_soal": 27,
-      "teks_opsi": "Keduanya sama persis tanpa perbedaan metodologis",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 136,
-      "id_soal": 28,
-      "teks_opsi": "Tidak memerlukan kondisi berhenti sama sekali",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 137,
-      "id_soal": 28,
-      "teks_opsi": "Memiliki basis rekursi (base case) sebagai penghenti pemanggilan diri sendiri",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 138,
-      "id_soal": 28,
-      "teks_opsi": "Selalu membutuhkan memori yang lebih kecil dibanding perulangan iteratif biasa",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 139,
-      "id_soal": 28,
-      "teks_opsi": "Hanya dapat memanggil fungsi lain di luar lingkup file",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 140,
-      "id_soal": 28,
-      "teks_opsi": "Menggunakan tipe data pointer global secara wajib",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 141,
-      "id_soal": 29,
-      "teks_opsi": "Persegi panjang dengan 5 baris dan 5 kolom bintang",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 142,
-      "id_soal": 29,
-      "teks_opsi": "Segitiga siku-siku bintang dengan tinggi 5 baris",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 143,
-      "id_soal": 29,
-      "teks_opsi": "Satu baris memanjang berisi 25 bintang",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 144,
-      "id_soal": 29,
-      "teks_opsi": "Bintang berbentuk lingkaran",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 145,
-      "id_soal": 29,
-      "teks_opsi": "Pesan kesalahan syntax error",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 146,
-      "id_soal": 30,
-      "teks_opsi": "Linear Search tanpa pengurutan",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 147,
-      "id_soal": 30,
-      "teks_opsi": "Bubble Sort atau Selection Sort secara descending berdasarkan field IPK",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 148,
-      "id_soal": 30,
-      "teks_opsi": "Radix Sort dengan kebutuhan memori sekunder raksasa",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 149,
-      "id_soal": 30,
-      "teks_opsi": "Menghapus data mahasiswa dengan IPK terendah secara permanen",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 150,
-      "id_soal": 30,
-      "teks_opsi": "Hashing tanpa tabel indeks",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 151,
-      "id_soal": 31,
-      "teks_opsi": "Keduanya mengubah nilai variabel asli di memori utama",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 152,
-      "id_soal": 31,
-      "teks_opsi": "Pass by value menyalin nilai tanpa mengubah variabel asal, pass by reference meneruskan alamat sehingga memodifikasi variabel asli",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 153,
-      "id_soal": 31,
-      "teks_opsi": "Pass by reference hanya bisa digunakan untuk variabel bertipe boolean",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 154,
-      "id_soal": 31,
-      "teks_opsi": "Pass by value otomatis memicu exception stack overflow",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 155,
-      "id_soal": 31,
-      "teks_opsi": "Tidak ada perbedaan sama sekali",
-      "benar": false,
-      "urutan": 5
-    },
-    {
       "id": 156,
       "id_soal": 32,
       "teks_opsi": "Opsi A",
@@ -1900,18 +1627,249 @@
       "urutan": 2
     },
     {
-      "id": 153,
+      "id": 168,
       "id_soal": 33,
-      "teks_opsi": "A",
+      "teks_opsi": "Menggunakan fungsi htmlspecialchars() pada input $_GET['q'] sebelum dimasukkan ke dalam string query untuk mengubah karakter khusus menjadi entitas HTML.",
+      "benar": false,
+      "urutan": 1
+    },
+    {
+      "id": 169,
+      "id_soal": 33,
+      "teks_opsi": "Menerapkan prepared statements dengan parameterisasi query menggunakan mysqli_prepare() dan mysqli_stmt_bind_param() untuk memisahkan logika SQL dari data input.",
+      "benar": true,
+      "urutan": 2
+    },
+    {
+      "id": 170,
+      "id_soal": 33,
+      "teks_opsi": "Menambahkan validasi regex yang ketat untuk memastikan input hanya mengandung huruf dan angka, lalu menggunakan fungsi addslashes() untuk menambahkan backslash pada karakter kutip.",
+      "benar": false,
+      "urutan": 3
+    },
+    {
+      "id": 171,
+      "id_soal": 33,
+      "teks_opsi": "Mengubah struktur query menjadi SELECT * FROM materi WHERE judul = ? dan menggunakan fungsi trim() untuk menghapus spasi di awal dan akhir input pengguna.",
+      "benar": false,
+      "urutan": 4
+    },
+    {
+      "id": 172,
+      "id_soal": 33,
+      "teks_opsi": "Mengaktifkan mode strict pada konfigurasi MySQL server dan menggunakan fungsi mysql_real_escape_string() untuk meng-escape karakter khusus dalam input.",
+      "benar": false,
+      "urutan": 5
+    },
+    {
+      "id": 173,
+      "id_soal": 34,
+      "teks_opsi": "Menggunakan fungsi filter_var() dengan flag FILTER_SANITIZE_STRING untuk membersihkan input dari tag HTML dan karakter berbahaya.",
+      "benar": false,
+      "urutan": 1
+    },
+    {
+      "id": 174,
+      "id_soal": 34,
+      "teks_opsi": "Menerapkan fungsi mysqli_real_escape_string() pada input username untuk meng-escape karakter khusus seperti kutip tunggal, kutip ganda, dan backslash.",
+      "benar": true,
+      "urutan": 2
+    },
+    {
+      "id": 175,
+      "id_soal": 34,
+      "teks_opsi": "Menggunakan fungsi str_replace() untuk mengganti semua karakter kutip tunggal (') dengan karakter kosong sehingga input tidak mengandung simbol SQL.",
+      "benar": false,
+      "urutan": 3
+    },
+    {
+      "id": 176,
+      "id_soal": 34,
+      "teks_opsi": "Menggunakan fungsi base64_encode() pada input username sebelum dimasukkan ke query untuk mengenkripsi data menjadi string aman.",
+      "benar": false,
+      "urutan": 4
+    },
+    {
+      "id": 177,
+      "id_soal": 34,
+      "teks_opsi": "Menggunakan fungsi md5() pada input username untuk menghasilkan hash tetap yang tidak dapat dimanipulasi oleh karakter SQL.",
+      "benar": false,
+      "urutan": 5
+    },
+    {
+      "id": 178,
+      "id_soal": 35,
+      "teks_opsi": "Sprint Goal ditetapkan setelah tim memilih item Sprint Backlog, sehingga dapat menyesuaikan tujuan dengan item yang tersedia.",
+      "benar": false,
+      "urutan": 1
+    },
+    {
+      "id": 179,
+      "id_soal": 35,
+      "teks_opsi": "Sprint Backlog dapat berisi item yang belum pernah masuk ke Product Backlog, asalkan tim setuju.",
+      "benar": false,
+      "urutan": 2
+    },
+    {
+      "id": 180,
+      "id_soal": 35,
+      "teks_opsi": "Sprint Goal merupakan satu tujuan utama yang memandu seluruh sprint dan ditetapkan sebelum tim memilih item Sprint Backlog.",
+      "benar": true,
+      "urutan": 3
+    },
+    {
+      "id": 181,
+      "id_soal": 35,
+      "teks_opsi": "Selama sprint, tim dapat menambah atau mengurangi item Sprint Backlog tanpa persetujuan seluruh tim.",
+      "benar": false,
+      "urutan": 4
+    },
+    {
+      "id": 182,
+      "id_soal": 35,
+      "teks_opsi": "Sprint Goal dapat diubah di tengah sprint bila ada permintaan baru dari stakeholder.",
+      "benar": false,
+      "urutan": 5
+    },
+    {
+      "id": 183,
+      "id_soal": 36,
+      "teks_opsi": "Langsung menambahkan bug ke Sprint Backlog sehingga meningkatkan ruang lingkup sprint.",
+      "benar": false,
+      "urutan": 1
+    },
+    {
+      "id": 184,
+      "id_soal": 36,
+      "teks_opsi": "Menghapus item backlog dengan prioritas terendah untuk menjaga ruang lingkup sprint tetap sama.",
+      "benar": false,
+      "urutan": 2
+    },
+    {
+      "id": 185,
+      "id_soal": 36,
+      "teks_opsi": "Membahas bug dengan Product Owner; jika dianggap bernilai, mengganti salah satu item Sprint Backlog setelah tim sepakat.",
+      "benar": true,
+      "urutan": 3
+    },
+    {
+      "id": 186,
+      "id_soal": 36,
+      "teks_opsi": "Menunda penanganan bug hingga sprint berikutnya, terlepas dari dampaknya.",
+      "benar": false,
+      "urutan": 4
+    },
+    {
+      "id": 187,
+      "id_soal": 36,
+      "teks_opsi": "Menghentikan sprint yang sedang berjalan dan memulai sprint baru khusus untuk memperbaiki bug.",
+      "benar": false,
+      "urutan": 5
+    },
+    {
+      "id": 200,
+      "id_soal": 38,
+      "teks_opsi": "Benar",
       "benar": true,
       "urutan": 1
     },
     {
-      "id": 154,
-      "id_soal": 33,
-      "teks_opsi": "B",
+      "id": 201,
+      "id_soal": 38,
+      "teks_opsi": "Salah",
       "benar": false,
       "urutan": 2
+    },
+    {
+      "id": 202,
+      "id_soal": 39,
+      "teks_opsi": "AND",
+      "benar": false,
+      "urutan": 1
+    },
+    {
+      "id": 203,
+      "id_soal": 39,
+      "teks_opsi": "OR",
+      "benar": false,
+      "urutan": 2
+    },
+    {
+      "id": 204,
+      "id_soal": 39,
+      "teks_opsi": "XOR",
+      "benar": true,
+      "urutan": 3
+    },
+    {
+      "id": 205,
+      "id_soal": 39,
+      "teks_opsi": "NAND",
+      "benar": false,
+      "urutan": 4
+    },
+    {
+      "id": 206,
+      "id_soal": 39,
+      "teks_opsi": "NOR",
+      "benar": false,
+      "urutan": 5
+    },
+    {
+      "id": 207,
+      "id_soal": 40,
+      "teks_opsi": "Mahasiswa A: TIDAK LULUS",
+      "benar": true,
+      "urutan": 1
+    },
+    {
+      "id": 208,
+      "id_soal": 40,
+      "teks_opsi": "Mahasiswa B: LULUS",
+      "benar": false,
+      "urutan": 2
+    },
+    {
+      "id": 209,
+      "id_soal": 40,
+      "teks_opsi": "Mahasiswa C: LULUS",
+      "benar": true,
+      "urutan": 3
+    },
+    {
+      "id": 210,
+      "id_soal": 40,
+      "teks_opsi": "Mahasiswa D: TIDAK LULUS",
+      "benar": false,
+      "urutan": 4
+    },
+    {
+      "id": 211,
+      "id_soal": 41,
+      "teks_opsi": "Operator AND (&&)",
+      "benar": true,
+      "urutan": 1
+    },
+    {
+      "id": 212,
+      "id_soal": 41,
+      "teks_opsi": "Operator OR (||)",
+      "benar": true,
+      "urutan": 2
+    },
+    {
+      "id": 213,
+      "id_soal": 41,
+      "teks_opsi": "Operator NOT (!)",
+      "benar": true,
+      "urutan": 3
+    },
+    {
+      "id": 214,
+      "id_soal": 41,
+      "teks_opsi": "Operator XOR (^)",
+      "benar": true,
+      "urutan": 4
     }
   ],
   "sesi_ujian": [],
@@ -1919,10 +1877,10 @@
   "riwayat_sesi_ujian": [],
   "pengaturan": {
     "nama_institusi": "UNIVERSITAS HAMZANWADI",
-    "fakultas_institusi": "FAKULTAS MIPA",
-    "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor, Selong Lombok Timur 83612",
-    "telepon_institusi": "Telp. (0376) 22954, email: universitas@hamzanwadi.ac.id",
-    "website_institusi": "http://hamzanwadi.ac.id",
+    "fakultas_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
+    "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
+    "telepon_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
+    "website_institusi": "https://hamzanwadi.ac.id",
     "logo_path": "/assets/img/logo_hamzanwadi.svg"
   }
 }
