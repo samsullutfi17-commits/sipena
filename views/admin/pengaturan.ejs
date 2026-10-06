@@ -31,14 +31,75 @@
                 <span>Pengaturan</span>
             </nav>
 
-            <h2><i class="fas fa-cog"></i> Pengaturan Identitas Institusi</h2>
+            <h2><i class="fas fa-cog"></i> Pengaturan Identitas Institusi & Pejabat Pengesahan</h2>
 
             <% if (message) { %>
                 <div class="alert alert-success"><%= message %></div>
             <% } %>
 
-            <div class="card" style="max-width: 650px;">
-                <form method="POST" action="/admin/pengaturan">
+            <div class="card" style="max-width: 780px;">
+                <form method="POST" action="/admin/pengaturan" id="formPengaturan">
+                    <input type="hidden" name="logo_path" id="setting_logo_path" value="<%= settings.logo_path || '/assets/img/logo_hamzanwadi.png' %>">
+
+                    <!-- SECTION 1: LOGO INSTITUSI -->
+                    <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 18px; margin-bottom: 22px;">
+                        <label style="font-weight: 700; color: #1e293b; font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <i class="fas fa-image" style="color: #1b4d3e;"></i> Logo Resmi Universitas / Institusi
+                        </label>
+                        <div style="display: flex; gap: 18px; align-items: center; flex-wrap: wrap;">
+                            <div style="width: 80px; height: 80px; border: 2px solid #cbd5e1; border-radius: 10px; background: #ffffff; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                <img id="setting_logo_preview" src="<%= settings.logo_path || '/assets/img/logo_hamzanwadi.png' %>" alt="Logo Institusi" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='/assets/img/logo_hamzanwadi.png'">
+                            </div>
+                            <div style="flex: 1; min-width: 260px;">
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                                    <input type="file" id="setting_logo_file" accept="image/*" style="display: none;" onchange="handleSettingLogoUpload(event)">
+                                    <button type="button" class="btn btn-sm btn-primary" style="background: #1b4d3e; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;" onclick="document.getElementById('setting_logo_file').click()">
+                                        <i class="fas fa-cloud-arrow-up"></i> Unggah Logo Baru
+                                    </button>
+                                    <button type="button" class="btn btn-sm" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 6px; font-weight: 500; cursor: pointer;" onclick="resetSettingLogo()">
+                                        <i class="fas fa-rotate-left"></i> Gunakan Logo Standar Universitas
+                                    </button>
+                                </div>
+                                <div id="setting_logo_status" style="font-size: 0.82rem; color: #64748b;">
+                                    * Format didukung: PNG, JPG, JPEG, SVG, WEBP. Logo ini akan digunakan otomatis pada Kop Surat Naskah Soal, Matriks Kisi-Kisi, dan Berkas Ekspor Word (.docx).
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: IDENTITAS PEJABAT PENGESAHAN (KAPRODI & DOSEN) -->
+                    <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 18px; margin-bottom: 22px;">
+                        <label style="font-weight: 700; color: #166534; font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                            <i class="fas fa-signature" style="color: #15803d;"></i> Identitas Pejabat Pengesahan (Ketua Program Studi & Dosen)
+                        </label>
+                        <p style="font-size: 0.85rem; color: #166534; margin-top: 0; margin-bottom: 14px;">
+                            Data ini akan otomatis tercantum pada kolom tanda tangan naskah soal dan matriks kisi-kisi penulisan butir soal.
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-weight: 600; color: #0f172a;">Nama Ketua Program Studi (Kaprodi)</label>
+                                <input type="text" name="nama_kaprodi" value="<%= settings.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.' %>" class="form-control" placeholder="Contoh: Dr. H. M. Zain, M.Pd." required>
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-weight: 600; color: #0f172a;">NIDN / NIP Ketua Program Studi</label>
+                                <input type="text" name="nidn_kaprodi" value="<%= settings.nidn_kaprodi || '0812048501' %>" class="form-control" placeholder="Contoh: 0812048501" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-weight: 600; color: #0f172a;">Nama Dosen Pengampu (Standar)</label>
+                                <input type="text" name="nama_dosen" value="<%= settings.nama_dosen || 'Samsul Lutfi, S.Pd., M.Pd.' %>" class="form-control" placeholder="Contoh: Samsul Lutfi, S.Pd., M.Pd." required>
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-weight: 600; color: #0f172a;">NIDN / NIP Dosen (Standar)</label>
+                                <input type="text" name="nidn_dosen" value="<%= settings.nidn_dosen || '0821098902' %>" class="form-control" placeholder="Contoh: 0821098902" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: KOP & PROFIL INSTITUSI -->
                     <div class="form-group">
                         <label>Nama Perguruan Tinggi / Institusi</label>
                         <input type="text" name="nama_institusi" value="<%= settings.nama_institusi %>" class="form-control" required>
@@ -65,10 +126,58 @@
                     </div>
 
                     <div style="margin-top: 24px;">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                        <button type="submit" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600;">
+                            <i class="fas fa-save"></i> Simpan Perubahan Pengaturan
+                        </button>
                     </div>
                 </form>
             </div>
+
+            <script>
+                async function handleSettingLogoUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const statusEl = document.getElementById('setting_logo_status');
+                    statusEl.innerHTML = '<span style="color: #0284c7;"><i class="fas fa-spinner fa-spin"></i> Mengunggah logo...</span>';
+
+                    const formData = new FormData();
+                    formData.append('logo_file', file);
+
+                    try {
+                        const res = await fetch('/admin/api/upload_logo', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (data.success && data.url) {
+                            document.getElementById('setting_logo_path').value = data.url;
+                            document.getElementById('setting_logo_preview').src = data.url;
+                            statusEl.innerHTML = '<span style="color: #16a34a;"><i class="fas fa-check-circle"></i> ' + data.message + ' Klik "Simpan Perubahan Pengaturan" untuk menetapkan.</span>';
+                        } else {
+                            throw new Error(data.message || 'Gagal mengunggah logo');
+                        }
+                    } catch (err) {
+                        // Fallback: Read as Base64 and save
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const b64 = e.target.result;
+                            document.getElementById('setting_logo_path').value = b64;
+                            document.getElementById('setting_logo_preview').src = b64;
+                            statusEl.innerHTML = '<span style="color: #16a34a;"><i class="fas fa-check-circle"></i> Logo siap disimpan! Klik "Simpan Perubahan Pengaturan".</span>';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+
+                function resetSettingLogo() {
+                    const defaultLogo = '/assets/img/logo_hamzanwadi.png';
+                    document.getElementById('setting_logo_path').value = defaultLogo;
+                    document.getElementById('setting_logo_preview').src = defaultLogo;
+                    const statusEl = document.getElementById('setting_logo_status');
+                    statusEl.innerHTML = '<span style="color: #16a34a;"><i class="fas fa-check-circle"></i> Menggunakan Logo Resmi Universitas Hamzanwadi. Klik "Simpan Perubahan Pengaturan" untuk menyimpan.</span>';
+                }
+            </script>
         </main>
     </div>
 </body>

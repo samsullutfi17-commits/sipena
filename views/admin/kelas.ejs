@@ -31,16 +31,16 @@
                 <span>Kelas</span>
             </nav>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 14px;">
+            <div class="page-header-row">
                 <div>
-                    <h2 style="margin: 0; color: #1b4d3e; font-size: 1.55rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+                    <h2 class="page-title">
                         <i class="fas fa-users-rectangle"></i> Data Kelas / Grup
                     </h2>
-                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">
+                    <p class="page-subtitle">
                         Kelola data rombongan belajar, angkatan, semester, dan program studi.
                     </p>
                 </div>
-                <button type="button" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 6px rgba(27,77,62,0.2);" onclick="document.getElementById('modal-kelas').style.display='flex'">
+                <button type="button" class="btn-primary-action" onclick="document.getElementById('modal-kelas').style.display='flex'">
                     <i class="fas fa-plus"></i> Tambah Kelas
                 </button>
             </div>
@@ -51,48 +51,60 @@
                 </div>
             <% } %>
 
-            <div class="card" style="border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 0;">
-                <table class="table" style="margin: 0;">
-                    <thead>
-                        <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
-                            <th style="width: 60px; text-align: center;">No</th>
-                            <th>Nama Kelas</th>
-                            <th style="width: 130px;">Angkatan</th>
-                            <th style="width: 140px;">Semester</th>
-                            <th>Program Studi</th>
-                            <th style="width: 150px; text-align: center;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (kelasList.length === 0) { %>
+            <div class="modern-table-card">
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 36px; color: #64748b;">
-                                    Belum ada data kelas. Klik tombol <strong>+ Tambah Kelas</strong> untuk menambahkan.
-                                </td>
+                                <th style="width: 60px; text-align: center;">No</th>
+                                <th>Nama Kelas</th>
+                                <th style="width: 140px;">Angkatan</th>
+                                <th style="width: 140px;">Semester</th>
+                                <th>Program Studi</th>
+                                <th style="width: 160px; text-align: center;">Aksi</th>
                             </tr>
-                        <% } else { %>
-                            <% kelasList.forEach(function(k, idx) { %>
+                        </thead>
+                        <tbody>
+                            <% if (kelasList.length === 0) { %>
                                 <tr>
-                                    <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
-                                    <td><strong style="color: #0f172a;"><%= k.nama_kelas %></strong></td>
-                                    <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-family: monospace; font-size: 0.88rem;"><%= k.angkatan %></span></td>
-                                    <td>Semester <%= k.semester %></td>
-                                    <td><span style="color: #0369a1; font-weight: 500;"><%= k.nama_prodi %></span></td>
-                                    <td style="text-align: center;">
-                                        <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
-                                            <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit Kelas" onclick="openModalEditKelas(<%= JSON.stringify(k) %>)">
-                                                <i class="fas fa-pen-to-square"></i> Edit
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" style="padding: 6px 10px; border-radius: 6px;" title="Hapus Kelas" onclick="openConfirmDeleteKelas(<%= k.id %>, '<%= (k.nama_kelas || '').replace(/'/g, '\\\'') %>')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
+                                    <td colspan="6" style="text-align: center; padding: 36px; color: #64748b;">
+                                        Belum ada data kelas yang Anda kelola. Klik tombol <strong>+ Tambah Kelas</strong> untuk menambahkan.
                                     </td>
                                 </tr>
-                            <% }); %>
-                        <% } %>
-                    </tbody>
-                </table>
+                            <% } else { %>
+                                <% kelasList.forEach(function(k, idx) { %>
+                                    <tr>
+                                        <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
+                                        <td>
+                                            <strong style="color: #0f172a; font-size: 0.95rem;"><%= k.nama_kelas %></strong>
+                                        </td>
+                                        <td>
+                                            <span class="kode-badge"><%= k.angkatan %></span>
+                                        </td>
+                                        <td>
+                                            <span class="pill-badge">
+                                                <i class="fas fa-calendar-check"></i> Sem. <%= k.semester %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="color: #0369a1; font-weight: 600;"><%= k.nama_prodi %></span>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                                                <button type="button" class="btn-action-edit" title="Edit Kelas" onclick="openModalEditKelas(<%= JSON.stringify(k) %>)">
+                                                    <i class="fas fa-pen-to-square"></i> Edit
+                                                </button>
+                                                <button type="button" class="btn-action-delete" title="Hapus Kelas" onclick="openConfirmDeleteKelas(<%= k.id %>, '<%= (k.nama_kelas || '').replace(/'/g, '\\\'') %>')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>

@@ -670,7 +670,7 @@
             <div class="kop-surat">
                 <% if (formatCetak.tampilkan_logo) { %>
                     <div class="kop-logo" id="paperLogoBox">
-                        <img src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.svg' %>" id="paperLogoImg" alt="Logo Institusi" onerror="this.src='/assets/img/logo_hamzanwadi.svg'">
+                        <img src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.png' %>" id="paperLogoImg" alt="Logo Institusi" onerror="this.src='/assets/img/logo_hamzanwadi.png'">
                     </div>
                 <% } %>
                 <div class="kop-text">
@@ -911,10 +911,10 @@
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <!-- Thumbnail Preview -->
                             <div style="width: 52px; height: 52px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
-                                <img id="cfg_logo_preview" src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.svg' %>" alt="Preview Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='/assets/img/logo_hamzanwadi.svg'">
+                                <img id="cfg_logo_preview" src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.png' %>" alt="Preview Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='/assets/img/logo_hamzanwadi.png'">
                             </div>
 
-                            <input type="text" id="cfg_logo_path" class="form-control" value="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.svg' %>" style="flex: 1; min-width: 220px;" oninput="updateLogoPreview(this.value)" placeholder="Pilih berkas logo atau ketik URL/path...">
+                            <input type="text" id="cfg_logo_path" class="form-control" value="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.png' %>" style="flex: 1; min-width: 220px;" oninput="updateLogoPreview(this.value)" placeholder="Pilih berkas logo atau ketik URL/path...">
 
                             <!-- Hidden file input & upload button -->
                             <input type="file" id="cfg_logo_file_input" accept="image/*" style="display: none;" onchange="handleLogoFileUpload(event)">
@@ -923,10 +923,11 @@
                             </button>
 
                             <!-- Presets -->
-                            <button type="button" class="quick-chip" onclick="setPresetLogo('/assets/img/logo_hamzanwadi.svg')">Logo Hamzanwadi</button>
-                            <button type="button" class="quick-chip" onclick="setPresetLogo('https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg')">Tut Wuri</button>
+                            <button type="button" class="quick-chip" onclick="setPresetLogo('/assets/img/logo_hamzanwadi.png')">
+                                <i class="fas fa-rotate-left"></i> Gunakan Logo Standar Universitas
+                            </button>
                             <button type="button" class="quick-chip" style="color: #dc2626; border-color: #fca5a5;" onclick="clearLogo()" title="Hapus logo">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash"></i> Hapus Logo
                             </button>
                         </div>
                         <div id="cfg_logo_upload_status" style="font-size: 0.82rem; margin-top: 6px; display: none;"></div>
@@ -955,14 +956,34 @@
 
                 <!-- TAB 2: JUDUL & TABEL IDENTITAS -->
                 <div id="tab-identitas" class="modal-tab-content">
-                    <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 8px; color: #166534; font-size: 0.88rem;">
-                            <i class="fas fa-id-badge" style="font-size: 1.1rem;"></i>
-                            <span>Dosen Pembuat / Pengampu Otomatis: <strong><%= formatCetak.identitas_rows && formatCetak.identitas_rows.find(r => (r.kiri_label||'').toLowerCase().includes('dosen') || (r.kiri_label||'').toLowerCase().includes('pengampu')) ? (formatCetak.identitas_rows.find(r => (r.kiri_label||'').toLowerCase().includes('dosen') || (r.kiri_label||'').toLowerCase().includes('pengampu')).kiri_val) : (currentUser ? currentUser.nama_lengkap : 'Dosen Pengampu') %></strong></span>
+                    <!-- IDENTITAS DOSEN & KAPRODI -->
+                    <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+                        <div style="font-weight: 700; color: #166534; font-size: 0.9rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                            <span><i class="fas fa-signature" style="color: #15803d;"></i> Identitas Dosen Pengampu & Ketua Program Studi</span>
+                            <span style="font-size: 0.75rem; background: #dcfce7; color: #15803d; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
+                                <i class="fas fa-check-circle"></i> Otomatis Tersinkronisasi
+                            </span>
                         </div>
-                        <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">
-                            <i class="fas fa-check-circle"></i> Otomatis Tercantum
-                        </span>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Nama Dosen Pengampu / Pembuat</label>
+                                <input type="text" id="cfg_nama_dosen" class="form-control" value="<%= formatCetak.nama_pejabat_kanan || (formatCetak.identitas_rows && formatCetak.identitas_rows.find(r => (r.kiri_label||'').toLowerCase().includes('dosen')) ? formatCetak.identitas_rows.find(r => (r.kiri_label||'').toLowerCase().includes('dosen')).kiri_val : '') || (currentUser ? currentUser.nama_lengkap : 'Samsul Lutfi, S.Pd., M.Pd') %>">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">NIDN / NIP Dosen</label>
+                                <input type="text" id="cfg_nip_dosen" class="form-control" value="<%= formatCetak.nip_kanan || (currentUser && currentUser.nidn) || '0821098902' %>">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">Nama Ketua Program Studi (Kaprodi)</label>
+                                <input type="text" id="cfg_nama_kaprodi" class="form-control" value="<%= formatCetak.nama_pejabat_kiri || (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">NIDN / NIP Kaprodi</label>
+                                <input type="text" id="cfg_nip_kaprodi" class="form-control" value="<%= formatCetak.nip_kiri || (settings && settings.nidn_kaprodi) || '0812048501' %>">
+                            </div>
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
@@ -1138,7 +1159,7 @@
         function updateLogoPreview(val) {
             const preview = document.getElementById('cfg_logo_preview');
             const paperLogo = document.getElementById('paperLogoImg');
-            const targetSrc = val || '/assets/img/logo_hamzanwadi.svg';
+            const targetSrc = val || '/assets/img/logo_hamzanwadi.png';
             if (preview) preview.src = targetSrc;
             if (paperLogo) paperLogo.src = targetSrc;
         }
@@ -1150,7 +1171,7 @@
             if (statusEl) {
                 statusEl.style.display = 'block';
                 statusEl.style.color = '#15803d';
-                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Menggunakan preset logo institusi.';
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Menggunakan Logo Standar Universitas Hamzanwadi.';
             }
         }
 
@@ -1325,6 +1346,10 @@
                     judul_utama: document.getElementById('cfg_judul_utama').value,
                     sub_judul: document.getElementById('cfg_sub_judul').value,
                     identitas_rows: currentIdentitasRows,
+                    nama_pejabat_kanan: document.getElementById('cfg_nama_dosen') ? document.getElementById('cfg_nama_dosen').value : '',
+                    nip_kanan: document.getElementById('cfg_nip_dosen') ? document.getElementById('cfg_nip_dosen').value : '',
+                    nama_pejabat_kiri: document.getElementById('cfg_nama_kaprodi') ? document.getElementById('cfg_nama_kaprodi').value : '',
+                    nip_kiri: document.getElementById('cfg_nip_kaprodi') ? document.getElementById('cfg_nip_kaprodi').value : '',
                     tampilkan_petunjuk: document.getElementById('cfg_tampilkan_petunjuk').checked,
                     judul_petunjuk: document.getElementById('cfg_judul_petunjuk').value,
                     petunjuk_items: currentPetunjukItems
@@ -1464,7 +1489,7 @@
                 format_cetak: {
                     tampilkan_kop: initialFormat.tampilkan_kop !== false,
                     tampilkan_logo: initialFormat.tampilkan_logo !== false,
-                    logo_path: initialFormat.logo_path || '/assets/img/logo_hamzanwadi.svg',
+                    logo_path: initialFormat.logo_path || '/assets/img/logo_hamzanwadi.png',
                     nama_institusi: namaInstitusi,
                     sub_institusi: subInstitusi,
                     alamat_institusi: alamatInstitusi,

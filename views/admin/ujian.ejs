@@ -125,16 +125,16 @@
                 <span>Penilaian</span>
             </nav>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 14px;">
+            <div class="page-header-row">
                 <div>
-                    <h2 style="margin: 0; color: #1b4d3e; font-size: 1.55rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-file-alt"></i> Manajemen Penilaian / Ujian
+                    <h2 class="page-title">
+                        <i class="fas fa-file-lines"></i> Data Penilaian / Ujian
                     </h2>
-                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">
-                        Buat dan atur sesi ujian, durasi, passing grade, serta penugasan kelas.
+                    <p class="page-subtitle">
+                        Kelola data penilaian, sesi ujian, alokasi waktu, kriteria kelulusan, dan penugasan kelas.
                     </p>
                 </div>
-                <button type="button" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; box-shadow: 0 2px 6px rgba(27,77,62,0.2);" onclick="openModal('create-modal')">
+                <button type="button" class="btn-primary-action" onclick="openModal('create-modal')">
                     <i class="fas fa-plus"></i> Tambah Ujian Baru
                 </button>
             </div>
@@ -145,74 +145,90 @@
                 </div>
             <% } %>
 
-            <div class="card" style="border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 0;">
-                <div class="table-responsive">
-                    <table class="table" style="margin: 0;">
+            <div class="modern-table-card">
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
                         <thead>
-                            <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                            <tr>
                                 <th style="width: 50px; text-align: center;">No</th>
                                 <th>Judul Penilaian</th>
                                 <th>Mata Kuliah</th>
-                                <th>Jenis</th>
-                                <th>Durasi</th>
-                                <th>Total</th>
-                                <th>Lulus</th>
+                                <th style="width: 100px;">Jenis</th>
+                                <th style="width: 110px;">Durasi</th>
+                                <th style="width: 120px;">Bobot / Lulus</th>
                                 <th>Grup / Kelas</th>
-                                <th style="text-align: center;">Status</th>
-                                <th style="text-align: center; width: 220px;">Aksi</th>
+                                <th style="text-align: center; width: 100px;">Status</th>
+                                <th style="text-align: center; width: 260px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% if (exams.length === 0) { %>
                                 <tr>
-                                    <td colspan="10" style="text-align: center; padding: 36px; color: #64748b;">
-                                        Belum ada data ujian / penilaian. Klik tombol <strong>+ Tambah Ujian Baru</strong> untuk membuat.
+                                    <td colspan="9" style="text-align: center; padding: 36px; color: #64748b;">
+                                        Belum ada data ujian / penilaian yang Anda kelola. Klik tombol <strong>+ Tambah Ujian Baru</strong> untuk membuat.
                                     </td>
                                 </tr>
                             <% } else { %>
                                 <% exams.forEach(function(exam, idx) { %>
                                     <tr>
                                         <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
-                                        <td><strong style="color: #0f172a;"><%= exam.judul_ujian %></strong></td>
-                                        <td><%= exam.nama_mk %></td>
-                                        <td><span class="badge badge-info"><%= exam.jenis_ujian %></span></td>
-                                        <td><%= exam.durasi_menit %> mnt</td>
-                                        <td><strong><%= exam.total_nilai %></strong></td>
-                                        <td><%= exam.nilai_lulus %></td>
+                                        <td>
+                                            <strong style="color: #0f172a; font-size: 0.95rem;"><%= exam.judul_ujian %></strong>
+                                            <% if (adminRole === 'admin') { %>
+                                                <small style="display: block; color: #64748b; font-size: 0.78rem; margin-top: 2px;">
+                                                    <i class="fas fa-chalkboard-user"></i> Pengampu: <%= exam.pengampu || exam.dosen_pembuat %>
+                                                </small>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <span style="font-weight: 500; color: #1e293b;"><%= exam.nama_mk %></span>
+                                        </td>
+                                        <td>
+                                            <span class="pill-badge"><%= exam.jenis_ujian %></span>
+                                        </td>
+                                        <td>
+                                            <span class="kode-badge" style="font-size: 0.8rem; padding: 3px 8px;"><%= exam.durasi_menit %> mnt</span>
+                                        </td>
+                                        <td>
+                                            <span style="font-weight: 700; color: #0f172a;"><%= exam.total_nilai %></span>
+                                            <span style="color: #94a3b8; font-size: 0.82rem;">/ min <%= exam.nilai_lulus %></span>
+                                        </td>
                                         <td>
                                             <% if (exam.kelas_list && exam.kelas_list.length > 0) { %>
-                                                <% exam.kelas_list.forEach(function(k) { %>
-                                                    <span class="badge badge-secondary" style="margin-right: 2px;"><%= k.nama_kelas %></span>
-                                                <% }); %>
+                                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                                    <% exam.kelas_list.forEach(function(k) { %>
+                                                        <span class="kode-badge" style="font-size: 0.75rem; padding: 2px 6px;"><%= k.nama_kelas %></span>
+                                                    <% }); %>
+                                                </div>
                                             <% } else { %>
-                                                <span style="color: #94a3b8; font-size: 0.85rem;">Semua Kelas</span>
+                                                <span style="color: #94a3b8; font-size: 0.82rem;">Semua Kelas</span>
                                             <% } %>
                                         </td>
                                         <td style="text-align: center;">
                                             <form method="POST" action="/admin/ujian" style="display: inline;">
                                                 <input type="hidden" name="action" value="toggle_active">
                                                 <input type="hidden" name="ujian_id" value="<%= exam.id %>">
-                                                <button type="submit" class="badge <%= exam.aktif ? 'badge-success' : 'badge-danger' %>" style="border: none; cursor: pointer;" title="Klik untuk ubah status aktif">
-                                                    <%= exam.aktif ? 'Aktif' : 'Non-Aktif' %>
+                                                <button type="submit" class="pill-badge <%= exam.aktif ? 'pill-badge-success' : 'pill-badge-danger' %>" style="cursor: pointer; border-style: solid;" title="Klik untuk ubah status aktif">
+                                                    <%= exam.aktif ? '● Aktif' : '○ Non-Aktif' %>
                                                 </button>
                                             </form>
                                         </td>
                                         <td style="text-align: center; white-space: nowrap;">
                                             <div style="display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                                                <a href="/admin/soal?ujian_id=<%= exam.id %>" class="btn btn-sm btn-outline-primary" style="padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="Kelola Bank Soal">
+                                                <a href="/admin/soal?ujian_id=<%= exam.id %>" class="btn-action-secondary" title="Kelola Bank Soal">
                                                     <i class="fas fa-question-circle"></i> Soal
                                                 </a>
-                                                <button type="button" class="btn-action-edit-ujian" style="padding: 5px 10px; font-size: 0.82rem; border-radius: 6px;" title="Edit Penilaian" onclick="openEditUjianModalById(<%= exam.id %>)">
-                                                    <i class="fas fa-pen-to-square"></i> Edit
-                                                </button>
-                                                <a href="/admin/kisi_kisi?ujian_id=<%= exam.id %>" class="btn btn-sm btn-outline-secondary" style="padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" title="Kisi-kisi">
+                                                <a href="/admin/kisi_kisi?ujian_id=<%= exam.id %>" class="btn-action-secondary" title="Kisi-kisi">
                                                     <i class="fas fa-table"></i> Kisi-kisi
                                                 </a>
+                                                <button type="button" class="btn-action-edit" title="Edit Penilaian" onclick="openEditUjianModalById(<%= exam.id %>)">
+                                                    <i class="fas fa-pen-to-square"></i> Edit
+                                                </button>
                                                 <form method="POST" action="/admin/ujian" style="display: inline-block; margin: 0;" onsubmit="return confirmDelete('Apakah Anda yakin ingin menghapus ujian ini beserta seluruh butir soalnya?');">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="ujian_id" value="<%= exam.id %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 5px 10px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="Hapus Ujian">
-                                                        <i class="fas fa-trash"></i> Hapus
+                                                    <button type="submit" class="btn-action-delete" title="Hapus Ujian">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -280,6 +296,33 @@
                     <div class="form-group">
                         <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Batas Kelulusan (Passing Grade)</label>
                         <input type="number" name="nilai_lulus" value="60" required class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    </div>
+                </div>
+
+                <!-- Identitas Pengesahan (Dosen & Kaprodi) -->
+                <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+                    <div style="font-weight: 700; color: #166534; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-signature"></i> Identitas Dosen Pengampu & Ketua Program Studi (Pengesahan)
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Dosen Pengampu</label>
+                            <input type="text" name="pengampu" value="<%= (typeof adminNama !== 'undefined' && adminNama) ? adminNama : (settings ? settings.nama_dosen : 'Samsul Lutfi, S.Pd., M.Pd') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Dosen</label>
+                            <input type="text" name="nidn_dosen" value="<%= (settings ? settings.nidn_dosen : '0821098902') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Ketua Program Studi</label>
+                            <input type="text" name="nama_kaprodi" value="<%= (settings ? settings.nama_kaprodi : 'Dr. H. M. Zain, M.Pd.') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Kaprodi</label>
+                            <input type="text" name="nidn_kaprodi" value="<%= (settings ? settings.nidn_kaprodi : '0812048501') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
                     </div>
                 </div>
 
@@ -357,6 +400,33 @@
                     <div class="form-group">
                         <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Batas Kelulusan (Passing Grade)</label>
                         <input type="number" name="nilai_lulus" id="edit_nilai_lulus" value="60" required class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    </div>
+                </div>
+
+                <!-- Identitas Pengesahan (Dosen & Kaprodi) -->
+                <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+                    <div style="font-weight: 700; color: #166534; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-signature"></i> Identitas Dosen Pengampu & Ketua Program Studi (Pengesahan)
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Dosen Pengampu</label>
+                            <input type="text" name="pengampu" id="edit_pengampu" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Dosen</label>
+                            <input type="text" name="nidn_dosen" id="edit_nidn_dosen" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Ketua Program Studi</label>
+                            <input type="text" name="nama_kaprodi" id="edit_nama_kaprodi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Kaprodi</label>
+                            <input type="text" name="nidn_kaprodi" id="edit_nidn_kaprodi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
                     </div>
                 </div>
 
@@ -459,6 +529,10 @@
             document.getElementById('edit_durasi_menit').value = exam.durasi_menit || 90;
             document.getElementById('edit_total_nilai').value = exam.total_nilai || 100;
             document.getElementById('edit_nilai_lulus').value = exam.nilai_lulus || 60;
+            document.getElementById('edit_pengampu').value = exam.pengampu || '';
+            document.getElementById('edit_nidn_dosen').value = exam.nidn_dosen || '0821098902';
+            document.getElementById('edit_nama_kaprodi').value = exam.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
+            document.getElementById('edit_nidn_kaprodi').value = exam.nidn_kaprodi || '0812048501';
 
             // Check checkboxes for assigned classes
             const assignedIds = (exam.kelas_list || []).map(k => String(k.id));

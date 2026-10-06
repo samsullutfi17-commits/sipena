@@ -542,7 +542,7 @@
         <div id="paperKopSection" style="<%= formatCetak.tampilkan_kop ? '' : 'display: none;' %>">
             <div class="kop-surat">
                 <% if (formatCetak.tampilkan_logo) { %>
-                    <img src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.svg' %>" id="paperLogoImg" alt="Logo" class="kop-logo" onerror="this.src='/assets/img/logo_hamzanwadi.svg'">
+                    <img src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.png' %>" id="paperLogoImg" alt="Logo" class="kop-logo" onerror="this.src='/assets/img/logo_hamzanwadi.png'">
                 <% } %>
                 <div class="kop-teks">
                     <div class="kop-instansi editable-field" id="paperNamaInstitusi" data-field="nama_institusi"><%= formatCetak.nama_institusi || 'UNIVERSITAS HAMZANWADI' %></div>
@@ -733,10 +733,10 @@
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <!-- Thumbnail Preview -->
                             <div style="width: 52px; height: 52px; border: 1.5px solid #cbd5e1; border-radius: 8px; background: #f8fafc; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);">
-                                <img id="cfg_logo_preview" src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.svg' %>" alt="Preview Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='/assets/img/logo_hamzanwadi.svg'">
+                                <img id="cfg_logo_preview" src="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.png' %>" alt="Preview Logo" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.src='/assets/img/logo_hamzanwadi.png'">
                             </div>
 
-                            <input type="text" id="cfg_logo_path" class="form-control" value="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.svg' %>" style="flex: 1; min-width: 220px;" oninput="updateLogoPreview(this.value)" placeholder="Pilih berkas logo atau ketik URL/path...">
+                            <input type="text" id="cfg_logo_path" class="form-control" value="<%= formatCetak.logo_path || '/assets/img/logo_hamzanwadi.png' %>" style="flex: 1; min-width: 220px;" oninput="updateLogoPreview(this.value)" placeholder="Pilih berkas logo atau ketik URL/path...">
 
                             <!-- Hidden file input & upload button -->
                             <input type="file" id="cfg_logo_file_input" accept="image/*" style="display: none;" onchange="handleLogoFileUpload(event)">
@@ -745,10 +745,11 @@
                             </button>
 
                             <!-- Presets -->
-                            <button type="button" class="quick-chip" onclick="setPresetLogo('/assets/img/logo_hamzanwadi.svg')">Logo Hamzanwadi</button>
-                            <button type="button" class="quick-chip" onclick="setPresetLogo('https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg')">Tut Wuri</button>
+                            <button type="button" class="quick-chip" onclick="setPresetLogo('/assets/img/logo_hamzanwadi.png')">
+                                <i class="fas fa-rotate-left"></i> Gunakan Logo Standar Universitas
+                            </button>
                             <button type="button" class="quick-chip" style="color: #dc2626; border-color: #fca5a5;" onclick="clearLogo()" title="Hapus logo">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-trash"></i> Hapus Logo
                             </button>
                         </div>
                         <div id="cfg_logo_upload_status" style="font-size: 0.82rem; margin-top: 6px; display: none;"></div>
@@ -980,6 +981,83 @@
 
         function populateModalFields() {
             renderModalMetaRows();
+            updateLogoPreview(document.getElementById('cfg_logo_path').value);
+        }
+
+        function updateLogoPreview(val) {
+            const preview = document.getElementById('cfg_logo_preview');
+            const paperLogo = document.getElementById('paperLogoImg');
+            const targetSrc = val || '/assets/img/logo_hamzanwadi.png';
+            if (preview) preview.src = targetSrc;
+            if (paperLogo) paperLogo.src = targetSrc;
+        }
+
+        function setPresetLogo(path) {
+            document.getElementById('cfg_logo_path').value = path;
+            updateLogoPreview(path);
+            const statusEl = document.getElementById('cfg_logo_upload_status');
+            if (statusEl) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#15803d';
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Menggunakan Logo Standar Universitas Hamzanwadi.';
+            }
+        }
+
+        function clearLogo() {
+            document.getElementById('cfg_logo_path').value = '';
+            const preview = document.getElementById('cfg_logo_preview');
+            if (preview) preview.src = '';
+            const paperLogo = document.getElementById('paperLogoImg');
+            if (paperLogo) paperLogo.src = '';
+            const statusEl = document.getElementById('cfg_logo_upload_status');
+            if (statusEl) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = '#dc2626';
+                statusEl.innerHTML = '<i class="fas fa-info-circle"></i> Logo dikosongkan.';
+            }
+        }
+
+        async function handleLogoFileUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const statusEl = document.getElementById('cfg_logo_upload_status');
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#0284c7';
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sedang membaca & mengunggah logo...';
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const dataUrl = e.target.result;
+                updateLogoPreview(dataUrl);
+
+                try {
+                    const formData = new FormData();
+                    formData.append('logo_file', file);
+
+                    const res = await fetch('/admin/api/upload_logo', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await res.json();
+                    if (result.success && result.url) {
+                        document.getElementById('cfg_logo_path').value = result.url;
+                        updateLogoPreview(result.url);
+                        statusEl.style.color = '#15803d';
+                        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Logo berhasil diunggah (' + file.name + ')!';
+                    } else {
+                        document.getElementById('cfg_logo_path').value = dataUrl;
+                        statusEl.style.color = '#b45309';
+                        statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Logo berhasil dimuat langsung (' + file.name + ')!';
+                    }
+                } catch (err) {
+                    console.warn('Fallback to dataUrl:', err);
+                    document.getElementById('cfg_logo_path').value = dataUrl;
+                    statusEl.style.color = '#b45309';
+                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Logo berhasil dimuat langsung!';
+                }
+            };
+            reader.readAsDataURL(file);
         }
 
         function renderModalMetaRows() {

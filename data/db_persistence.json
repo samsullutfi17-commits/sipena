@@ -43,6 +43,7 @@
       "default_format_cetak": {
         "tampilkan_kop": true,
         "tampilkan_logo": true,
+        "logo_path": "/admin/uploads/logo_1791274397912_Logo_UH__2_.png",
         "nama_institusi": "UNIVERSITAS HAMZANWADI",
         "sub_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
         "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
@@ -65,11 +66,11 @@
           }
         ],
         "tampilkan_petunjuk": true,
+        "judul_petunjuk": "PETUNJUK:",
         "petunjuk_items": [
           "Berdoalah sebelum mengerjakan!",
           "Dilarang bekerja sama!"
-        ],
-        "tampilkan_ttd": true
+        ]
       }
     },
     {
@@ -342,6 +343,7 @@
       "format_cetak": {
         "tampilkan_kop": true,
         "tampilkan_logo": true,
+        "logo_path": "/admin/uploads/logo_1791274397912_Logo_UH__2_.png",
         "nama_institusi": "UNIVERSITAS HAMZANWADI",
         "sub_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
         "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
@@ -364,12 +366,13 @@
           }
         ],
         "tampilkan_petunjuk": true,
+        "judul_petunjuk": "PETUNJUK:",
         "petunjuk_items": [
           "Berdoalah sebelum mengerjakan!",
           "Dilarang bekerja sama!"
-        ],
-        "tampilkan_ttd": true
-      }
+        ]
+      },
+      "dosen_pembuat": "Administrator Utama"
     },
     {
       "id": 2,
@@ -1881,6 +1884,10 @@
     "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
     "telepon_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
     "website_institusi": "https://hamzanwadi.ac.id",
-    "logo_path": "/assets/img/logo_hamzanwadi.svg"
+    "logo_path": "/assets/img/logo_hamzanwadi.png",
+    "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+    "nidn_kaprodi": "0812048501",
+    "nama_dosen": "Samsul Lutfi, S.Pd., M.Pd.",
+    "nidn_dosen": "0821098902"
   }
 }

@@ -712,6 +712,11 @@
                                             <% if (u.nim) { %>
                                                 <small style="color: #64748b; font-size: 0.78rem;">NIM: <%= u.nim %></small>
                                             <% } %>
+                                            <% if (u.nidn) { %>
+                                                <small style="color: #0369a1; font-size: 0.78rem; font-weight: 600; display: block;"><i class="fas fa-id-card"></i> NIDN: <%= u.nidn %></small>
+                                            <% } else if (u.role === 'dosen') { %>
+                                                <small style="color: #0369a1; font-size: 0.78rem; font-weight: 600; display: block;"><i class="fas fa-id-card"></i> NIDN: 0821098902</small>
+                                            <% } %>
                                         </td>
                                         <td>
                                             <% if (u.role === 'dosen') { %>
@@ -1020,6 +1025,14 @@
                     <input type="text" id="add_nim" name="nim" class="filter-control" placeholder="Contoh: 240305013">
                 </div>
 
+                <div class="form-row" id="add_nidn_row" style="display: none;">
+                    <label for="add_nidn">NIDN / NIP Dosen</label>
+                    <input type="text" id="add_nidn" name="nidn" class="filter-control" placeholder="Contoh: 0821098902">
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
+                        * NIDN ini akan otomatis tercantum pada identitas naskah dan tanda tangan pengesahan kisi-kisi.
+                    </small>
+                </div>
+
                 <div class="form-row" id="add_kelas_row">
                     <label for="add_kelas">Kelas / Rombel</label>
                     <select id="add_kelas" name="id_kelas" class="filter-control">
@@ -1081,6 +1094,14 @@
                 <div class="form-row" id="edit_nim_row">
                     <label for="edit_nim">NIM</label>
                     <input type="text" id="edit_nim" name="nim" class="filter-control">
+                </div>
+
+                <div class="form-row" id="edit_nidn_row" style="display: none;">
+                    <label for="edit_nidn">NIDN / NIP Dosen</label>
+                    <input type="text" id="edit_nidn" name="nidn" class="filter-control" placeholder="Contoh: 0821098902">
+                    <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
+                        * NIDN ini akan otomatis tercantum pada identitas naskah dan tanda tangan pengesahan kisi-kisi.
+                    </small>
                 </div>
 
                 <div class="form-row" id="edit_kelas_row">
@@ -1746,6 +1767,7 @@
             document.getElementById('edit_nama').value = user.nama_lengkap || '';
             document.getElementById('edit_role').value = user.role || 'peserta';
             document.getElementById('edit_nim').value = user.nim || '';
+            document.getElementById('edit_nidn').value = user.nidn || '';
             document.getElementById('edit_kelas').value = user.id_kelas || '';
 
             toggleEditKelasInput(user.role);
@@ -1985,28 +2007,42 @@
             });
         });
 
-        // Toggle Kelas & NIM fields
+        // Toggle Kelas, NIM & NIDN fields
         function toggleAddKelasInput(role) {
             const nimRow = document.getElementById('add_nim_row');
+            const nidnRow = document.getElementById('add_nidn_row');
             const kelasRow = document.getElementById('add_kelas_row');
             if (role === 'peserta') {
                 nimRow.style.display = 'block';
                 kelasRow.style.display = 'block';
+                if (nidnRow) nidnRow.style.display = 'none';
+            } else if (role === 'dosen') {
+                nimRow.style.display = 'none';
+                kelasRow.style.display = 'none';
+                if (nidnRow) nidnRow.style.display = 'block';
             } else {
                 nimRow.style.display = 'none';
                 kelasRow.style.display = 'none';
+                if (nidnRow) nidnRow.style.display = 'none';
             }
         }
 
         function toggleEditKelasInput(role) {
             const nimRow = document.getElementById('edit_nim_row');
+            const nidnRow = document.getElementById('edit_nidn_row');
             const kelasRow = document.getElementById('edit_kelas_row');
             if (role === 'peserta') {
                 nimRow.style.display = 'block';
                 kelasRow.style.display = 'block';
+                if (nidnRow) nidnRow.style.display = 'none';
+            } else if (role === 'dosen') {
+                nimRow.style.display = 'none';
+                kelasRow.style.display = 'none';
+                if (nidnRow) nidnRow.style.display = 'block';
             } else {
                 nimRow.style.display = 'none';
                 kelasRow.style.display = 'none';
+                if (nidnRow) nidnRow.style.display = 'none';
             }
         }
 

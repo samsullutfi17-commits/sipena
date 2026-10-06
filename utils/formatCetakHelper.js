@@ -21,12 +21,26 @@ export function getUjianFormatCetak(ujian = {}, user = null, settings = {}) {
     namaDosen = 'Samsul Lutfi, S.Pd., M.Pd';
   }
 
+  let nidnDosen = '';
+  if (ujian && ujian.nidn_dosen && ujian.nidn_dosen.trim()) {
+    nidnDosen = ujian.nidn_dosen.trim();
+  } else if (user && user.nidn && user.nidn.trim()) {
+    nidnDosen = user.nidn.trim();
+  } else if (settings && settings.nidn_dosen) {
+    nidnDosen = settings.nidn_dosen.trim();
+  } else {
+    nidnDosen = '0821098902';
+  }
+
+  let namaKaprodi = (ujian && ujian.nama_kaprodi) || (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.';
+  let nidnKaprodi = (ujian && ujian.nidn_kaprodi) || (settings && settings.nidn_kaprodi) || '0812048501';
+
   // 1. Default institutional layout matching screenshot
   const defaultFormat = {
     // Kop Surat (Korps)
     tampilkan_kop: true,
     tampilkan_logo: true,
-    logo_path: (settings && settings.logo_path) || '/assets/img/logo_hamzanwadi.svg',
+    logo_path: (settings && settings.logo_path && !settings.logo_path.endsWith('.svg')) ? settings.logo_path : '/assets/img/logo_hamzanwadi.png',
     nama_institusi: (settings && settings.nama_institusi) || 'UNIVERSITAS HAMZANWADI',
     sub_institusi: (settings && settings.fakultas_institusi) || '',
     alamat_institusi: (settings && settings.alamat_institusi) || 'Jl. TGKH. Muhammad Zainuddin Abdul Madjid No. 132, Pancor, Kec. Selong, Kabupaten Lombok Timur, Nusa Tenggara Barat 83611',
@@ -77,11 +91,11 @@ export function getUjianFormatCetak(ujian = {}, user = null, settings = {}) {
     kota_ttd: 'Selong',
     tanggal_ttd: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
     jabatan_kiri: 'Ketua Program Studi',
-    nama_pejabat_kiri: (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.',
-    nip_kiri: (settings && settings.nidn_kaprodi) || '0812048501',
+    nama_pejabat_kiri: namaKaprodi,
+    nip_kiri: nidnKaprodi,
     jabatan_kanan: 'Dosen Pengampu Mata Kuliah',
     nama_pejabat_kanan: namaDosen,
-    nip_kanan: (settings && settings.nidn_dosen) || '0821098902'
+    nip_kanan: nidnDosen
   };
 
   // 2. User/Role custom default template

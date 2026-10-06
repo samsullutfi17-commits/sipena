@@ -24,18 +24,53 @@ class DataStore {
           if (Array.isArray(data.users)) this.users = data.users;
           if (Array.isArray(data.mahasiswa)) this.mahasiswa = data.mahasiswa;
           if (Array.isArray(data.fakultas)) this.fakultas = data.fakultas;
-          if (Array.isArray(data.program_studi)) this.program_studi = data.program_studi;
-          if (Array.isArray(data.kelas)) this.kelas = data.kelas;
-          if (Array.isArray(data.mata_kuliah)) this.mata_kuliah = data.mata_kuliah;
+          if (Array.isArray(data.program_studi)) {
+            this.program_studi = data.program_studi.map(p => ({
+              ...p,
+              nama_kaprodi: p.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.',
+              nidn_kaprodi: p.nidn_kaprodi || '0812048501'
+            }));
+          }
+          if (Array.isArray(data.kelas)) {
+            this.kelas = data.kelas.map(k => ({
+              ...k,
+              id_dosen: k.id_dosen || (k.id === 1 ? 6 : (k.id === 2 ? 7 : (k.id === 3 ? 7 : null))),
+              created_by: k.created_by || (k.id === 1 ? 'Samsul Lutfi, S.Pd., M.Pd' : 'Dr. Budi Santoso, M.Kom')
+            }));
+          }
+          if (Array.isArray(data.mata_kuliah)) {
+            this.mata_kuliah = data.mata_kuliah.map(m => ({
+              ...m,
+              id_dosen: m.id_dosen || ([2, 6, 7].includes(m.id) ? 6 : ([1, 3, 4].includes(m.id) ? 7 : 1)),
+              created_by: m.created_by || ([2, 6, 7].includes(m.id) ? 'Samsul Lutfi, S.Pd., M.Pd' : ([1, 3, 4].includes(m.id) ? 'Dr. Budi Santoso, M.Kom' : 'Pengajar'))
+            }));
+          }
           if (Array.isArray(data.mata_kuliah_kelas)) this.mata_kuliah_kelas = data.mata_kuliah_kelas;
-          if (Array.isArray(data.ujian)) this.ujian = data.ujian;
+          if (Array.isArray(data.ujian)) {
+            this.ujian = data.ujian.map(u => ({
+              ...u,
+              id_dosen: u.id_dosen || (u.id === 3 ? 7 : 6),
+              dosen_pembuat: u.dosen_pembuat || (u.id === 3 ? 'Dr. Budi Santoso, M.Kom' : 'Samsul Lutfi, S.Pd., M.Pd'),
+              pengampu: u.pengampu || (u.id === 3 ? 'Dr. Budi Santoso, M.Kom' : 'Samsul Lutfi, S.Pd., M.Pd')
+            }));
+          }
           if (Array.isArray(data.ujian_kelas)) this.ujian_kelas = data.ujian_kelas;
           if (Array.isArray(data.soal)) this.soal = data.soal;
           if (Array.isArray(data.opsi_jawaban)) this.opsi_jawaban = data.opsi_jawaban;
           if (Array.isArray(data.sesi_ujian)) this.sesi_ujian = data.sesi_ujian;
           if (Array.isArray(data.jawaban_peserta)) this.jawaban_peserta = data.jawaban_peserta;
           if (Array.isArray(data.riwayat_sesi_ujian)) this.riwayat_sesi_ujian = data.riwayat_sesi_ujian;
-          if (data.pengaturan) this.pengaturan = data.pengaturan;
+          if (data.pengaturan) {
+            this.pengaturan = {
+              ...this.pengaturan,
+              ...data.pengaturan,
+              logo_path: (data.pengaturan.logo_path && !data.pengaturan.logo_path.endsWith('.svg')) ? data.pengaturan.logo_path : '/assets/img/logo_hamzanwadi.png',
+              nama_kaprodi: data.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.',
+              nidn_kaprodi: data.pengaturan.nidn_kaprodi || '0812048501',
+              nama_dosen: data.pengaturan.nama_dosen || 'Samsul Lutfi, S.Pd., M.Pd.',
+              nidn_dosen: data.pengaturan.nidn_dosen || '0821098902'
+            };
+          }
         }
       } else {
         this.save();
@@ -293,13 +328,17 @@ class DataStore {
     this.jawaban_peserta = [];
     this.riwayat_sesi_ujian = [];
 
-        this.pengaturan = {
+    this.pengaturan = {
       nama_institusi: 'UNIVERSITAS HAMZANWADI',
       fakultas_institusi: 'FAKULTAS MIPA',
       alamat_institusi: 'Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor, Selong Lombok Timur 83612',
       telepon_institusi: 'Telp. (0376) 22954, email: universitas@hamzanwadi.ac.id',
       website_institusi: 'http://hamzanwadi.ac.id',
-      logo_path: '/assets/img/logo_hamzanwadi.svg'
+      logo_path: '/assets/img/logo_hamzanwadi.png',
+      nama_kaprodi: 'Dr. H. M. Zain, M.Pd.',
+      nidn_kaprodi: '0812048501',
+      nama_dosen: 'Samsul Lutfi, S.Pd., M.Pd.',
+      nidn_dosen: '0821098902'
     };
   }
 
