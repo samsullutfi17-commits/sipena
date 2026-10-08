@@ -595,18 +595,29 @@
             </nav>
 
             <!-- Title & Top Right Action Buttons -->
-            <div class="users-header-row">
-                <h2 class="users-page-title">
-                    <i class="fas fa-users-gear"></i> Pengguna & Sesi Peserta
-                </h2>
+            <div class="page-header-row">
+                <div>
+                    <% if (adminRole === 'dosen') { %>
+                        <h2 class="page-title">
+                            <i class="fas fa-user-graduate"></i> Data Mahasiswa & Peserta Ujian
+                        </h2>
+                        <p class="page-subtitle">
+                            Kelola data mahasiswa perwalian/kelas yang Anda ampu dan pantau sesi ujian.
+                        </p>
+                    <% } else { %>
+                        <h2 class="page-title">
+                            <i class="fas fa-users-gear"></i> Pengguna & Sesi Peserta
+                        </h2>
+                        <p class="page-subtitle">
+                            Kelola data akun pengguna, role sistem, reset password, dan pantau aktivitas peserta ujian.
+                        </p>
+                    <% } %>
+                </div>
 
                 <div class="users-top-actions">
-                    <button type="button" class="btn-tambah-user" onclick="openAddModal()">
-                        <i class="fas fa-plus"></i> Tambah Pengguna
+                    <button type="button" class="btn-primary-action" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i> <%= adminRole === 'dosen' ? 'Tambah Mahasiswa' : 'Tambah Pengguna' %>
                     </button>
-                    <a href="/admin/users/template_xlsx" class="btn-template-download" title="Unduh Template Excel dengan Kolom Kelas">
-                        <i class="fas fa-file-arrow-down"></i> Unduh Template Excel
-                    </a>
                     <a href="/admin/users/export_xlsx" class="btn-export-xlsx" title="Ekspor Seluruh Data Pengguna & Kelas ke Excel">
                         <i class="fas fa-file-export"></i> Ekspor Excel
                     </a>
@@ -676,17 +687,17 @@
                 </div>
 
                 <!-- Users Table -->
-                <div class="table-card">
+                <div class="modern-table-card">
                     <div style="overflow-x: auto;">
-                        <table class="users-table" id="usersTable">
+                        <table class="modern-table" id="usersTable">
                             <thead>
                                 <tr>
-                                    <th style="width: 17%;">Username</th>
+                                    <th style="width: 16%;">Username</th>
                                     <th style="width: 25%;">Nama Lengkap & NIM</th>
                                     <th style="width: 12%;">Role</th>
                                     <th style="width: 16%;">Kelas</th>
                                     <th style="width: 12%;">Dibuat</th>
-                                    <th style="width: 18%;">Aksi</th>
+                                    <th style="width: 19%; text-align: center;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -705,34 +716,36 @@
                                         data-kelas="<%= u.id_kelas || '' %>"
                                         data-namakelas="<%= (u.nama_kelas || '').toLowerCase() %>">
                                         <td>
-                                            <strong style="font-weight: 500;"><%= u.username %></strong>
+                                            <strong style="font-weight: 600; color: #0f172a;"><%= u.username %></strong>
                                         </td>
                                         <td>
-                                            <div style="font-weight: 500;"><%= u.nama_lengkap %></div>
+                                            <strong style="color: #0f172a; font-size: 0.94rem;"><%= u.nama_lengkap %></strong>
                                             <% if (u.nim) { %>
-                                                <small style="color: #64748b; font-size: 0.78rem;">NIM: <%= u.nim %></small>
+                                                <div style="margin-top: 3px;">
+                                                    <span class="kode-badge" style="font-size: 0.78rem; padding: 2px 7px;">NIM: <%= u.nim %></span>
+                                                </div>
                                             <% } %>
                                             <% if (u.nidn) { %>
-                                                <small style="color: #0369a1; font-size: 0.78rem; font-weight: 600; display: block;"><i class="fas fa-id-card"></i> NIDN: <%= u.nidn %></small>
+                                                <small style="color: #0369a1; font-size: 0.78rem; font-weight: 600; display: block; margin-top: 3px;"><i class="fas fa-id-card"></i> NIDN: <%= u.nidn %></small>
                                             <% } else if (u.role === 'dosen') { %>
-                                                <small style="color: #0369a1; font-size: 0.78rem; font-weight: 600; display: block;"><i class="fas fa-id-card"></i> NIDN: 0821098902</small>
+                                                <small style="color: #0369a1; font-size: 0.78rem; font-weight: 600; display: block; margin-top: 3px;"><i class="fas fa-id-card"></i> NIDN: 0821098902</small>
                                             <% } %>
                                         </td>
                                         <td>
                                             <% if (u.role === 'dosen') { %>
-                                                <span class="role-badge-dosen">Dosen</span>
+                                                <span class="pill-badge pill-badge-success">Dosen</span>
                                             <% } else if (u.role === 'peserta') { %>
-                                                <span class="role-text-peserta">Peserta</span>
+                                                <span class="pill-badge">Peserta</span>
                                             <% } else if (u.role === 'pengawas') { %>
-                                                <span class="role-badge-pengawas">Pengawas</span>
+                                                <span class="pill-badge pill-badge-warning">Pengawas</span>
                                             <% } else { %>
-                                                <span class="role-badge-admin">Admin</span>
+                                                <span class="pill-badge pill-badge-purple">Admin</span>
                                             <% } %>
                                         </td>
                                         <td>
                                             <% if (u.role === 'peserta') { %>
                                                 <% if (u.nama_kelas) { %>
-                                                    <span class="badge-user-kelas"><i class="fas fa-graduation-cap"></i> <%= u.nama_kelas %></span>
+                                                    <span class="pill-badge"><i class="fas fa-graduation-cap"></i> <%= u.nama_kelas %></span>
                                                 <% } else { %>
                                                     <span style="color: #94a3b8; font-size: 0.8rem; font-style: italic;">Belum Diatur</span>
                                                 <% } %>
@@ -740,22 +753,22 @@
                                                 <span style="color: #cbd5e1;">-</span>
                                             <% } %>
                                         </td>
-                                        <td style="color: #475569;">
+                                        <td style="color: #475569; font-size: 0.88rem;">
                                             <%= formattedDate %>
                                         </td>
-                                        <td>
-                                            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
-                                                <button type="button" class="btn-action-edit" onclick="openEditModal(<%= JSON.stringify(u) %>)">
-                                                    Edit
-                                                </button>
-
-                                                <button type="button" class="btn-action-reset" onclick="openResetModal(<%= u.id %>, '<%= u.username %>', '<%= (u.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
-                                                    Reset PW
-                                                </button>
-
-                                                <% if (u.username !== 'admin' && u.username !== 'samsul') { %>
-                                                    <button type="button" class="btn-action-hapus" onclick="openDeleteModal(<%= u.id %>, '<%= u.username %>', '<%= (u.nama_lengkap || '').replace(/'/g, '\\\'') %>')">
-                                                        Hapus
+                                        <td style="text-align: center;">
+                                            <div style="display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                                                <% if (u.can_edit !== false) { %>
+                                                    <button type="button" class="btn-action-edit" onclick="openEditModal(<%= JSON.stringify(u) %>)" title="Edit Pengguna">
+                                                        <i class="fas fa-pen-to-square"></i> Edit
+                                                    </button>
+                                                    <button type="button" class="btn-action-secondary" onclick="openResetModal(<%= u.id %>, '<%= u.username %>', '<%= (u.nama_lengkap || '').replace(/'/g, '\\\'') %>')" title="Reset Password">
+                                                        <i class="fas fa-key"></i> Reset
+                                                    </button>
+                                                <% } %>
+                                                <% if (u.can_delete !== false && u.username !== 'admin' && u.username !== 'samsul') { %>
+                                                    <button type="button" class="btn-action-delete" onclick="openDeleteModal(<%= u.id %>, '<%= u.username %>', '<%= (u.nama_lengkap || '').replace(/'/g, '\\\'') %>')" title="Hapus Akun">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 <% } %>
                                             </div>
@@ -857,9 +870,9 @@
                 </div>
 
                 <!-- Real-time Monitor Table matching user requirements -->
-                <div class="table-card">
+                <div class="modern-table-card">
                     <div style="overflow-x: auto;">
-                        <table class="users-table" id="statusPesertaTable">
+                        <table class="modern-table" id="statusPesertaTable">
                             <thead>
                                 <tr>
                                     <th style="width: 45px;">No</th>
@@ -1012,12 +1025,17 @@
 
                 <div class="form-row">
                     <label for="add_role">Peran (Role)</label>
-                    <select id="add_role" name="role" class="filter-control" onchange="toggleAddKelasInput(this.value)">
-                        <option value="peserta">Peserta (Mahasiswa)</option>
-                        <option value="dosen">Dosen (Pengajar)</option>
-                        <option value="pengawas">Pengawas Ujian</option>
-                        <option value="admin">Administrator</option>
-                    </select>
+                    <% if (adminRole === 'dosen') { %>
+                        <input type="text" value="Peserta (Mahasiswa)" class="filter-control" disabled style="background: #f1f5f9; cursor: not-allowed;">
+                        <input type="hidden" id="add_role" name="role" value="peserta">
+                    <% } else { %>
+                        <select id="add_role" name="role" class="filter-control" onchange="toggleAddKelasInput(this.value)">
+                            <option value="peserta">Peserta (Mahasiswa)</option>
+                            <option value="dosen">Dosen (Pengajar)</option>
+                            <option value="pengawas">Pengawas Ujian</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    <% } %>
                 </div>
 
                 <div class="form-row" id="add_nim_row">
@@ -1083,12 +1101,17 @@
 
                 <div class="form-row">
                     <label for="edit_role">Peran (Role)</label>
-                    <select id="edit_role" name="role" class="filter-control" onchange="toggleEditKelasInput(this.value)">
-                        <option value="peserta">Peserta (Mahasiswa)</option>
-                        <option value="dosen">Dosen (Pengajar)</option>
-                        <option value="pengawas">Pengawas Ujian</option>
-                        <option value="admin">Administrator</option>
-                    </select>
+                    <% if (adminRole === 'dosen') { %>
+                        <input type="text" value="Peserta (Mahasiswa)" class="filter-control" disabled style="background: #f1f5f9; cursor: not-allowed;">
+                        <input type="hidden" id="edit_role" name="role" value="peserta">
+                    <% } else { %>
+                        <select id="edit_role" name="role" class="filter-control" onchange="toggleEditKelasInput(this.value)">
+                            <option value="peserta">Peserta (Mahasiswa)</option>
+                            <option value="dosen">Dosen (Pengajar)</option>
+                            <option value="pengawas">Pengawas Ujian</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    <% } %>
                 </div>
 
                 <div class="form-row" id="edit_nim_row">

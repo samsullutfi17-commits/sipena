@@ -400,35 +400,35 @@
             <% } %>
 
             <!-- Matriks Sebaran Soal Table -->
-            <div class="card" style="box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;">
-                        <i class="fas fa-list-check" style="color: #1e5631;"></i> Matriks Sebaran & Rincian Butir Soal
+            <div class="modern-table-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; border-bottom: 1.5px solid #e2e8f0; background: #ffffff;">
+                    <h3 style="margin: 0; font-size: 1.15rem; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-list-check" style="color: #1b4d3e;"></i> Matriks Sebaran & Rincian Butir Soal
                     </h3>
-                    <span class="badge badge-info" style="font-size: 0.85rem; padding: 6px 12px;">
+                    <span class="pill-badge pill-badge-purple" style="font-size: 0.85rem; padding: 6px 14px;">
                         <%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Ujian Terpilih' %>
                     </span>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table">
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
                         <thead>
                             <tr>
-                                <th style="width: 50px;">No</th>
+                                <th style="width: 50px; text-align: center;">No</th>
                                 <th style="width: 20%;">CPMK / Kompetensi</th>
                                 <th style="width: 18%;">Materi Pokok</th>
                                 <th style="width: 25%;">Indikator Soal</th>
                                 <th style="width: 10%;">Bentuk</th>
-                                <th style="width: 8%;">Level</th>
-                                <th style="width: 9%;">Kesulitan</th>
-                                <th style="width: 6%;">Bobot</th>
+                                <th style="width: 8%; text-align: center;">Level</th>
+                                <th style="width: 10%; text-align: center;">Kesulitan</th>
+                                <th style="width: 7%; text-align: center;">Bobot</th>
                                 <th style="width: 210px; text-align: center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% if (soalList.length === 0) { %>
                                 <tr>
-                                    <td colspan="9" class="text-center" style="padding: 36px; color: #64748b;">
+                                    <td colspan="9" style="text-align: center; padding: 42px; color: #64748b;">
                                         <i class="fas fa-folder-open" style="font-size: 2.2rem; display: block; margin-bottom: 10px; color: #cbd5e1;"></i>
                                         Belum ada butir soal atau kisi-kisi pada ujian ini.<br>
                                         Klik tombol <strong>Generate Kisi-Kisi AI</strong> di atas untuk membuat matriks otomatis.
@@ -437,10 +437,10 @@
                             <% } else { %>
                                 <% soalList.forEach(function(s, idx) { %>
                                     <tr>
-                                        <td><strong><%= idx + 1 %></strong></td>
-                                        <td><div style="font-size: 0.9rem; font-weight: 600; color: #0f172a;"><%= s.cpmk || 'Capaian Pembelajaran MK' %></div></td>
-                                        <td><span style="color: #475569; font-size: 0.85rem;"><%= s.materi_pokok || '-' %></span></td>
-                                        <td><div style="font-size: 0.85rem; color: #334155;"><%= s.indikator || (s.pertanyaan ? s.pertanyaan.replace(/<[^>]*>?/gm, '').substring(0, 80) + '...' : '-') %></div></td>
+                                        <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
+                                        <td><div style="font-size: 0.92rem; font-weight: 600; color: #0f172a;"><%= s.cpmk || 'Capaian Pembelajaran MK' %></div></td>
+                                        <td><span style="color: #475569; font-size: 0.88rem;"><%= s.materi_pokok || '-' %></span></td>
+                                        <td><div style="font-size: 0.88rem; color: #334155; line-height: 1.4;"><%= s.indikator || (s.pertanyaan ? s.pertanyaan.replace(/<[^>]*>?/gm, '').substring(0, 80) + '...' : '-') %></div></td>
                                         <td>
                                             <% 
                                                 let jsoalLabel = 'PG';
@@ -451,41 +451,41 @@
                                                 else if (jCode === 'short' || jCode === 'isian') jsoalLabel = 'Isian Singkat';
                                                 else if (jCode === 'esai' || jCode === 'essay') jsoalLabel = 'Uraian/Esai';
                                             %>
-                                            <span class="badge badge-secondary" style="font-size: 0.75rem;">
+                                            <span class="pill-badge" style="font-size: 0.78rem;">
                                                  <%= jsoalLabel %>
                                             </span>
                                         </td>
-                                        <td>
-                                            <span class="badge badge-info" style="font-size: 0.75rem;">
+                                        <td style="text-align: center;">
+                                            <span class="kode-badge" style="font-size: 0.78rem; padding: 2px 7px;">
                                                 <%= s.level_kognitif || 'C2' %>
                                             </span>
                                         </td>
-                                        <td>
+                                        <td style="text-align: center;">
                                             <% 
                                                 const diff = (s.tingkat_kesulitan || '').toLowerCase();
-                                                let badgeClass = 'badge-warning';
-                                                if (diff === 'mudah') badgeClass = 'badge-success';
-                                                else if (diff === 'sulit') badgeClass = 'badge-danger';
+                                                let pillColor = 'pill-badge-warning';
+                                                if (diff === 'mudah') pillColor = 'pill-badge-success';
+                                                else if (diff === 'sulit') pillColor = 'pill-badge-danger';
                                             %>
-                                            <span class="badge <%= badgeClass %>" style="font-size: 0.75rem;">
-                                                <%= diff %>
+                                            <span class="pill-badge <%= pillColor %>" style="font-size: 0.78rem;">
+                                                <%= diff || 'sedang' %>
                                             </span>
                                         </td>
-                                        <td><strong><%= s.poin || 4 %></strong></td>
+                                        <td style="text-align: center;"><strong style="color: #0f172a; font-size: 0.95rem;"><%= s.poin || 4 %></strong></td>
                                         <td style="text-align: center; white-space: nowrap;">
                                             <div style="display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                                                <button type="button" class="btn btn-sm btn-outline-primary" style="padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;" onclick="viewSoalDetail(<%= s.id %>)" title="Lihat Pertanyaan Lengkap">
+                                                <button type="button" class="btn-action-secondary" onclick="viewSoalDetail(<%= s.id %>)" title="Lihat Pertanyaan Lengkap">
                                                     <i class="fas fa-eye"></i> Detail
                                                 </button>
-                                                <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #ffffff; border: none; padding: 5px 10px; font-size: 0.82rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit Kisi-Kisi &amp; Soal" onclick="openEditKisiModalById(<%= s.id %>)">
+                                                <button type="button" class="btn-action-edit" title="Edit Kisi-Kisi &amp; Soal" onclick="openEditKisiModalById(<%= s.id %>)">
                                                     <i class="fas fa-pen-to-square"></i> Edit
                                                 </button>
                                                 <form method="POST" action="/admin/kisi_kisi" style="display: inline-block; margin: 0;" onsubmit="return confirmDelete('Apakah Anda yakin ingin menghapus butir kisi-kisi No. <%= idx + 1 %> ini?');">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="ujian_id" value="<%= selectedUjianId %>">
                                                     <input type="hidden" name="soal_id" value="<%= s.id %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="Hapus Butir Kisi-Kisi">
-                                                        <i class="fas fa-trash"></i> Hapus
+                                                    <button type="submit" class="btn-action-delete" title="Hapus Butir Kisi-Kisi">
+                                                        <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
                                             </div>

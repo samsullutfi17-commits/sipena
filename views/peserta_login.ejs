@@ -38,21 +38,23 @@
             border: 1px solid #f1f5f9;
         }
 
-        .avatar-badge {
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            background-color: #1b4d3e;
+        .login-logo-container {
             margin: 0 auto 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(27, 77, 62, 0.2);
         }
 
-        .avatar-badge i {
-            color: #ffffff;
-            font-size: 1.7rem;
+        .login-logo-img {
+            width: 82px;
+            height: 82px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
+            transition: transform 0.2s ease;
+        }
+
+        .login-logo-img:hover {
+            transform: scale(1.05);
         }
 
         .login-title {
@@ -261,8 +263,8 @@
     <% } else { %>
         <!-- LOGIN CARD MATCHING IMAGE 1 -->
         <div class="login-card">
-            <div class="avatar-badge">
-                <i class="fas fa-user-graduate"></i>
+            <div class="login-logo-container">
+                <img src="/assets/img/logo_hamzanwadi.png" alt="Logo Universitas Hamzanwadi" class="login-logo-img">
             </div>
 
             <h2 class="login-title">Login Peserta</h2>

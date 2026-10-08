@@ -1122,6 +1122,12 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
 
 // Admin Hasil Penilaian
 app.get(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const userExams = (currentUser && currentUser.role === 'dosen')
+    ? db.ujian.filter(u => isExamOwner(u, currentUser))
+    : db.ujian;
+  const myExamIds = userExams.map(u => u.id);
+
   const ujianId = parseInt(req.query.ujian_id, 10) || 0;
   const kelasId = parseInt(req.query.kelas_id, 10) || 0;
   const search = (req.query.search || '').toLowerCase();
@@ -1144,6 +1150,10 @@ app.get(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
     };
   });
 
+  if (currentUser && currentUser.role === 'dosen') {
+    results = results.filter(r => myExamIds.includes(r.id_ujian));
+  }
+
   if (ujianId) results = results.filter(r => r.id_ujian === ujianId);
   if (kelasId) results = results.filter(r => {
     const mhs = db.mahasiswa.find(m => m.id === r.id_mahasiswa);
@@ -1153,26 +1163,36 @@ app.get(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
     results = results.filter(r => r.nama_lengkap.toLowerCase().includes(search) || r.nim.toLowerCase().includes(search));
   }
 
+  const userKelasList = (currentUser && currentUser.role === 'dosen')
+    ? db.kelas.filter(k => isKelasOwner(k, currentUser))
+    : db.kelas;
+
   res.render('admin/hasil', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
     results,
-    ujianList: db.ujian,
-    kelasList: db.kelas,
+    ujianList: userExams,
+    kelasList: userKelasList,
     selectedUjianId: ujianId,
     selectedKelasId: kelasId,
     search,
-    message: req.query.msg || ''
+    message: req.query.msg || '',
+    error: req.query.err || ''
   });
 });
 
 app.post(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
   const action = req.body.action;
+  const currentUser = getCurrentUser(req);
 
   if (action === 'reset_single') {
     const sesiId = parseInt(req.body.sesi_id, 10);
     const sesi = db.sesi_ujian.find(s => s.id === sesiId);
     if (sesi) {
+      const ujian = db.ujian.find(u => u.id === sesi.id_ujian);
+      if (!isExamOwner(ujian, currentUser)) {
+        return res.redirect('/admin/hasil?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mereset sesi untuk ujian milik Anda!'));
+      }
       db.riwayat_sesi_ujian.push({
         id_sesi: sesi.id,
         id_ujian: sesi.id_ujian,
@@ -1189,14 +1209,25 @@ app.post(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
     }
   } else if (action === 'delete_single') {
     const sesiId = parseInt(req.body.sesi_id, 10);
-    db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sesiId);
-    db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sesiId);
-    db.save();
-    return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Data hasil berhasil dihapus!'));
+    const sesi = db.sesi_ujian.find(s => s.id === sesiId);
+    if (sesi) {
+      const ujian = db.ujian.find(u => u.id === sesi.id_ujian);
+      if (!isExamOwner(ujian, currentUser)) {
+        return res.redirect('/admin/hasil?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat menghapus hasil untuk ujian milik Anda!'));
+      }
+      db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sesiId);
+      db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sesiId);
+      db.save();
+      return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Data hasil berhasil dihapus!'));
+    }
   } else if (action === 'edit_nilai') {
     const sesiId = parseInt(req.body.sesi_id, 10);
     const sesi = db.sesi_ujian.find(s => s.id === sesiId);
     if (sesi) {
+      const ujian = db.ujian.find(u => u.id === sesi.id_ujian);
+      if (!isExamOwner(ujian, currentUser)) {
+        return res.redirect('/admin/hasil?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengedit nilai untuk ujian milik Anda!'));
+      }
       sesi.nilai_total = parseFloat(req.body.nilai_total) || 0;
       db.save();
       return res.redirect('/admin/hasil?msg=' + encodeURIComponent('Nilai ujian peserta berhasil diperbarui!'));
@@ -1212,8 +1243,13 @@ app.get(['/admin/detail_hasil', '/admin/detail_hasil.php'], requireAdmin, (req, 
   const sesi = db.sesi_ujian.find(s => s.id === sesiId);
   if (!sesi) return res.redirect('/admin/hasil');
 
-  const mhs = db.mahasiswa.find(m => m.id === sesi.id_mahasiswa);
+  const currentUser = getCurrentUser(req);
   const ujian = db.ujian.find(u => u.id === sesi.id_ujian);
+  if (!isExamOwner(ujian, currentUser)) {
+    return res.redirect('/admin/hasil?err=' + encodeURIComponent('Akses ditolak: Anda tidak memiliki akses ke detail hasil ujian ini!'));
+  }
+
+  const mhs = db.mahasiswa.find(m => m.id === sesi.id_mahasiswa);
   const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
   const soalList = db.getSoalByUjian(sesi.id_ujian);
   const jawabanList = db.jawaban_peserta.filter(j => j.id_sesi === sesiId);
@@ -1231,20 +1267,29 @@ app.get(['/admin/detail_hasil', '/admin/detail_hasil.php'], requireAdmin, (req, 
 
 // Admin Kisi-Kisi
 app.get(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) => {
-  const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
-  const currentUjian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+  const currentUser = getCurrentUser(req);
+  const userExams = (currentUser && currentUser.role === 'dosen')
+    ? db.ujian.filter(u => isExamOwner(u, currentUser))
+    : db.ujian;
+
+  let ujianId = parseInt(req.query.ujian_id, 10);
+  if (!ujianId || !userExams.some(u => u.id === ujianId)) {
+    ujianId = userExams[0] ? userExams[0].id : 0;
+  }
+  const currentUjian = db.ujian.find(u => u.id === ujianId) || userExams[0];
   const matkul = currentUjian ? db.mata_kuliah.find(m => m.id === currentUjian.id_mata_kuliah) : null;
   const soalList = db.getSoalByUjian(currentUjian ? currentUjian.id : 0);
 
   res.render('admin/kisi_kisi', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
-    ujianList: db.ujian,
+    ujianList: userExams,
     selectedUjianId: currentUjian ? currentUjian.id : 0,
     currentUjian: currentUjian ? { ...currentUjian, nama_mk: matkul ? matkul.nama_mk : '-' } : null,
     soalList,
     settings: db.pengaturan,
-    message: req.query.msg || ''
+    message: req.query.msg || '',
+    error: req.query.err || ''
   });
 });
 
@@ -1252,11 +1297,21 @@ app.post(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) 
   const { action, soal_id, id, ujian_id, cpmk, materi_pokok, indikator, level_kognitif, tingkat_kesulitan, poin, pertanyaan } = req.body;
   let targetUjianId = parseInt(ujian_id, 10) || 0;
   const targetSoalId = parseInt(soal_id || id, 10) || 0;
+  const currentUser = getCurrentUser(req);
+
+  const targetUjian = db.ujian.find(u => u.id === targetUjianId);
+  if (targetUjian && !isExamOwner(targetUjian, currentUser)) {
+    return res.redirect(`/admin/kisi_kisi?err=` + encodeURIComponent('Akses ditolak: Anda hanya dapat mengedit kisi-kisi pada penilaian milik Anda!'));
+  }
 
   if (action === 'edit' && targetSoalId) {
     const s = db.soal.find(x => x.id === targetSoalId);
     if (s) {
       if (!targetUjianId) targetUjianId = s.id_ujian;
+      const parentExam = db.ujian.find(u => u.id === s.id_ujian);
+      if (!isExamOwner(parentExam, currentUser)) {
+        return res.redirect(`/admin/kisi_kisi?err=` + encodeURIComponent('Akses ditolak: Anda hanya dapat mengedit kisi-kisi pada penilaian milik Anda!'));
+      }
       if (cpmk !== undefined) s.cpmk = cpmk.trim();
       if (materi_pokok !== undefined) s.materi_pokok = materi_pokok.trim();
       if (indikator !== undefined) s.indikator = indikator.trim();
@@ -1269,11 +1324,17 @@ app.post(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) 
     }
   } else if (action === 'delete' && targetSoalId) {
     const s = db.soal.find(x => x.id === targetSoalId);
-    if (s && !targetUjianId) targetUjianId = s.id_ujian;
-    db.soal = db.soal.filter(x => x.id !== targetSoalId);
-    db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== targetSoalId);
-    db.save();
-    return res.redirect(`/admin/kisi_kisi?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Butir kisi-kisi soal berhasil dihapus!'));
+    if (s) {
+      if (!targetUjianId) targetUjianId = s.id_ujian;
+      const parentExam = db.ujian.find(u => u.id === s.id_ujian);
+      if (!isExamOwner(parentExam, currentUser)) {
+        return res.redirect(`/admin/kisi_kisi?err=` + encodeURIComponent('Akses ditolak: Anda hanya dapat menghapus kisi-kisi pada penilaian milik Anda!'));
+      }
+      db.soal = db.soal.filter(x => x.id !== targetSoalId);
+      db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== targetSoalId);
+      db.save();
+      return res.redirect(`/admin/kisi_kisi?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Butir kisi-kisi soal berhasil dihapus!'));
+    }
   }
 
   res.redirect(`/admin/kisi_kisi?ujian_id=${targetUjianId}`);
@@ -1281,11 +1342,14 @@ app.post(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) 
 
 // Export PDF / Print Preview Naskah Soal matching Image 2
 app.get(['/admin/kisi_kisi/export_pdf', '/admin/soal/cetak_naskah'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
   const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+  if (ujian && !isExamOwner(ujian, currentUser)) {
+    return res.redirect('/admin/ujian?err=' + encodeURIComponent('Akses ditolak: Anda tidak memiliki akses ke naskah penilaian ini!'));
+  }
   const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
   const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
-  const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
 
   // Auto-assign creator lecturer name if exam lecturer name is generic or unset
   if (currentUser && currentUser.nama_lengkap && (!ujian.dosen_pembuat || ujian.dosen_pembuat === 'Dosen Pengampu' || !ujian.pengampu || ujian.pengampu === 'Dosen Pengampu')) {
@@ -1307,11 +1371,14 @@ app.get(['/admin/kisi_kisi/export_pdf', '/admin/soal/cetak_naskah'], requireAdmi
 
 // Export PDF / Print Preview Matriks Kisi-Kisi Soal
 app.get(['/admin/kisi_kisi/cetak_matriks', '/admin/kisi_kisi/export_matrix_pdf'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
   const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+  if (ujian && !isExamOwner(ujian, currentUser)) {
+    return res.redirect('/admin/ujian?err=' + encodeURIComponent('Akses ditolak: Anda tidak memiliki akses ke matriks penilaian ini!'));
+  }
   const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
   const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
-  const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
 
   // Auto-assign creator lecturer name if exam lecturer name is generic or unset
   if (currentUser && currentUser.nama_lengkap && (!ujian.dosen_pembuat || ujian.dosen_pembuat === 'Dosen Pengampu' || !ujian.pengampu || ujian.pengampu === 'Dosen Pengampu')) {
@@ -1491,11 +1558,14 @@ app.post('/admin/api/upload_logo', requireAdmin, (req, res) => {
 // Export Word (.docx) matching Image 2
 app.get(['/admin/kisi_kisi/export_word'], requireAdmin, async (req, res) => {
   try {
+    const currentUser = getCurrentUser(req);
     const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
     const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+    if (ujian && !isExamOwner(ujian, currentUser)) {
+      return res.status(403).send('Akses ditolak: Anda tidak memiliki akses ke naskah penilaian ini!');
+    }
     const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
     const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
-    const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
     const ujianData = { ...ujian, nama_mk: matkul ? matkul.nama_mk : '-' };
 
     const docxBuffer = await generateExamDocx(ujianData, soalList, db.pengaturan, currentUser);
@@ -1513,11 +1583,14 @@ app.get(['/admin/kisi_kisi/export_word'], requireAdmin, async (req, res) => {
 // Export Matriks Kisi-Kisi Word (.docx)
 app.get(['/admin/kisi_kisi/export_matrix_word'], requireAdmin, async (req, res) => {
   try {
+    const currentUser = getCurrentUser(req);
     const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
     const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+    if (ujian && !isExamOwner(ujian, currentUser)) {
+      return res.status(403).send('Akses ditolak: Anda tidak memiliki akses ke matriks penilaian ini!');
+    }
     const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
     const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
-    const currentUser = req.session && req.session.admin_id ? db.users.find(u => u.id === req.session.admin_id) : null;
     const ujianData = { ...ujian, nama_mk: matkul ? matkul.nama_mk : '-' };
 
     const docxBuffer = await generateMatrixDocx(ujianData, soalList, db.pengaturan, currentUser);
@@ -1550,11 +1623,15 @@ function getJenisSoalLabel(code) {
 // Export Matriks Kisi-Kisi & Soal to Excel (.xlsx)
 app.get(['/admin/kisi_kisi/export_excel', '/admin/kisi_kisi/export_xlsx'], requireAdmin, (req, res) => {
   try {
+    const currentUser = getCurrentUser(req);
     const xlsxLib = XLSX.default || XLSX;
     const wb = xlsxLib.utils.book_new();
 
     const ujianId = parseInt(req.query.ujian_id, 10) || (db.ujian[0] ? db.ujian[0].id : 0);
     const ujian = db.ujian.find(u => u.id === ujianId) || db.ujian[0];
+    if (ujian && !isExamOwner(ujian, currentUser)) {
+      return res.status(403).send('Akses ditolak: Anda tidak memiliki akses ke penilaian ini!');
+    }
     const matkul = ujian ? db.mata_kuliah.find(m => m.id === ujian.id_mata_kuliah) : null;
     const soalList = db.getSoalByUjian(ujian ? ujian.id : 0);
     const ujianNama = ujian ? (ujian.nama_mk || ujian.judul_ujian) : 'Ujian';
@@ -2039,9 +2116,13 @@ async function generateWithAI({ prompt, systemInstruction = 'Anda adalah dosen a
 
 // API: Generate Kisi-Kisi AI (Multi-Type Question & Custom Bloom Levels, No Jenjang)
 app.post(['/admin/api/generate_kisi_kisi'], requireAdmin, async (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { ujian_id, topik, sub_topik, cpmk, jumlah, kesulitan, jenis_soal_list, kognitif_list, apply } = req.body;
   const count = parseInt(jumlah, 10) || 5;
   const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10)) || db.ujian[0];
+  if (targetUjian && !isExamOwner(targetUjian, currentUser)) {
+    return res.status(403).json({ success: false, message: 'Akses ditolak: Anda tidak memiliki akses ke penilaian ini!' });
+  }
   const matkul = targetUjian ? db.mata_kuliah.find(m => m.id === targetUjian.id_mata_kuliah) : null;
   const effectiveTopik = topik || (matkul ? matkul.nama_mk : (targetUjian ? targetUjian.judul_ujian : 'Mata Kuliah'));
 
@@ -2235,10 +2316,11 @@ Format respon HANYA berupa JSON valid:
 
 // API: Save / Apply approved Kisi-Kisi matrix after user preview
 app.post(['/admin/api/save_kisi_kisi'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { ujian_id, items } = req.body;
   const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10));
-  if (!targetUjian || !Array.isArray(items)) {
-    return res.status(400).json({ success: false, message: 'Data tidak valid' });
+  if (!targetUjian || !isExamOwner(targetUjian, currentUser) || !Array.isArray(items)) {
+    return res.status(400).json({ success: false, message: 'Data tidak valid atau akses ditolak' });
   }
 
   const existingSoal = db.soal.filter(s => s.id_ujian === targetUjian.id);
@@ -2314,10 +2396,14 @@ app.post(['/admin/api/save_kisi_kisi'], requireAdmin, (req, res) => {
 
 // API: Generate Soal dari Matriks Kisi-Kisi (Multi-Type Question & Custom Bloom Levels, No Jenjang)
 app.post(['/admin/api/generate_soal_kisi_kisi'], requireAdmin, async (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { ujian_id, jumlah, poin, fokus_materi, jenis_soal_list, kesulitan, kognitif_list, apply } = req.body;
   const count = parseInt(jumlah, 10) || 5;
   const eachPoin = parseInt(poin, 10) || 4;
   const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10)) || db.ujian[0];
+  if (targetUjian && !isExamOwner(targetUjian, currentUser)) {
+    return res.status(403).json({ success: false, message: 'Akses ditolak: Anda tidak memiliki akses ke penilaian ini!' });
+  }
   const matkul = targetUjian ? db.mata_kuliah.find(m => m.id === targetUjian.id_mata_kuliah) : null;
   const courseName = matkul ? matkul.nama_mk : (targetUjian ? targetUjian.judul_ujian : 'Mata Kuliah');
 
@@ -2451,10 +2537,11 @@ Format respon HANYA berupa JSON valid:
 
 // API: Save / Apply approved questions from Kisi-Kisi
 app.post(['/admin/api/save_soal_kisi_kisi'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { ujian_id, questions, poin } = req.body;
   const targetUjian = db.ujian.find(u => u.id === parseInt(ujian_id, 10));
-  if (!targetUjian || !Array.isArray(questions)) {
-    return res.status(400).json({ success: false, message: 'Data tidak valid' });
+  if (!targetUjian || !isExamOwner(targetUjian, currentUser) || !Array.isArray(questions)) {
+    return res.status(400).json({ success: false, message: 'Data tidak valid atau akses ditolak' });
   }
 
   const eachPoin = parseInt(poin, 10) || 4;
@@ -2499,11 +2586,54 @@ app.post(['/admin/api/save_soal_kisi_kisi'], requireAdmin, (req, res) => {
 
 // Admin Riwayat & Arsip
 app.get(['/admin/arsip', '/admin/arsip.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const rawRiwayat = (currentUser && currentUser.role === 'dosen')
+    ? db.riwayat_sesi_ujian.filter(r => {
+        const u = db.ujian.find(x => x.id === r.id_ujian);
+        return u && isExamOwner(u, currentUser);
+      })
+    : db.riwayat_sesi_ujian;
+
+  const enrichedRiwayat = rawRiwayat.map(r => {
+    const u = db.ujian.find(x => x.id === r.id_ujian);
+    const m = db.mahasiswa.find(x => x.id === r.id_mahasiswa);
+    const k = m ? db.kelas.find(kls => kls.id === m.id_kelas) : null;
+    return {
+      ...r,
+      judul_ujian: u ? u.judul_ujian : (r.judul_ujian || '-'),
+      nama_mahasiswa: m ? m.nama_lengkap : (r.nama_peserta || '-'),
+      nim_mahasiswa: m ? m.nim : (r.nim || '-'),
+      nama_kelas: k ? k.nama_kelas : '-',
+      can_delete: u ? isExamOwner(u, currentUser) : (currentUser && currentUser.role === 'admin')
+    };
+  });
+
   res.render('admin/arsip', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
-    riwayat: db.riwayat_sesi_ujian
+    riwayat: enrichedRiwayat,
+    message: req.query.msg || '',
+    error: req.query.err || ''
   });
+});
+
+app.post(['/admin/arsip', '/admin/arsip.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const { action, id_sesi } = req.body;
+  if (action === 'delete' && id_sesi) {
+    const sId = parseInt(id_sesi, 10);
+    const target = db.riwayat_sesi_ujian.find(r => r.id === sId || r.id_sesi === sId);
+    if (target) {
+      const u = db.ujian.find(x => x.id === target.id_ujian);
+      if (u && !isExamOwner(u, currentUser)) {
+        return res.redirect('/admin/arsip?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat menghapus riwayat arsip untuk ujian milik Anda!'));
+      }
+      db.riwayat_sesi_ujian = db.riwayat_sesi_ujian.filter(r => r.id !== sId && r.id_sesi !== sId);
+      db.save();
+      return res.redirect('/admin/arsip?msg=' + encodeURIComponent('Arsip sesi ujian berhasil dihapus!'));
+    }
+  }
+  res.redirect('/admin/arsip');
 });
 
 // Admin Master Data: Fakultas
@@ -2584,11 +2714,21 @@ app.post(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
   res.redirect('/admin/prodi?msg=' + encodeURIComponent('Data prodi berhasil diperbarui!'));
 });
 
-// Admin Master Data: Kelas
-app.get(['/admin/kelas', '/admin/kelas.php'], requireAdminOnly, (req, res) => {
-  const classes = db.kelas.map(k => {
+// Admin Master Data: Kelas (Accessible by Admin and Dosen with data isolation)
+app.get(['/admin/kelas', '/admin/kelas.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const rawClasses = (currentUser && currentUser.role === 'dosen')
+    ? db.kelas.filter(k => isKelasOwner(k, currentUser))
+    : db.kelas;
+
+  const classes = rawClasses.map(k => {
     const p = db.program_studi.find(prodi => prodi.id === k.id_program_studi);
-    return { ...k, nama_prodi: p ? p.nama_prodi : '-' };
+    return {
+      ...k,
+      nama_prodi: p ? p.nama_prodi : '-',
+      can_edit: isKelasOwner(k, currentUser),
+      can_delete: isKelasOwner(k, currentUser)
+    };
   });
 
   res.render('admin/kelas', {
@@ -2596,11 +2736,13 @@ app.get(['/admin/kelas', '/admin/kelas.php'], requireAdminOnly, (req, res) => {
     adminRole: req.session.admin_role,
     kelasList: classes,
     prodiList: db.program_studi,
-    message: req.query.msg || ''
+    message: req.query.msg || '',
+    error: req.query.err || ''
   });
 });
 
-app.post(['/admin/kelas', '/admin/kelas.php'], requireAdminOnly, (req, res) => {
+app.post(['/admin/kelas', '/admin/kelas.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { action, nama_kelas, angkatan, semester, id_program_studi, id } = req.body;
   if (action === 'create' && nama_kelas && id_program_studi) {
     const newId = db.kelas.length ? Math.max(...db.kelas.map(k => k.id)) + 1 : 1;
@@ -2609,37 +2751,65 @@ app.post(['/admin/kelas', '/admin/kelas.php'], requireAdminOnly, (req, res) => {
       nama_kelas: nama_kelas.trim(),
       angkatan: parseInt(angkatan, 10) || new Date().getFullYear(),
       semester: parseInt(semester, 10) || 1,
-      id_program_studi: parseInt(id_program_studi, 10)
+      id_program_studi: parseInt(id_program_studi, 10),
+      id_dosen: currentUser ? currentUser.id : null,
+      created_by: currentUser ? (currentUser.username || currentUser.nama_lengkap) : null
     });
     db.save();
+    return res.redirect('/admin/kelas?msg=' + encodeURIComponent('Data kelas berhasil ditambahkan!'));
   } else if (action === 'edit' && id && nama_kelas && id_program_studi) {
     const targetId = parseInt(id, 10);
     const k = db.kelas.find(item => item.id === targetId);
     if (k) {
+      if (!isKelasOwner(k, currentUser)) {
+        return res.redirect('/admin/kelas?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengedit kelas yang Anda kelola sendiri!'));
+      }
       k.nama_kelas = nama_kelas.trim();
       k.angkatan = parseInt(angkatan, 10) || k.angkatan;
       k.semester = parseInt(semester, 10) || k.semester;
       k.id_program_studi = parseInt(id_program_studi, 10);
       db.save();
+      return res.redirect('/admin/kelas?msg=' + encodeURIComponent('Data kelas berhasil diperbarui!'));
     }
   } else if (action === 'delete') {
-    db.kelas = db.kelas.filter(k => k.id !== parseInt(id, 10));
-    db.save();
+    const targetId = parseInt(id, 10);
+    const k = db.kelas.find(item => item.id === targetId);
+    if (k) {
+      if (!isKelasOwner(k, currentUser)) {
+        return res.redirect('/admin/kelas?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat menghapus kelas yang Anda kelola sendiri!'));
+      }
+      db.kelas = db.kelas.filter(item => item.id !== targetId);
+      db.save();
+      return res.redirect('/admin/kelas?msg=' + encodeURIComponent('Data kelas berhasil dihapus!'));
+    }
   }
-  res.redirect('/admin/kelas?msg=' + encodeURIComponent('Data kelas berhasil diperbarui!'));
+  res.redirect('/admin/kelas');
 });
 
-// Admin Master Data: Matkul
-app.get(['/admin/matkul', '/admin/matkul.php'], requireAdminOnly, (req, res) => {
+// Admin Master Data: Matkul / Materi (Accessible by Admin and Dosen with data isolation)
+app.get(['/admin/matkul', '/admin/matkul.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const rawMatkul = (currentUser && currentUser.role === 'dosen')
+    ? db.mata_kuliah.filter(m => isMatkulOwner(m, currentUser))
+    : db.mata_kuliah;
+
+  const matkulList = rawMatkul.map(m => ({
+    ...m,
+    can_edit: isMatkulOwner(m, currentUser),
+    can_delete: isMatkulOwner(m, currentUser)
+  }));
+
   res.render('admin/matkul', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
-    matkulList: db.mata_kuliah,
-    message: req.query.msg || ''
+    matkulList,
+    message: req.query.msg || '',
+    error: req.query.err || ''
   });
 });
 
-app.post(['/admin/matkul', '/admin/matkul.php'], requireAdminOnly, (req, res) => {
+app.post(['/admin/matkul', '/admin/matkul.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { action, kode_mk, nama_mk, sks, id } = req.body;
   if (action === 'create' && kode_mk && nama_mk) {
     const newId = db.mata_kuliah.length ? Math.max(...db.mata_kuliah.map(m => m.id)) + 1 : 1;
@@ -2647,34 +2817,64 @@ app.post(['/admin/matkul', '/admin/matkul.php'], requireAdminOnly, (req, res) =>
       id: newId,
       kode_mk: kode_mk.trim(),
       nama_mk: nama_mk.trim(),
-      sks: parseInt(sks, 10) || 3
+      sks: parseInt(sks, 10) || 3,
+      id_dosen: currentUser ? currentUser.id : null,
+      created_by: currentUser ? (currentUser.username || currentUser.nama_lengkap) : null
     });
     db.save();
+    return res.redirect('/admin/matkul?msg=' + encodeURIComponent('Data materi/mata kuliah berhasil ditambahkan!'));
   } else if (action === 'edit' && id && kode_mk && nama_mk) {
     const targetId = parseInt(id, 10);
     const mk = db.mata_kuliah.find(m => m.id === targetId);
     if (mk) {
+      if (!isMatkulOwner(mk, currentUser)) {
+        return res.redirect('/admin/matkul?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengedit materi/mata kuliah yang Anda buat sendiri!'));
+      }
       mk.kode_mk = kode_mk.trim();
       mk.nama_mk = nama_mk.trim();
       mk.sks = parseInt(sks, 10) || mk.sks;
       db.save();
+      return res.redirect('/admin/matkul?msg=' + encodeURIComponent('Data materi/mata kuliah berhasil diperbarui!'));
     }
   } else if (action === 'delete') {
-    db.mata_kuliah = db.mata_kuliah.filter(m => m.id !== parseInt(id, 10));
-    db.save();
+    const targetId = parseInt(id, 10);
+    const mk = db.mata_kuliah.find(m => m.id === targetId);
+    if (mk) {
+      if (!isMatkulOwner(mk, currentUser)) {
+        return res.redirect('/admin/matkul?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat menghapus materi/mata kuliah yang Anda buat sendiri!'));
+      }
+      db.mata_kuliah = db.mata_kuliah.filter(m => m.id !== targetId);
+      db.save();
+      return res.redirect('/admin/matkul?msg=' + encodeURIComponent('Data materi/mata kuliah berhasil dihapus!'));
+    }
   }
-  res.redirect('/admin/matkul?msg=' + encodeURIComponent('Data materi/mata kuliah berhasil diperbarui!'));
+  res.redirect('/admin/matkul');
 });
 
 // Helper function to build detailed participant and exam session status data
-function getStatusPesertaData() {
+function getStatusPesertaData(currentUser = null) {
   // Ensure all peserta users have a corresponding mahasiswa record
   db.users.filter(u => u.role === 'peserta').forEach(u => {
     const studentNim = u.nim || u.username;
     db.getOrCreateMahasiswa(studentNim, u.nama_lengkap, u.id_kelas || 1, u.id);
   });
 
-  return db.mahasiswa.map((m, idx) => {
+  let targetMahasiswa = db.mahasiswa;
+  if (currentUser && currentUser.role === 'dosen') {
+    targetMahasiswa = db.mahasiswa.filter(m => {
+      const u = db.users.find(x => x.id === m.id_user || (m.nim && x.username === m.nim));
+      if (u && isUserOwner(u, currentUser)) return true;
+      if (m.id_kelas) {
+        const k = db.kelas.find(kls => kls.id === m.id_kelas);
+        if (k && isKelasOwner(k, currentUser)) return true;
+      }
+      const hasExamSesi = db.sesi_ujian.some(s => s.id_mahasiswa === m.id && isExamOwner(db.ujian.find(x => x.id === s.id_ujian), currentUser));
+      if (hasExamSesi) return true;
+      return false;
+    });
+  }
+
+  return targetMahasiswa.map((m, idx) => {
     const user = db.users.find(u => u.id === m.id_user || (m.nim && u.username === m.nim));
     let k = db.kelas.find(kls => kls.id === m.id_kelas);
     if (!k && user && user.id_kelas) {
@@ -2775,10 +2975,16 @@ function getStatusPesertaData() {
   });
 }
 
-// Admin Master Data: Users
-app.get(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
+// Admin Master Data: Users (Accessible by Admin and Dosen with data isolation)
+app.get(['/admin/users', '/admin/users.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  let rawUsers = db.users;
+  if (currentUser && currentUser.role === 'dosen') {
+    rawUsers = db.users.filter(u => isUserOwner(u, currentUser));
+  }
+
   // Enrich users with id_kelas and nama_kelas
-  const usersWithMeta = db.users.map(u => {
+  const usersWithMeta = rawUsers.map(u => {
     let id_kelas = u.id_kelas;
     let nama_kelas = '';
     const mhs = db.mahasiswa.find(m => m.id_user === u.id || (u.nim && m.nim === u.nim));
@@ -2793,18 +2999,24 @@ app.get(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     return {
       ...u,
       id_kelas: id_kelas || '',
-      nama_kelas
+      nama_kelas,
+      can_edit: isUserOwner(u, currentUser),
+      can_delete: isUserOwner(u, currentUser)
     };
   });
 
+  const userKelasList = (currentUser && currentUser.role === 'dosen')
+    ? db.kelas.filter(k => isKelasOwner(k, currentUser))
+    : db.kelas;
+
   // Prepare status peserta for tab "Status Peserta"
-  const statusPesertaList = getStatusPesertaData();
+  const statusPesertaList = getStatusPesertaData(currentUser);
 
   res.render('admin/users', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
     usersList: usersWithMeta,
-    kelasList: db.kelas,
+    kelasList: userKelasList,
     statusPesertaList,
     activeTab: req.query.tab || 'daftar',
     message: req.query.msg || '',
@@ -2813,8 +3025,9 @@ app.get(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
 });
 
 // Real-time API endpoint for Status Peserta live polling
-app.get(['/admin/api/status_peserta'], requireAdminOnly, (req, res) => {
-  const data = getStatusPesertaData();
+app.get(['/admin/api/status_peserta'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const data = getStatusPesertaData(currentUser);
   res.json({
     success: true,
     server_time: new Date().toISOString(),
@@ -2827,13 +3040,17 @@ app.get(['/admin/api/status_peserta'], requireAdminOnly, (req, res) => {
   });
 });
 
-app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
+app.post(['/admin/users', '/admin/users.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { action, username, password, nama_lengkap, role, nim, id_kelas, user_id, sesi_id, nidn } = req.body;
 
   if (action === 'reset_password') {
     const targetUserId = parseInt(user_id, 10);
     const targetUser = db.users.find(u => u.id === targetUserId);
     if (targetUser) {
+      if (!isUserOwner(targetUser, currentUser)) {
+        return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mereset password pengguna binaan Anda!'));
+      }
       db.resetUserPassword(targetUserId, '12345*');
       return res.redirect('/admin/users?msg=' + encodeURIComponent(`Password akun "${targetUser.username}" berhasil direset ke password standar: 12345*`));
     }
@@ -2845,19 +3062,23 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     const finalPassword = (password || '').trim() || '12345*';
     const kelasNumber = id_kelas ? parseInt(id_kelas, 10) : 1;
 
+    // If dosen is creating, role must strictly be 'peserta'
+    const finalRole = (currentUser && currentUser.role === 'dosen') ? 'peserta' : (role || 'peserta');
+
     db.users.push({
       id: newId,
       username: username.trim(),
       password: bcrypt.hashSync(finalPassword, 10),
       nama_lengkap: nama_lengkap.trim(),
-      role: role || 'peserta',
-      nim: nim ? nim.trim() : (role === 'peserta' ? username.trim() : null),
-      nidn: nidn ? nidn.trim() : (role === 'dosen' ? '0821098902' : null),
-      id_kelas: role === 'peserta' ? kelasNumber : null,
+      role: finalRole,
+      nim: nim ? nim.trim() : (finalRole === 'peserta' ? username.trim() : null),
+      nidn: nidn ? nidn.trim() : (finalRole === 'dosen' ? '0821098902' : null),
+      id_kelas: finalRole === 'peserta' ? kelasNumber : null,
+      created_by_dosen: currentUser ? currentUser.id : null,
       created_at: new Date()
     });
 
-    if (role === 'peserta') {
+    if (finalRole === 'peserta') {
       db.getOrCreateMahasiswa(nim ? nim.trim() : username.trim(), nama_lengkap.trim(), kelasNumber, newId);
     }
     db.save();
@@ -2866,6 +3087,9 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     const targetId = parseInt(user_id, 10);
     const user = db.users.find(u => u.id === targetId);
     if (user) {
+      if (!isUserOwner(user, currentUser)) {
+        return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengedit akun pengguna binaan Anda!'));
+      }
       const newUsername = (username || '').trim();
       if (newUsername && newUsername.toLowerCase() !== user.username.toLowerCase()) {
         const usernameExists = db.users.some(u => u.id !== targetId && u.username.toLowerCase() === newUsername.toLowerCase());
@@ -2879,9 +3103,11 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
       }
 
       user.nama_lengkap = nama_lengkap.trim();
-      user.role = role || user.role;
+      if (currentUser && currentUser.role === 'admin') {
+        user.role = role || user.role;
+      }
       user.nim = nim ? nim.trim() : user.nim;
-      if (nidn !== undefined) {
+      if (nidn !== undefined && currentUser && currentUser.role === 'admin') {
         user.nidn = nidn.trim();
       }
       if (id_kelas) {
@@ -2900,12 +3126,22 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     if (user && (user.username === 'admin' || user.username === 'samsul')) {
       return res.redirect('/admin/users?err=' + encodeURIComponent('Akun Administrator Utama tidak boleh dihapus demi keamanan sistem.'));
     }
+    if (user && !isUserOwner(user, currentUser)) {
+      return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat menghapus akun pengguna binaan Anda!'));
+    }
     db.users = db.users.filter(u => u.id !== targetId);
     db.mahasiswa = db.mahasiswa.filter(m => m.id_user !== targetId);
     db.save();
     return res.redirect('/admin/users?msg=' + encodeURIComponent('Pengguna berhasil dihapus dari sistem!'));
   } else if (action === 'reset_sesi' && sesi_id) {
     const sId = parseInt(sesi_id, 10);
+    const sesi = db.sesi_ujian.find(s => s.id === sId) || db.riwayat_sesi_ujian.find(r => r.id === sId);
+    if (sesi) {
+      const u = db.ujian.find(x => x.id === sesi.id_ujian);
+      if (u && !isExamOwner(u, currentUser)) {
+        return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mereset sesi ujian untuk penilaian milik Anda!'));
+      }
+    }
     db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sId);
     db.riwayat_sesi_ujian = db.riwayat_sesi_ujian.filter(s => s.id !== sId);
     db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sId);
@@ -2915,6 +3151,9 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     const targetUserId = parseInt(user_id, 10);
     const targetUser = db.users.find(u => u.id === targetUserId);
     if (targetUser) {
+      if (!isUserOwner(targetUser, currentUser)) {
+        return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengelola peserta binaan Anda!'));
+      }
       targetUser.is_logged_in = false;
       for (const [sid, sessionData] of activeSessions.entries()) {
         if (sessionData.peserta_id === targetUserId) {
@@ -2928,6 +3167,10 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     const sId = parseInt(sesi_id, 10);
     const sesi = db.sesi_ujian.find(s => s.id === sId);
     if (sesi) {
+      const u = db.ujian.find(x => x.id === sesi.id_ujian);
+      if (u && !isExamOwner(u, currentUser)) {
+        return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengakhiri sesi pada penilaian milik Anda!'));
+      }
       const answers = sesi.jawaban_draft || {};
       const shuffledOptions = sesi.shuffled_options || {};
       const soalList = db.getSoalByUjian(sesi.id_ujian);
@@ -2950,6 +3193,10 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
     const sId = parseInt(sesi_id, 10);
     const sesi = db.sesi_ujian.find(s => s.id === sId) || db.riwayat_sesi_ujian.find(r => r.id === sId);
     if (sesi) {
+      const u = db.ujian.find(x => x.id === sesi.id_ujian);
+      if (u && !isExamOwner(u, currentUser)) {
+        return res.redirect('/admin/users?err=' + encodeURIComponent('Akses ditolak: Anda hanya dapat mengubah sesi pada penilaian milik Anda!'));
+      }
       sesi.status = 'berlangsung';
       sesi.waktu_selesai = null;
       if (!db.sesi_ujian.some(s => s.id === sId)) {
@@ -2965,7 +3212,8 @@ app.post(['/admin/users', '/admin/users.php'], requireAdminOnly, (req, res) => {
 });
 
 // JSON API endpoint for fast actions (reset password, delete, reset sesi, paksa keluar, akhiri sesi, tandai aktif)
-app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
+app.post(['/admin/api/users/action'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const { action, user_id, sesi_id } = req.body;
 
   if (action === 'reset_password') {
@@ -2973,6 +3221,9 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
     const targetUser = db.users.find(u => u.id === targetUserId);
     if (!targetUser) {
       return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
+    }
+    if (!isUserOwner(targetUser, currentUser)) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak: Anda hanya dapat mereset password akun binaan Anda!' });
     }
     db.resetUserPassword(targetUserId, '12345*');
     db.save();
@@ -2991,6 +3242,9 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
     if (targetUser.username === 'admin' || targetUser.username === 'samsul') {
       return res.status(403).json({ success: false, message: 'Akun Administrator Utama tidak boleh dihapus demi keamanan.' });
     }
+    if (!isUserOwner(targetUser, currentUser)) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak: Anda hanya dapat menghapus akun binaan Anda!' });
+    }
     db.users = db.users.filter(u => u.id !== targetUserId);
     db.mahasiswa = db.mahasiswa.filter(m => m.id_user !== targetUserId);
     db.save();
@@ -3002,6 +3256,13 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
 
   if (action === 'reset_sesi') {
     const sId = parseInt(sesi_id, 10);
+    const sesi = db.sesi_ujian.find(s => s.id === sId) || db.riwayat_sesi_ujian.find(r => r.id === sId);
+    if (sesi) {
+      const u = db.ujian.find(x => x.id === sesi.id_ujian);
+      if (u && !isExamOwner(u, currentUser)) {
+        return res.status(403).json({ success: false, message: 'Akses ditolak: Anda hanya dapat mereset sesi pada penilaian milik Anda!' });
+      }
+    }
     db.sesi_ujian = db.sesi_ujian.filter(s => s.id !== sId);
     db.riwayat_sesi_ujian = db.riwayat_sesi_ujian.filter(s => s.id !== sId);
     db.jawaban_peserta = db.jawaban_peserta.filter(j => j.id_sesi !== sId);
@@ -3017,6 +3278,9 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
     const targetUser = db.users.find(u => u.id === targetUserId);
     if (!targetUser) {
       return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
+    }
+    if (!isUserOwner(targetUser, currentUser)) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak: Anda hanya dapat mengelola peserta binaan Anda!' });
     }
     targetUser.is_logged_in = false;
     for (const [sid, sessionData] of activeSessions.entries()) {
@@ -3036,6 +3300,10 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
     const sesi = db.sesi_ujian.find(s => s.id === sId) || db.riwayat_sesi_ujian.find(r => r.id === sId);
     if (!sesi) {
       return res.status(404).json({ success: false, message: 'Sesi ujian tidak ditemukan' });
+    }
+    const u = db.ujian.find(x => x.id === sesi.id_ujian);
+    if (u && !isExamOwner(u, currentUser)) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak: Anda hanya dapat mengakhiri sesi pada penilaian milik Anda!' });
     }
     const answers = sesi.jawaban_draft || {};
     const shuffledOptions = sesi.shuffled_options || {};
@@ -3066,6 +3334,10 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
     if (!sesi) {
       return res.status(404).json({ success: false, message: 'Sesi ujian tidak ditemukan' });
     }
+    const u = db.ujian.find(x => x.id === sesi.id_ujian);
+    if (u && !isExamOwner(u, currentUser)) {
+      return res.status(403).json({ success: false, message: 'Akses ditolak: Anda hanya dapat mengubah sesi pada penilaian milik Anda!' });
+    }
     sesi.status = 'berlangsung';
     sesi.waktu_selesai = null;
     if (!db.sesi_ujian.some(s => s.id === sId)) {
@@ -3083,12 +3355,17 @@ app.post(['/admin/api/users/action'], requireAdminOnly, (req, res) => {
 });
 
 // Download XLSX Template for Import
-app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
+app.get(['/admin/users/template_xlsx'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const xlsxLib = XLSX.default || XLSX;
   const wb = xlsxLib.utils.book_new();
 
+  const userKelas = (currentUser && currentUser.role === 'dosen')
+    ? db.kelas.filter(k => isKelasOwner(k, currentUser))
+    : db.kelas;
+
   // 1. Sheet: Template_Pengguna
-  const sampleClasses = db.kelas.map(k => k.nama_kelas);
+  const sampleClasses = userKelas.map(k => k.nama_kelas);
   const sampleData = [
     {
       'Username': '240305013',
@@ -3096,7 +3373,7 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
       'Nama Lengkap': 'MOH ANWAR KHALID',
       'Role': 'peserta',
       'NIM': '240305013',
-      'Kelas': sampleClasses[0] || 'V (A,B)'
+      'Kelas': sampleClasses[0] || 'TI-A'
     },
     {
       'Username': '240305018',
@@ -3104,39 +3381,7 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
       'Nama Lengkap': 'Riyan Ferdianto',
       'Role': 'peserta',
       'NIM': '240305018',
-      'Kelas': sampleClasses[0] || 'V (A,B)'
-    },
-    {
-      'Username': '230102400',
-      'Password': '',
-      'Nama Lengkap': 'Ziadatul Ilmi',
-      'Role': 'peserta',
-      'NIM': '230102400',
-      'Kelas': sampleClasses[1] || 'TI-A'
-    },
-    {
-      'Username': '230102401',
-      'Password': '',
-      'Nama Lengkap': 'Ahmad Fauzi',
-      'Role': 'peserta',
-      'NIM': '230102401',
-      'Kelas': sampleClasses[2] || 'TI-B'
-    },
-    {
-      'Username': 'dosen_informatika',
-      'Password': '',
-      'Nama Lengkap': 'Dr. H. Sudirman, M.Pd.',
-      'Role': 'dosen',
-      'NIM': '',
-      'Kelas': ''
-    },
-    {
-      'Username': 'pengawas_lab',
-      'Password': '',
-      'Nama Lengkap': 'Dewi Lestari, S.Kom.',
-      'Role': 'pengawas',
-      'NIM': '',
-      'Kelas': ''
+      'Kelas': sampleClasses[0] || 'TI-A'
     }
   ];
 
@@ -3152,7 +3397,7 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
   xlsxLib.utils.book_append_sheet(wb, ws, 'Template_Pengguna');
 
   // 2. Sheet: Daftar_Kelas_Referensi (Reference Sheet)
-  const kelasRefData = db.kelas.map(k => {
+  const kelasRefData = userKelas.map(k => {
     const prodi = db.program_studi.find(p => p.id === k.id_program_studi);
     return {
       'ID Kelas': k.id,
@@ -3176,10 +3421,10 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
   const panduanData = [
     { 'Kolom': 'Username', 'Wajib': 'Ya', 'Keterangan': 'Username akun untuk login (untuk mahasiswa gunakan NIM)' },
     { 'Kolom': 'Password', 'Wajib': 'Tidak', 'Keterangan': 'Bila dikosongkan, password otomatis disetel default: 12345*' },
-    { 'Kolom': 'Nama Lengkap', 'Wajib': 'Ya', 'Keterangan': 'Nama lengkap pengguna beserta gelar' },
-    { 'Kolom': 'Role', 'Wajib': 'Ya', 'Keterangan': 'Pilihan peran: peserta, dosen, pengawas, atau admin' },
+    { 'Kolom': 'Nama Lengkap', 'Wajib': 'Ya', 'Keterangan': 'Nama lengkap pengguna' },
+    { 'Kolom': 'Role', 'Wajib': 'Ya', 'Keterangan': 'Pilihan peran: peserta' },
     { 'Kolom': 'NIM', 'Wajib': 'Khusus Peserta', 'Keterangan': 'Nomor Induk Mahasiswa peserta ujian' },
-    { 'Kolom': 'Kelas', 'Wajib': 'Khusus Peserta', 'Keterangan': 'Nama kelas atau ID kelas (lihat sheet Daftar_Kelas_Referensi). Kelas ini otomatis menghubungkan mahasiswa ke ujian dan filter sesi!' }
+    { 'Kolom': 'Kelas', 'Wajib': 'Khusus Peserta', 'Keterangan': 'Nama kelas atau ID kelas (lihat sheet Daftar_Kelas_Referensi).' }
   ];
   const wsPanduan = xlsxLib.utils.json_to_sheet(panduanData);
   wsPanduan['!cols'] = [
@@ -3197,16 +3442,17 @@ app.get(['/admin/users/template_xlsx'], requireAdminOnly, (req, res) => {
 });
 
 // Download CSV Template for Import (Includes Kelas)
-app.get(['/admin/users/template_csv'], requireAdminOnly, (req, res) => {
-  const sampleClasses = db.kelas.map(k => k.nama_kelas);
+app.get(['/admin/users/template_csv'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const userKelas = (currentUser && currentUser.role === 'dosen')
+    ? db.kelas.filter(k => isKelasOwner(k, currentUser))
+    : db.kelas;
+
+  const sampleClasses = userKelas.map(k => k.nama_kelas);
   const rows = [
     ['Username', 'Password', 'Nama Lengkap', 'Role', 'NIM', 'Kelas'],
-    ['240305013', '', 'MOH ANWAR KHALID', 'peserta', '240305013', sampleClasses[0] || 'V (A,B)'],
-    ['240305018', '', 'Riyan Ferdianto', 'peserta', '240305018', sampleClasses[0] || 'V (A,B)'],
-    ['230102400', '', 'Ziadatul Ilmi', 'peserta', '230102400', sampleClasses[1] || 'TI-A'],
-    ['230102401', '', 'Ahmad Fauzi', 'peserta', '230102401', sampleClasses[2] || 'TI-B'],
-    ['dosen_informatika', '', 'Dr. H. Sudirman, M.Pd.', 'dosen', '', ''],
-    ['pengawas_lab', '', 'Dewi Lestari, S.Kom.', 'pengawas', '', '']
+    ['240305013', '', 'MOH ANWAR KHALID', 'peserta', '240305013', sampleClasses[0] || 'TI-A'],
+    ['240305018', '', 'Riyan Ferdianto', 'peserta', '240305018', sampleClasses[0] || 'TI-A']
   ];
   const csvContent = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
   res.setHeader('Content-Type', 'text/csv');
@@ -3215,11 +3461,17 @@ app.get(['/admin/users/template_csv'], requireAdminOnly, (req, res) => {
 });
 
 // Export Current Users & Participants with Kelas to XLSX
-app.get(['/admin/users/export_xlsx'], requireAdminOnly, (req, res) => {
+app.get(['/admin/users/export_xlsx'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
   const xlsxLib = XLSX.default || XLSX;
   const wb = xlsxLib.utils.book_new();
 
-  const exportData = db.users.map((u, idx) => {
+  let targetUsers = db.users;
+  if (currentUser && currentUser.role === 'dosen') {
+    targetUsers = db.users.filter(u => isUserOwner(u, currentUser));
+  }
+
+  const exportData = targetUsers.map((u, idx) => {
     let nama_kelas = '';
     const mhs = db.mahasiswa.find(m => m.id_user === u.id || (u.nim && m.nim === u.nim));
     const kId = u.id_kelas || (mhs ? mhs.id_kelas : null);
@@ -3257,7 +3509,8 @@ app.get(['/admin/users/export_xlsx'], requireAdminOnly, (req, res) => {
 });
 
 // Import Users from XLSX
-app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xlsx'), (req, res) => {
+app.post(['/admin/users/import_xlsx'], requireAdmin, upload.single('file_xlsx'), (req, res) => {
+  const currentUser = getCurrentUser(req);
   if (!req.file || !req.file.buffer) {
     return res.redirect('/admin/users?err=' + encodeURIComponent('Silakan pilih berkas Excel (.xlsx / .csv) terlebih dahulu!'));
   }
@@ -3283,7 +3536,9 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
       const passwordRaw = String(row['Password'] || row['password'] || row['PASSWORD'] || '').trim() || '12345*';
       const nama = String(row['Nama Lengkap'] || row['Nama'] || row['nama_lengkap'] || row['NAMA'] || username).trim();
       let role = String(row['Role'] || row['role'] || row['ROLE'] || 'peserta').trim().toLowerCase();
-      if (!['admin', 'dosen', 'pengawas', 'peserta'].includes(role)) {
+      if (currentUser && currentUser.role === 'dosen') {
+        role = 'peserta';
+      } else if (!['admin', 'dosen', 'pengawas', 'peserta'].includes(role)) {
         role = 'peserta';
       }
       const nim = String(row['NIM'] || row['nim'] || (role === 'peserta' ? username : '')).trim();
@@ -3297,7 +3552,7 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
           String(k.id) === kelasRaw
         );
 
-        // If class is specified but doesn't exist yet in db.kelas, auto-create it so student's class is preserved!
+        // If class is specified but doesn't exist yet in db.kelas, auto-create it
         if (!targetKelas && role === 'peserta') {
           const newKelasId = db.kelas.length ? Math.max(...db.kelas.map(k => k.id)) + 1 : 1;
           targetKelas = {
@@ -3305,7 +3560,9 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
             nama_kelas: kelasRaw,
             angkatan: new Date().getFullYear(),
             semester: 1,
-            id_program_studi: db.program_studi[0] ? db.program_studi[0].id : 1
+            id_program_studi: db.program_studi[0] ? db.program_studi[0].id : 1,
+            id_dosen: currentUser ? currentUser.id : null,
+            created_by: currentUser ? (currentUser.username || currentUser.nama_lengkap) : null
           };
           db.kelas.push(targetKelas);
         }
@@ -3315,14 +3572,19 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
 
       const existingUser = db.users.find(u => u.username.toLowerCase() === username.toLowerCase());
       if (existingUser) {
+        if (!isUserOwner(existingUser, currentUser)) {
+          return; // Skip editing other lecturers' or admins' users
+        }
         existingUser.nama_lengkap = nama;
-        existingUser.role = role;
+        if (currentUser && currentUser.role === 'admin') {
+          existingUser.role = role;
+        }
         existingUser.nim = nim || null;
         if (idKelas) existingUser.id_kelas = idKelas;
         if (passwordRaw !== '12345*') {
           existingUser.password = bcrypt.hashSync(passwordRaw, 10);
         }
-        if (role === 'peserta') {
+        if (existingUser.role === 'peserta') {
           const m = db.mahasiswa.find(mhs => mhs.id_user === existingUser.id || (existingUser.nim && mhs.nim === existingUser.nim));
           if (m) {
             m.nama_lengkap = nama;
@@ -3343,6 +3605,7 @@ app.post(['/admin/users/import_xlsx'], requireAdminOnly, upload.single('file_xls
           role: role,
           nim: nim || null,
           id_kelas: idKelas,
+          created_by_dosen: currentUser ? currentUser.id : null,
           created_at: new Date()
         });
         if (role === 'peserta') {

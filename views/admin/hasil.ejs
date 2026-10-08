@@ -26,103 +26,144 @@
         <%- include('../partials/admin_sidebar', { currentPath: '/admin/hasil', adminRole: adminRole }) %>
 
         <main class="admin-main">
-            <nav class="breadcrumb">
+            <nav class="breadcrumb" style="margin-bottom: 14px;">
                 <a href="/admin/dashboard">Beranda</a> &raquo;
                 <span>Laporan Hasil</span>
             </nav>
 
-            <h2><i class="fas fa-chart-bar"></i> Laporan Rekapitulasi Hasil Penilaian</h2>
+            <div class="page-header-row">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-chart-bar"></i> Laporan Rekapitulasi Hasil Penilaian
+                    </h2>
+                    <p class="page-subtitle">
+                        Rekapitulasi perolehan nilai, persentase kelulusan, dan status pengerjaan ujian mahasiswa.
+                    </p>
+                </div>
+            </div>
 
-            <% if (message) { %>
-                <div class="alert alert-success"><%= message %></div>
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="alert alert-success" style="margin-bottom: 20px;">
+                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i> <%= message %>
+                </div>
+            <% } %>
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger" style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> <%= error %>
+                </div>
             <% } %>
 
-            <!-- Filter Card -->
-            <div class="card" style="margin-bottom: 20px;">
-                <form method="GET" action="/admin/hasil" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) 100px; gap: 12px; align-items: flex-end;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>Filter Ujian</label>
-                        <select name="ujian_id" class="form-select">
-                            <option value="">Semua Penilaian</option>
+            <!-- Modern Filter Card -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                <form method="GET" action="/admin/hasil" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) auto; gap: 14px; align-items: flex-end;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 0.85rem; font-weight: 600; color: #0f172a;">Filter Penilaian</label>
+                        <select name="ujian_id" class="form-select" style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                            <option value="">-- Semua Penilaian --</option>
                             <% ujianList.forEach(function(u) { %>
                                 <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>><%= u.judul_ujian %></option>
                             <% }); %>
                         </select>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>Filter Kelas</label>
-                        <select name="kelas_id" class="form-select">
-                            <option value="">Semua Kelas</option>
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 0.85rem; font-weight: 600; color: #0f172a;">Filter Kelas Peserta</label>
+                        <select name="kelas_id" class="form-select" style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                            <option value="">-- Semua Kelas --</option>
                             <% kelasList.forEach(function(k) { %>
                                 <option value="<%= k.id %>" <%= k.id === selectedKelasId ? 'selected' : '' %>><%= k.nama_kelas %></option>
                             <% }); %>
                         </select>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>Pencarian</label>
-                        <input type="text" name="search" value="<%= search %>" class="form-control" placeholder="Nama / NIM...">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 0.85rem; font-weight: 600; color: #0f172a;">Pencarian (Nama / NIM)</label>
+                        <input type="text" name="search" value="<%= search %>" class="form-control" placeholder="Ketik nama atau NIM mahasiswa..." style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                     </div>
 
-                    <div>
-                        <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-filter"></i> Filter</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="btn-primary-action" style="padding: 9px 18px; border-radius: 8px; font-size: 0.9rem;">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <a href="/admin/hasil" class="btn-action-secondary" style="padding: 9px 14px; border-radius: 8px; font-size: 0.9rem; text-decoration: none;" title="Reset Filter">
+                            <i class="fas fa-rotate-left"></i>
+                        </a>
                     </div>
                 </form>
             </div>
 
             <!-- Results Table -->
-            <div class="card">
-                <div class="table-responsive">
-                    <table class="table">
+            <div class="modern-table-card">
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>NIM</th>
+                                <th style="width: 50px; text-align: center;">No</th>
+                                <th style="width: 130px;">NIM</th>
                                 <th>Nama Lengkap</th>
-                                <th>Kelas / Program</th>
+                                <th>Kelas & Program</th>
                                 <th>Penilaian</th>
-                                <th>Waktu Selesai</th>
-                                <th>Nilai</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
+                                <th style="width: 150px;">Waktu Selesai</th>
+                                <th style="width: 90px; text-align: center;">Nilai</th>
+                                <th style="width: 110px; text-align: center;">Status</th>
+                                <th style="width: 190px; text-align: center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <% if (results.length === 0) { %>
-                                <tr><td colspan="9" class="text-center" style="padding: 24px;">Belum ada riwayat hasil ujian yang cocok dengan kriteria.</td></tr>
+                                <tr>
+                                    <td colspan="9" style="text-align: center; padding: 42px; color: #64748b;">
+                                        <i class="fas fa-chart-line" style="font-size: 2.2rem; display: block; margin-bottom: 10px; color: #cbd5e1;"></i>
+                                        Belum ada riwayat hasil ujian yang cocok dengan kriteria filter.
+                                    </td>
+                                </tr>
                             <% } else { %>
                                 <% results.forEach(function(r, idx) { %>
                                     <tr>
-                                        <td><%= idx + 1 %></td>
-                                        <td><code><%= r.nim %></code></td>
-                                        <td><strong><%= r.nama_lengkap %></strong></td>
-                                        <td><%= r.nama_kelas %> &bull; <%= r.nama_prodi %></td>
-                                        <td><%= r.judul_ujian %></td>
-                                        <td><%= r.waktu_selesai ? new Date(r.waktu_selesai).toLocaleString('id-ID') : '-' %></td>
-                                        <td><strong style="font-size: 1.1rem;"><%= r.nilai_total %></strong></td>
+                                        <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
+                                        <td><span class="kode-badge"><%= r.nim %></span></td>
+                                        <td><strong style="color: #0f172a; font-size: 0.94rem;"><%= r.nama_lengkap %></strong></td>
                                         <td>
-                                            <span class="badge <%= r.status_lulus === 'Lulus' ? 'badge-success' : 'badge-danger' %>">
+                                            <span class="pill-badge" style="margin-right: 4px;">
+                                                <i class="fas fa-users-rectangle"></i> <%= r.nama_kelas %>
+                                            </span>
+                                            <small style="color: #64748b; display: block; margin-top: 3px;"><%= r.nama_prodi %></small>
+                                        </td>
+                                        <td>
+                                            <span style="font-weight: 500; color: #1e293b;"><%= r.judul_ujian %></span>
+                                        </td>
+                                        <td style="color: #475569; font-size: 0.85rem;">
+                                            <%= r.waktu_selesai ? new Date(r.waktu_selesai).toLocaleString('id-ID') : '-' %>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <strong style="font-size: 1.15rem; color: #0f172a;"><%= r.nilai_total %></strong>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span class="pill-badge <%= r.status_lulus === 'Lulus' ? 'pill-badge-success' : 'pill-badge-danger' %>">
                                                 <%= r.status_lulus %>
                                             </span>
                                         </td>
-                                        <td style="white-space: nowrap; text-align: center;">
+                                        <td style="text-align: center; white-space: nowrap;">
                                             <div style="display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                                                <a href="/admin/detail_hasil?sesi_id=<%= r.id %>" class="btn btn-sm btn-outline-primary" style="padding: 5px 9px; font-size: 0.82rem;" title="Rincian Jawaban">
+                                                <a href="/admin/detail_hasil?sesi_id=<%= r.id %>" class="btn-action-secondary" title="Rincian Jawaban">
                                                     <i class="fas fa-eye"></i> Detail
                                                 </a>
-                                                <button type="button" class="btn btn-sm" style="background: #1b4d3e; color: #ffffff; border: none; padding: 5px 9px; font-size: 0.82rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit Nilai" onclick="openEditNilaiModal(<%= r.id %>, '<%= (r.nama_lengkap || '').replace(/'/g, '\\\'') %>', <%= r.nilai_total || 0 %>)">
-                                                    <i class="fas fa-pen-to-square"></i> Edit
+                                                <button type="button" class="btn-action-edit" title="Edit Nilai" onclick="openEditNilaiModal(<%= r.id %>, '<%= (r.nama_lengkap || '').replace(/'/g, '\\\'') %>', <%= r.nilai_total || 0 %>)">
+                                                    <i class="fas fa-pen-to-square"></i>
                                                 </button>
-                                                <form method="POST" action="/admin/hasil" style="display: inline;" onsubmit="return confirm('Reset ujian untuk mahasiswa ini agar bisa ujian ulang?');">
+                                                <form method="POST" action="/admin/hasil" style="display: inline-block; margin: 0;" onsubmit="return confirm('Reset ujian untuk mahasiswa ini agar bisa ujian ulang?');">
                                                     <input type="hidden" name="action" value="reset_single">
                                                     <input type="hidden" name="sesi_id" value="<%= r.id %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-warning" style="padding: 5px 9px; font-size: 0.82rem;" title="Reset Ujian"><i class="fas fa-rotate-left"></i></button>
+                                                    <button type="submit" class="btn-action-secondary" style="color: #b45309; border-color: #fde68a; background: #fef3c7;" title="Reset Ujian Mahasiswa">
+                                                        <i class="fas fa-rotate-left"></i>
+                                                    </button>
                                                 </form>
-                                                <form method="POST" action="/admin/hasil" style="display: inline;" onsubmit="return confirm('Hapus permanen data nilai ini?');">
+                                                <form method="POST" action="/admin/hasil" style="display: inline-block; margin: 0;" onsubmit="return confirm('Hapus permanen data nilai ini?');">
                                                     <input type="hidden" name="action" value="delete_single">
                                                     <input type="hidden" name="sesi_id" value="<%= r.id %>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" style="padding: 5px 9px; font-size: 0.82rem;" title="Hapus"><i class="fas fa-trash"></i></button>
+                                                    <button type="submit" class="btn-action-delete" title="Hapus Data Nilai">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
                                                 </form>
                                             </div>
                                         </td>

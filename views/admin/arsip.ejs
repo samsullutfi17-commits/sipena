@@ -26,42 +26,112 @@
         <%- include('../partials/admin_sidebar', { currentPath: '/admin/arsip', adminRole: adminRole }) %>
 
         <main class="admin-main">
-            <nav class="breadcrumb">
+            <nav class="breadcrumb" style="margin-bottom: 14px;">
                 <a href="/admin/dashboard">Beranda</a> &raquo;
-                <span>Arsip</span>
+                <span>Riwayat & Arsip</span>
             </nav>
 
-            <h2><i class="fas fa-history"></i> Riwayat & Arsip Reset Ujian</h2>
+            <div class="page-header-row">
+                <div>
+                    <h2 class="page-title">
+                        <i class="fas fa-history"></i> Riwayat & Arsip Sesi Ujian
+                    </h2>
+                    <p class="page-subtitle">
+                        Catatan audit riwayat reset sesi, pengerjaan ujian terdahulu, dan rekam jejak penilaian peserta.
+                    </p>
+                </div>
+            </div>
 
-            <div class="card">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>ID Sesi</th>
-                            <th>Nilai Terdahulu</th>
-                            <th>Status Terakhir</th>
-                            <th>Alasan Reset</th>
-                            <th>Direset Oleh</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (riwayat.length === 0) { %>
-                            <tr><td colspan="6" class="text-center" style="padding: 24px;">Belum ada arsip sesi yang direset.</td></tr>
-                        <% } else { %>
-                            <% riwayat.forEach(function(r, idx) { %>
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="alert alert-success" style="margin-bottom: 20px;">
+                    <i class="fas fa-check-circle" style="margin-right: 6px;"></i> <%= message %>
+                </div>
+            <% } %>
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger" style="margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 6px;"></i> <%= error %>
+                </div>
+            <% } %>
+
+            <div class="modern-table-card">
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">No</th>
+                                <th style="width: 130px;">ID Sesi</th>
+                                <th>Mahasiswa & NIM</th>
+                                <th>Penilaian & Kelas</th>
+                                <th style="width: 120px; text-align: center;">Skor Lama</th>
+                                <th style="width: 130px; text-align: center;">Status</th>
+                                <th>Alasan Reset</th>
+                                <th style="width: 150px;">Direset Oleh</th>
+                                <th style="width: 100px; text-align: center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (!riwayat || riwayat.length === 0) { %>
                                 <tr>
-                                    <td><%= idx + 1 %></td>
-                                    <td><code>SESI-#<%= r.id_sesi %></code></td>
-                                    <td><%= r.nilai_total %></td>
-                                    <td><span class="badge badge-info"><%= r.status_kelulusan || 'Selesai' %></span></td>
-                                    <td><%= r.alasan_reset %></td>
-                                    <td><%= r.direset_oleh %></td>
+                                    <td colspan="9" style="text-align: center; padding: 42px; color: #64748b;">
+                                        <i class="fas fa-folder-open" style="font-size: 2.2rem; display: block; margin-bottom: 10px; color: #cbd5e1;"></i>
+                                        Belum ada riwayat sesi yang direset atau diarsipkan.
+                                    </td>
                                 </tr>
-                            <% }); %>
-                        <% } %>
-                    </tbody>
-                </table>
+                            <% } else { %>
+                                <% riwayat.forEach(function(r, idx) { %>
+                                    <tr>
+                                        <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
+                                        <td>
+                                            <span class="kode-badge">SESI-#<%= r.id_sesi || r.id %></span>
+                                        </td>
+                                        <td>
+                                            <strong style="color: #0f172a; font-size: 0.94rem; display: block;"><%= r.nama_mahasiswa || '-' %></strong>
+                                            <small style="color: #64748b; font-size: 0.78rem;">NIM: <%= r.nim_mahasiswa || '-' %></small>
+                                        </td>
+                                        <td>
+                                            <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem;"><%= r.judul_ujian || '-' %></div>
+                                            <% if (r.nama_kelas && r.nama_kelas !== '-') { %>
+                                                <span class="pill-badge" style="font-size: 0.75rem; padding: 2px 8px; margin-top: 4px;">
+                                                    <i class="fas fa-users-rectangle"></i> <%= r.nama_kelas %>
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <strong style="font-size: 1.05rem; color: #0f172a;"><%= r.nilai_total !== null && r.nilai_total !== undefined ? r.nilai_total : '-' %></strong>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <span class="pill-badge <%= (r.status_kelulusan === 'Lulus' || r.status === 'selesai') ? 'pill-badge-success' : 'pill-badge-warning' %>">
+                                                <%= r.status_kelulusan || r.status || 'Direset' %>
+                                            </span>
+                                        </td>
+                                        <td style="color: #475569; font-size: 0.88rem;">
+                                            <%= r.alasan_reset || 'Reset Sesi Ujian' %>
+                                        </td>
+                                        <td>
+                                            <span style="color: #0f172a; font-weight: 500; font-size: 0.88rem;">
+                                                <i class="fas fa-user-check" style="color: #1b4d3e; margin-right: 4px;"></i>
+                                                <%= r.direset_oleh || 'Administrator' %>
+                                            </span>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <% if (r.can_delete) { %>
+                                                <form method="POST" action="/admin/arsip" style="display: inline-block; margin: 0;" onsubmit="return confirm('Hapus permanen arsip sesi ini?');">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="id_sesi" value="<%= r.id_sesi || r.id %>">
+                                                    <button type="submit" class="btn-action-delete" title="Hapus Riwayat Arsip">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            <% } else { %>
+                                                <span style="color: #cbd5e1; font-size: 0.8rem;">-</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>

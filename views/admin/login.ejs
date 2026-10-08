@@ -38,6 +38,25 @@
             border: 1px solid #f1f5f9;
         }
 
+        .login-logo-container {
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-logo-img {
+            width: 82px;
+            height: 82px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.08));
+            transition: transform 0.2s ease;
+        }
+
+        .login-logo-img:hover {
+            transform: scale(1.05);
+        }
+
         .login-title {
             color: #1b4d3e;
             font-size: 1.75rem;
@@ -181,6 +200,9 @@
 
     <!-- LOGIN CARD MATCHING IMAGE 2 -->
     <div class="login-card">
+        <div class="login-logo-container">
+            <img src="/assets/img/logo_hamzanwadi.png" alt="Logo Universitas Hamzanwadi" class="login-logo-img">
+        </div>
         <h2 class="login-title">
             Login<br>Admin/Dosen/Pengawas
         </h2>
