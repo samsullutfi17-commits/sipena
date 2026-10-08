@@ -80,10 +80,10 @@
                                         <td><span class="pill-badge"><%= p.nama_fakultas %></span></td>
                                         <td>
                                             <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem;">
-                                                <i class="fas fa-user-tie" style="color: #1b4d3e; margin-right: 4px;"></i> <%= p.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.' %>
+                                                <i class="fas fa-user-tie" style="color: #1b4d3e; margin-right: 4px;"></i> <%= p.nama_kaprodi || (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>
                                             </div>
                                             <div style="font-size: 0.78rem; color: #64748b; margin-top: 2px;">
-                                                NIDN: <%= p.nidn_kaprodi || '0812048501' %>
+                                                NIDN: <%= p.nidn_kaprodi || (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>
                                             </div>
                                         </td>
                                         <td style="text-align: center;">
@@ -136,11 +136,11 @@
                 </div>
                 <div class="form-group" style="margin-bottom: 14px;">
                     <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Nama Ketua Program Studi (Kaprodi)</label>
-                    <input type="text" name="nama_kaprodi" class="form-control" placeholder="Contoh: Dr. H. M. Zain, M.Pd." value="Dr. H. M. Zain, M.Pd." style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    <input type="text" name="nama_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" value="<%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 18px;">
                     <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">NIDN / NIP Kaprodi</label>
-                    <input type="text" name="nidn_kaprodi" class="form-control" placeholder="Contoh: 0812048501" value="0812048501" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    <input type="text" name="nidn_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" value="<%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
                     <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-prodi').style.display='none'" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
@@ -182,11 +182,11 @@
                 </div>
                 <div class="form-group" style="margin-bottom: 14px;">
                     <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Nama Ketua Program Studi (Kaprodi)</label>
-                    <input type="text" name="nama_kaprodi" id="edit_nama_kaprodi" class="form-control" placeholder="Contoh: Dr. H. M. Zain, M.Pd." style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    <input type="text" name="nama_kaprodi" id="edit_nama_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 18px;">
                     <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">NIDN / NIP Kaprodi</label>
-                    <input type="text" name="nidn_kaprodi" id="edit_nidn_kaprodi" class="form-control" placeholder="Contoh: 0812048501" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    <input type="text" name="nidn_kaprodi" id="edit_nidn_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
                     <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-edit-prodi').style.display='none'" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
@@ -233,13 +233,16 @@
             document.getElementById('modal-delete-prodi').style.display = 'none';
         }
 
+        const defaultKaprodiName = <%- JSON.stringify((typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.') %>;
+        const defaultKaprodiNidn = <%- JSON.stringify((typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501') %>;
+
         function openModalEditProdi(p) {
             document.getElementById('edit_prodi_id').value = p.id;
             document.getElementById('edit_id_fakultas').value = p.id_fakultas || '';
             document.getElementById('edit_kode_prodi').value = p.kode_prodi || '';
             document.getElementById('edit_nama_prodi').value = p.nama_prodi || '';
-            document.getElementById('edit_nama_kaprodi').value = p.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
-            document.getElementById('edit_nidn_kaprodi').value = p.nidn_kaprodi || '0812048501';
+            document.getElementById('edit_nama_kaprodi').value = p.nama_kaprodi || defaultKaprodiName;
+            document.getElementById('edit_nidn_kaprodi').value = p.nidn_kaprodi || defaultKaprodiNidn;
             document.getElementById('modal-edit-prodi').style.display = 'flex';
         }
 

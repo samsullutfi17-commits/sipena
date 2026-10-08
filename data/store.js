@@ -25,10 +25,12 @@ class DataStore {
           if (Array.isArray(data.mahasiswa)) this.mahasiswa = data.mahasiswa;
           if (Array.isArray(data.fakultas)) this.fakultas = data.fakultas;
           if (Array.isArray(data.program_studi)) {
+            const defKaprodi = (data.pengaturan && data.pengaturan.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.';
+            const defNidn = (data.pengaturan && data.pengaturan.nidn_kaprodi) || '0812048501';
             this.program_studi = data.program_studi.map(p => ({
               ...p,
-              nama_kaprodi: p.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.',
-              nidn_kaprodi: p.nidn_kaprodi || '0812048501'
+              nama_kaprodi: p.nama_kaprodi || defKaprodi,
+              nidn_kaprodi: p.nidn_kaprodi || defNidn
             }));
           }
           if (Array.isArray(data.kelas)) {

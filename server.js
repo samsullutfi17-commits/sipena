@@ -2671,7 +2671,12 @@ app.post(['/admin/fakultas', '/admin/fakultas.php'], requireAdminOnly, (req, res
 app.get(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
   const prodis = db.program_studi.map(p => {
     const f = db.fakultas.find(fak => fak.id === p.id_fakultas);
-    return { ...p, nama_fakultas: f ? f.nama_fakultas : '-' };
+    return {
+      ...p,
+      nama_fakultas: f ? f.nama_fakultas : '-',
+      nama_kaprodi: p.nama_kaprodi || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.',
+      nidn_kaprodi: p.nidn_kaprodi || db.pengaturan.nidn_kaprodi || '0812048501'
+    };
   });
 
   res.render('admin/prodi', {
@@ -2679,6 +2684,7 @@ app.get(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
     adminRole: req.session.admin_role,
     prodiList: prodis,
     fakultasList: db.fakultas,
+    settings: db.pengaturan,
     message: req.query.msg || ''
   });
 });
@@ -2692,8 +2698,8 @@ app.post(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
       kode_prodi: kode_prodi.trim(),
       nama_prodi: nama_prodi.trim(),
       id_fakultas: parseInt(id_fakultas, 10) || null,
-      nama_kaprodi: (nama_kaprodi && nama_kaprodi.trim()) || 'Dr. H. M. Zain, M.Pd.',
-      nidn_kaprodi: (nidn_kaprodi && nidn_kaprodi.trim()) || '0812048501'
+      nama_kaprodi: (nama_kaprodi && nama_kaprodi.trim()) || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.',
+      nidn_kaprodi: (nidn_kaprodi && nidn_kaprodi.trim()) || db.pengaturan.nidn_kaprodi || '0812048501'
     });
     db.save();
   } else if (action === 'edit' && id && kode_prodi && nama_prodi) {
@@ -2703,8 +2709,8 @@ app.post(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
       p.kode_prodi = kode_prodi.trim();
       p.nama_prodi = nama_prodi.trim();
       p.id_fakultas = parseInt(id_fakultas, 10) || p.id_fakultas;
-      p.nama_kaprodi = (nama_kaprodi && nama_kaprodi.trim()) || p.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
-      p.nidn_kaprodi = (nidn_kaprodi && nidn_kaprodi.trim()) || p.nidn_kaprodi || '0812048501';
+      p.nama_kaprodi = (nama_kaprodi && nama_kaprodi.trim()) || p.nama_kaprodi || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
+      p.nidn_kaprodi = (nidn_kaprodi && nidn_kaprodi.trim()) || p.nidn_kaprodi || db.pengaturan.nidn_kaprodi || '0812048501';
       db.save();
     }
   } else if (action === 'delete') {
@@ -3684,6 +3690,12 @@ app.get(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res)
 });
 
 app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res) => {
+  const oldNamaKaprodi = db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
+  const oldNidnKaprodi = db.pengaturan.nidn_kaprodi || '0812048501';
+
+  const newNamaKaprodi = (req.body.nama_kaprodi && req.body.nama_kaprodi.trim()) || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
+  const newNidnKaprodi = (req.body.nidn_kaprodi && req.body.nidn_kaprodi.trim()) || db.pengaturan.nidn_kaprodi || '0812048501';
+
   db.pengaturan = {
     ...db.pengaturan,
     nama_institusi: req.body.nama_institusi || db.pengaturan.nama_institusi,
@@ -3692,13 +3704,34 @@ app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res
     telepon_institusi: req.body.telepon_institusi || db.pengaturan.telepon_institusi,
     website_institusi: req.body.website_institusi || db.pengaturan.website_institusi,
     logo_path: req.body.logo_path || db.pengaturan.logo_path || '/assets/img/logo_hamzanwadi.png',
-    nama_kaprodi: (req.body.nama_kaprodi && req.body.nama_kaprodi.trim()) || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.',
-    nidn_kaprodi: (req.body.nidn_kaprodi && req.body.nidn_kaprodi.trim()) || db.pengaturan.nidn_kaprodi || '0812048501',
+    nama_kaprodi: newNamaKaprodi,
+    nidn_kaprodi: newNidnKaprodi,
     nama_dosen: (req.body.nama_dosen && req.body.nama_dosen.trim()) || db.pengaturan.nama_dosen || 'Samsul Lutfi, S.Pd., M.Pd.',
     nidn_dosen: (req.body.nidn_dosen && req.body.nidn_dosen.trim()) || db.pengaturan.nidn_dosen || '0821098902'
   };
+
+  // 1. Sinkronisasi otomatis ke Menu Program Studi (db.program_studi)
+  if (Array.isArray(db.program_studi)) {
+    db.program_studi.forEach(p => {
+      p.nama_kaprodi = newNamaKaprodi;
+      p.nidn_kaprodi = newNidnKaprodi;
+    });
+  }
+
+  // 2. Sinkronisasi otomatis ke Menu Ujian / Penilaian (db.ujian)
+  if (Array.isArray(db.ujian)) {
+    db.ujian.forEach(u => {
+      if (!u.nama_kaprodi || u.nama_kaprodi === oldNamaKaprodi || u.nama_kaprodi === 'Dr. H. M. Zain, M.Pd.') {
+        u.nama_kaprodi = newNamaKaprodi;
+      }
+      if (!u.nidn_kaprodi || u.nidn_kaprodi === oldNidnKaprodi || u.nidn_kaprodi === '0812048501') {
+        u.nidn_kaprodi = newNidnKaprodi;
+      }
+    });
+  }
+
   db.save();
-  res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Pengaturan institusi & data pengesahan berhasil disimpan!'));
+  res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Pengaturan institusi & data pengesahan berhasil disimpan dan disinkronkan ke seluruh Program Studi dan modul terkait!'));
 });
 
 // AI Question Generator API (Multi-Type Question & Custom Bloom Levels, No Jenjang)

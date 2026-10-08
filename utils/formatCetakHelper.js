@@ -32,8 +32,17 @@ export function getUjianFormatCetak(ujian = {}, user = null, settings = {}) {
     nidnDosen = '0821098902';
   }
 
-  let namaKaprodi = (ujian && ujian.nama_kaprodi) || (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.';
-  let nidnKaprodi = (ujian && ujian.nidn_kaprodi) || (settings && settings.nidn_kaprodi) || '0812048501';
+  const defaultKaprodiNames = ['Dr. H. M. Zain, M.Pd.', ''];
+  const defaultKaprodiNidns = ['0812048501', ''];
+  let namaKaprodi = (settings && settings.nama_kaprodi) || (ujian && ujian.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.';
+  if (ujian && ujian.nama_kaprodi && !defaultKaprodiNames.includes(ujian.nama_kaprodi) && settings && settings.nama_kaprodi && ujian.nama_kaprodi !== settings.nama_kaprodi) {
+    namaKaprodi = ujian.nama_kaprodi;
+  }
+
+  let nidnKaprodi = (settings && settings.nidn_kaprodi) || (ujian && ujian.nidn_kaprodi) || '0812048501';
+  if (ujian && ujian.nidn_kaprodi && !defaultKaprodiNidns.includes(ujian.nidn_kaprodi) && settings && settings.nidn_kaprodi && ujian.nidn_kaprodi !== settings.nidn_kaprodi) {
+    nidnKaprodi = ujian.nidn_kaprodi;
+  }
 
   // 1. Default institutional layout matching screenshot
   const defaultFormat = {

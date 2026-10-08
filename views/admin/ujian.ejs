@@ -531,8 +531,8 @@
             document.getElementById('edit_nilai_lulus').value = exam.nilai_lulus || 60;
             document.getElementById('edit_pengampu').value = exam.pengampu || '';
             document.getElementById('edit_nidn_dosen').value = exam.nidn_dosen || '0821098902';
-            document.getElementById('edit_nama_kaprodi').value = exam.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
-            document.getElementById('edit_nidn_kaprodi').value = exam.nidn_kaprodi || '0812048501';
+            document.getElementById('edit_nama_kaprodi').value = exam.nama_kaprodi || <%- JSON.stringify((settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.') %>;
+            document.getElementById('edit_nidn_kaprodi').value = exam.nidn_kaprodi || <%- JSON.stringify((settings && settings.nidn_kaprodi) || '0812048501') %>;
 
             // Check checkboxes for assigned classes
             const assignedIds = (exam.kelas_list || []).map(k => String(k.id));
