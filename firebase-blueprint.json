@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Pengguna sistem (admin, dosen, mahasiswa/peserta)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "username": { "type": "string" },
+        "nama_lengkap": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Pengaturan sistem dan data pengesahan institusi",
+      "type": "object",
+      "properties": {
+        "nama_institusi": { "type": "string" },
+        "nama_kaprodi": { "type": "string" },
+        "nidn_kaprodi": { "type": "string" }
+      }
+    },
+    "DatabaseSnapshot": {
+      "title": "DatabaseSnapshot",
+      "description": "Full persistent cloud snapshot of all SIPENA academic data",
+      "type": "object",
+      "properties": {
+        "payload": { "type": "string" },
+        "updated_at": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/system_state/{stateId}": {
+      "schema": "DatabaseSnapshot",
+      "description": "Persistent cloud state snapshot for SIPENA"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "System settings collection"
+    }
+  }
+}

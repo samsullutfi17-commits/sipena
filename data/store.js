@@ -2,17 +2,24 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_FILE = path.join(__dirname, 'db_persistence.json');
+const MASTER_FILE = path.join(__dirname, 'master_default.json');
 
-// Persistent JSON Data Store for SIPENA
+// Persistent JSON & Cloud Firestore Data Store for SIPENA
 class DataStore {
   constructor() {
     this.storagePath = DB_FILE;
+    this.masterPath = MASTER_FILE;
+    this.firestore = null;
+    this.firebaseConnected = false;
     this.reset();
     this.load();
+    this.initFirebase();
   }
 
   load() {
@@ -82,35 +89,147 @@ class DataStore {
     }
   }
 
-  save() {
+  saveLocal() {
     try {
-      const payload = {
-        users: this.users,
-        mahasiswa: this.mahasiswa,
-        fakultas: this.fakultas,
-        program_studi: this.program_studi,
-        kelas: this.kelas,
-        mata_kuliah: this.mata_kuliah,
-        mata_kuliah_kelas: this.mata_kuliah_kelas,
-        ujian: this.ujian,
-        ujian_kelas: this.ujian_kelas,
-        soal: this.soal,
-        opsi_jawaban: this.opsi_jawaban,
-        sesi_ujian: this.sesi_ujian,
-        jawaban_peserta: this.jawaban_peserta,
-        riwayat_sesi_ujian: this.riwayat_sesi_ujian,
-        pengaturan: this.pengaturan
-      };
+      const payload = this.getSnapshot();
       const json = JSON.stringify(payload, null, 2);
       const tempPath = this.storagePath + '.tmp';
       fs.writeFileSync(tempPath, json, 'utf-8');
       fs.renameSync(tempPath, this.storagePath);
+      return true;
     } catch (err) {
       console.error('Error saving db_persistence.json:', err);
+      return false;
+    }
+  }
+
+  save() {
+    this.saveLocal();
+    if (this.firestore) {
+      this.syncToFirebase().catch(err => {
+        console.warn('[SIPENA] Cloud save notice:', err.message);
+      });
+    }
+  }
+
+  initFirebase() {
+    try {
+      const configPath = path.join(__dirname, '..', 'firebase-applet-config.json');
+      if (fs.existsSync(configPath)) {
+        const cfg = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        const app = getApps().length > 0 ? getApps()[0] : initializeApp(cfg);
+        this.firestore = getFirestore(app, cfg.firestoreDatabaseId || undefined);
+        this.firebaseConnected = true;
+        console.log('[SIPENA] Firebase Cloud Firestore terhubung (Database: ' + (cfg.firestoreDatabaseId || 'default') + ')');
+        this.syncFromFirebase();
+      }
+    } catch (err) {
+      console.warn('[SIPENA] Firebase init warning:', err.message);
+      this.firebaseConnected = false;
+    }
+  }
+
+  async syncFromFirebase() {
+    if (!this.firestore) return;
+    try {
+      const ref = doc(this.firestore, 'system_state', 'current_db');
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        const cloudData = snap.data();
+        if (cloudData && cloudData.payload) {
+          const parsed = JSON.parse(cloudData.payload);
+          this.applyData(parsed);
+          this.saveLocal();
+          console.log('[SIPENA] Sinkronisasi data awan berhasil (Firestore updated: ' + (cloudData.updated_at || '-') + ')');
+        }
+      } else {
+        await this.syncToFirebase();
+      }
+    } catch (err) {
+      console.warn('[SIPENA] Sync from Firebase note:', err.message);
+    }
+  }
+
+  async syncToFirebase() {
+    if (!this.firestore) return;
+    try {
+      const payload = this.getSnapshot();
+      const ref = doc(this.firestore, 'system_state', 'current_db');
+      await setDoc(ref, {
+        payload: JSON.stringify(payload),
+        updated_at: new Date().toISOString()
+      });
+    } catch (err) {
+      console.warn('[SIPENA] Save to Firebase note:', err.message);
+    }
+  }
+
+  getSnapshot() {
+    return {
+      version: '1.0.0',
+      exported_at: new Date().toISOString(),
+      users: this.users,
+      mahasiswa: this.mahasiswa,
+      fakultas: this.fakultas,
+      program_studi: this.program_studi,
+      kelas: this.kelas,
+      mata_kuliah: this.mata_kuliah,
+      mata_kuliah_kelas: this.mata_kuliah_kelas,
+      ujian: this.ujian,
+      ujian_kelas: this.ujian_kelas,
+      soal: this.soal,
+      opsi_jawaban: this.opsi_jawaban,
+      sesi_ujian: this.sesi_ujian,
+      jawaban_peserta: this.jawaban_peserta,
+      riwayat_sesi_ujian: this.riwayat_sesi_ujian,
+      pengaturan: this.pengaturan
+    };
+  }
+
+  applyData(data) {
+    if (!data || typeof data !== 'object') return false;
+    if (Array.isArray(data.users)) this.users = data.users;
+    if (Array.isArray(data.mahasiswa)) this.mahasiswa = data.mahasiswa;
+    if (Array.isArray(data.fakultas)) this.fakultas = data.fakultas;
+    if (Array.isArray(data.program_studi)) this.program_studi = data.program_studi;
+    if (Array.isArray(data.kelas)) this.kelas = data.kelas;
+    if (Array.isArray(data.mata_kuliah)) this.mata_kuliah = data.mata_kuliah;
+    if (Array.isArray(data.mata_kuliah_kelas)) this.mata_kuliah_kelas = data.mata_kuliah_kelas;
+    if (Array.isArray(data.ujian)) this.ujian = data.ujian;
+    if (Array.isArray(data.ujian_kelas)) this.ujian_kelas = data.ujian_kelas;
+    if (Array.isArray(data.soal)) this.soal = data.soal;
+    if (Array.isArray(data.opsi_jawaban)) this.opsi_jawaban = data.opsi_jawaban;
+    if (Array.isArray(data.sesi_ujian)) this.sesi_ujian = data.sesi_ujian;
+    if (Array.isArray(data.jawaban_peserta)) this.jawaban_peserta = data.jawaban_peserta;
+    if (Array.isArray(data.riwayat_sesi_ujian)) this.riwayat_sesi_ujian = data.riwayat_sesi_ujian;
+    if (data.pengaturan) this.pengaturan = { ...this.pengaturan, ...data.pengaturan };
+    return true;
+  }
+
+  saveAsDefaultMaster() {
+    try {
+      const snapshot = this.getSnapshot();
+      fs.writeFileSync(this.masterPath, JSON.stringify(snapshot, null, 2), 'utf-8');
+      this.save();
+      return true;
+    } catch (err) {
+      console.error('[SIPENA] Error saving master_default.json:', err);
+      return false;
     }
   }
 
   reset() {
+    if (fs.existsSync(this.masterPath)) {
+      try {
+        const raw = fs.readFileSync(this.masterPath, 'utf-8');
+        const data = JSON.parse(raw);
+        if (this.applyData(data)) {
+          return;
+        }
+      } catch (err) {
+        console.warn('[SIPENA] master_default.json read note:', err.message);
+      }
+    }
     this.fakultas = [
       { id: 1, kode_fakultas: 'FT', nama_fakultas: 'Fakultas Teknik' },
       { id: 2, kode_fakultas: 'FIP', nama_fakultas: 'Fakultas Ilmu Pendidikan' },

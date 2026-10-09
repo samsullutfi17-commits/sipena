@@ -3685,8 +3685,67 @@ app.get(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res)
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
     settings: db.pengaturan,
-    message: req.query.msg || ''
+    firebaseConnected: !!db.firestore,
+    message: req.query.msg || '',
+    error: req.query.err || ''
   });
+});
+
+// Backup Database JSON Download
+app.get(['/admin/pengaturan/backup', '/admin/pengaturan/backup.php'], requireAdmin, (req, res) => {
+  const snapshot = db.getSnapshot();
+  const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const filename = `backup_sipena_${dateStr}.json`;
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send(JSON.stringify(snapshot, null, 2));
+});
+
+// Restore Database JSON Upload
+app.post(['/admin/pengaturan/restore', '/admin/pengaturan/restore.php'], requireAdmin, upload.single('backup_file'), (req, res) => {
+  if (!req.file) {
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Mohon pilih berkas cadangan (.json) untuk dipulihkan!'));
+  }
+  try {
+    const raw = req.file.buffer.toString('utf-8');
+    const data = JSON.parse(raw);
+    const success = db.applyData(data);
+    if (!success) {
+      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Format berkas cadangan JSON tidak valid atau struktur tidak cocok!'));
+    }
+    db.save();
+    return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Database berhasil dipulihkan secara penuh dari cadangan berkas JSON!'));
+  } catch (err) {
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Gagal memulihkan database: ' + err.message));
+  }
+});
+
+// Set Current Data as Permanent Master Base
+app.post(['/admin/pengaturan/set_default_master', '/admin/pengaturan/set_default_master.php'], requireAdmin, (req, res) => {
+  try {
+    const success = db.saveAsDefaultMaster();
+    if (success) {
+      return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Data saat ini berhasil ditetapkan sebagai Master Baku sistem! Setiap kali server dimulai ulang, data ini akan menjadi nilai bawaan.'));
+    } else {
+      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Gagal menyimpan berkas master baku.'));
+    }
+  } catch (err) {
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Gagal menetapkan master baku: ' + err.message));
+  }
+});
+
+// Sync to Cloud Firestore Manual Trigger
+app.post(['/admin/pengaturan/sync_cloud', '/admin/pengaturan/sync_cloud.php'], requireAdmin, async (req, res) => {
+  try {
+    if (db.firestore) {
+      await db.syncToFirebase();
+      return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Data berhasil disinkronkan ke Google Firebase Firestore secara permanen!'));
+    } else {
+      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Layanan Firebase belum terhubung atau sedang offline.'));
+    }
+  } catch (err) {
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Sinkronisasi Firebase gagal: ' + err.message));
+  }
 });
 
 app.post(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res) => {

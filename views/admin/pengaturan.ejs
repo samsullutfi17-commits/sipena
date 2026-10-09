@@ -36,6 +36,9 @@
             <% if (message) { %>
                 <div class="alert alert-success"><%= message %></div>
             <% } %>
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-danger" style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;"><i class="fas fa-triangle-exclamation"></i> <%= error %></div>
+            <% } %>
 
             <div class="card" style="max-width: 780px;">
                 <form method="POST" action="/admin/pengaturan" id="formPengaturan">
@@ -137,6 +140,85 @@
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- SECTION 4: KELOLA DATABASE & CADANGAN (BACKUP, RESTORE, & CLOUD SYNC) -->
+            <div class="card" style="max-width: 780px; margin-top: 24px; border: 1.5px solid #cbd5e1; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h3 style="margin: 0; color: #1b4d3e; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-database" style="color: #1b4d3e;"></i> Penyimpanan & Cadangan Database (Backup & Restore)
+                        </h3>
+                        <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b;">
+                            Kelola pencadangan data, pemulihan berkas, dan sinkronisasi awan agar data tidak hilang saat server dimulai ulang.
+                        </p>
+                    </div>
+                    <div>
+                        <% if (typeof firebaseConnected !== 'undefined' && firebaseConnected) { %>
+                            <span style="background: #dcfce7; color: #15803d; font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #86efac;">
+                                <i class="fas fa-cloud" style="color: #16a34a;"></i> Cloud Firebase Aktif & Tersinkron
+                            </span>
+                        <% } else { %>
+                            <span style="background: #f1f5f9; color: #475569; font-size: 0.82rem; font-weight: 600; padding: 6px 14px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1;">
+                                <i class="fas fa-hard-drive"></i> Penyimpanan Lokal JSON
+                            </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+                    <!-- KOTAK 1: UNDUH CADANGAN -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <strong style="color: #0f172a; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <i class="fas fa-file-arrow-down" style="color: #0284c7;"></i> Unduh Cadangan Data (.json)
+                            </strong>
+                            <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 14px; line-height: 1.45;">
+                                Unduh seluruh data sistem (pengguna/peserta, kelas, prodi, ujian, butir soal, dan riwayat nilai) dalam berkas JSON mandiri.
+                            </p>
+                        </div>
+                        <a href="/admin/pengaturan/backup" class="btn" style="background: #0284c7; color: white; text-decoration: none; padding: 9px 16px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                            <i class="fas fa-download"></i> Unduh Cadangan Lengkap
+                        </a>
+                    </div>
+
+                    <!-- KOTAK 2: PULIHKAN DARI CADANGAN -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <strong style="color: #0f172a; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <i class="fas fa-file-arrow-up" style="color: #16a34a;"></i> Pulihkan Data dari Cadangan (.json)
+                            </strong>
+                            <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 14px; line-height: 1.45;">
+                                Unggah berkas JSON cadangan yang pernah Anda unduh untuk memulihkan seluruh data dan pengaturan secara langsung.
+                            </p>
+                        </div>
+                        <form method="POST" action="/admin/pengaturan/restore" enctype="multipart/form-data" onsubmit="return confirm('Peringatan: Seluruh data saat ini akan ditimpa dengan data dari berkas cadangan JSON. Lanjutkan pemulihan?')">
+                            <div style="display: flex; gap: 8px;">
+                                <input type="file" name="backup_file" accept=".json" required style="font-size: 0.8rem; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; flex: 1;">
+                                <button type="submit" class="btn" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; white-space: nowrap;">
+                                    <i class="fas fa-upload"></i> Pulihkan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- KOTAK 3: TETAPKAN SEBAGAI MASTER BAKU SISTEM -->
+                <div style="background: #fefce8; border: 1.5px solid #fef08a; border-radius: 10px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                    <div style="flex: 1; min-width: 260px;">
+                        <strong style="color: #854d0e; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                            <i class="fas fa-shield-halved" style="color: #ca8a04;"></i> Tetapkan Data Saat Ini Sebagai Master Baku Sistem
+                        </strong>
+                        <p style="font-size: 0.82rem; color: #713f12; margin: 0; line-height: 1.45;">
+                            Menyimpan seluruh data aktif saat ini (Nama Kaprodi, akun dosen/mahasiswa, bank soal) sebagai data dasar sistem. Jika server mengalami restart atau tanpa koneksi eksternal sekalipun, sistem akan selalu menggunakan data ini sebagai data awal resmi.
+                        </p>
+                    </div>
+                    <form method="POST" action="/admin/pengaturan/set_default_master" onsubmit="return confirm('Tetapkan seluruh data aktif saat ini sebagai data master bawaan sistem?')">
+                        <button type="submit" class="btn" style="background: #ca8a04; color: white; border: none; padding: 10px 18px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                            <i class="fas fa-bookmark"></i> Jadikan Master Baku
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <script>
