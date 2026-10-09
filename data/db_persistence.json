@@ -1,37 +1,7 @@
 {
+  "version": "1.0.0",
+  "exported_at": "2026-10-09T02:47:46.770Z",
   "users": [
-    {
-      "id": 2,
-      "username": "240305013",
-      "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
-      "nama_lengkap": "MOH ANWAR KHALID",
-      "role": "peserta",
-      "nim": "240305013",
-      "id_kelas": 1,
-      "created_at": "2026-07-29T09:00:00.000Z",
-      "is_logged_in": true,
-      "last_login": "2026-10-04T07:41:05.915Z"
-    },
-    {
-      "id": 3,
-      "username": "240305018",
-      "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
-      "nama_lengkap": "Riyan Ferdianto",
-      "role": "peserta",
-      "nim": "240305018",
-      "id_kelas": 1,
-      "created_at": "2026-07-29T09:15:00.000Z"
-    },
-    {
-      "id": 4,
-      "username": "230102400",
-      "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
-      "nama_lengkap": "Ziadatul Ilmi",
-      "role": "peserta",
-      "nim": "230102400",
-      "id_kelas": 2,
-      "created_at": "2026-07-23T10:00:00.000Z"
-    },
     {
       "id": 5,
       "username": "admin",
@@ -84,35 +54,4613 @@
     },
     {
       "id": 7,
-      "username": "dosen",
-      "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
-      "nama_lengkap": "Dr. Budi Santoso, M.Kom",
-      "role": "dosen",
-      "nim": null,
-      "created_at": "2026-02-10T08:00:00.000Z"
+      "username": "240102468",
+      "password": "$2a$10$dWg1aDFnuygHWCiWuy1X2uASWH9mmM1mWuxz/MLK2byZ.vHxA2wtS",
+      "nama_lengkap": "ALVIYANA KHAIRUN NISA",
+      "role": "peserta",
+      "nim": "240102468",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:15.432Z"
+    },
+    {
+      "id": 8,
+      "username": "240102469",
+      "password": "$2a$10$AGzjP1gAipgGGvl/uHrFPuO5qluXuqG1uCMgGSShSlTF/QXnzHiVi",
+      "nama_lengkap": "ANNISA' HAFIFAH FRIHASTI",
+      "role": "peserta",
+      "nim": "240102469",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:15.537Z"
+    },
+    {
+      "id": 9,
+      "username": "240102470",
+      "password": "$2a$10$1LbT01C71aegE5F2KtU8UOJh33cE3UDbjkrU999kzsTlz9S09A5em",
+      "nama_lengkap": "AZIZA ROSIDA",
+      "role": "peserta",
+      "nim": "240102470",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:15.636Z"
+    },
+    {
+      "id": 10,
+      "username": "240102472",
+      "password": "$2a$10$qzXY276boSoDVB7BOoWdOOeuRGHvQJ0V1RvK.rZBSW1wrhnrYqwtO",
+      "nama_lengkap": "BAIQ TARIK NABILA",
+      "role": "peserta",
+      "nim": "240102472",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:15.739Z"
+    },
+    {
+      "id": 11,
+      "username": "240102474",
+      "password": "$2a$10$N9prDMKIrv7FFvScdY9cGOJlq1/kJKWFxeTLiJ919kkrHYunXIBdS",
+      "nama_lengkap": "DIAH ADINDA AURA DIVA",
+      "role": "peserta",
+      "nim": "240102474",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:15.839Z"
+    },
+    {
+      "id": 12,
+      "username": "240102473",
+      "password": "$2a$10$0wd8p4fU0fpP3CFWYbfyJOSB7Aq7Rs7C762JUlTpDHniPsJgZWrAC",
+      "nama_lengkap": "DARUL WASIAH",
+      "role": "peserta",
+      "nim": "240102473",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:15.938Z"
+    },
+    {
+      "id": 13,
+      "username": "240102479",
+      "password": "$2a$10$Hybue6LJaPiKSFpB3/C0uuejJF0rRcLABE1rUoFwm1AronoUmqziK",
+      "nama_lengkap": "FITRIA",
+      "role": "peserta",
+      "nim": "240102479",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.038Z"
+    },
+    {
+      "id": 14,
+      "username": "240102477",
+      "password": "$2a$10$bHKOW.7zo7VH./wtgg.wAO/fa9JYepqxoRnYJvdkYZ3IIaiIxTrz6",
+      "nama_lengkap": "ERIKA PEBRIANTI",
+      "role": "peserta",
+      "nim": "240102477",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.140Z"
+    },
+    {
+      "id": 15,
+      "username": "240102475",
+      "password": "$2a$10$m24C61e7HaMeCYDLmUv.neTUgH1rri5.I/fV7yYvGjadNocHLCXFW",
+      "nama_lengkap": "DINDA SETIA LESTARI",
+      "role": "peserta",
+      "nim": "240102475",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.245Z"
+    },
+    {
+      "id": 16,
+      "username": "240102476",
+      "password": "$2a$10$4G4MK0KTiI36ymIidmWFz.DC/7Nj9LFGuLpJ9urBff.IueoF4CcUa",
+      "nama_lengkap": "EKA RAHMAWATI",
+      "role": "peserta",
+      "nim": "240102476",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.346Z"
+    },
+    {
+      "id": 17,
+      "username": "240102482",
+      "password": "$2a$10$uo4dhrJvaraRNExsyXXy8OmfGb1b6I3b.37ZYQ1QufWz5x4SRlo2O",
+      "nama_lengkap": "HUSNIATI AULIA",
+      "role": "peserta",
+      "nim": "240102482",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.452Z"
+    },
+    {
+      "id": 18,
+      "username": "240102480",
+      "password": "$2a$10$NHcS//TQCj4Q5/QjO.ICDucjmFQworW6Nr.b6m79mL6oTYFqjhIWe",
+      "nama_lengkap": "HAIFA NAJWAN WAHIBAH",
+      "role": "peserta",
+      "nim": "240102480",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.553Z"
+    },
+    {
+      "id": 19,
+      "username": "240102484",
+      "password": "$2a$10$5IWM/TcsPM.zGaVvU.SREuFvELGXuSnSDcsLO6ZiiUpubppfNKX/S",
+      "nama_lengkap": "LAELI AGUS TIA WATI",
+      "role": "peserta",
+      "nim": "240102484",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.655Z"
+    },
+    {
+      "id": 20,
+      "username": "240102485",
+      "password": "$2a$10$gIqp0WRRHgXP/o2DtdmzVeKfmuE68LA3cxLftGIcKJj1OScB9fRFy",
+      "nama_lengkap": "LALU MUH.HISYAM SAPUTRA",
+      "role": "peserta",
+      "nim": "240102485",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.756Z"
+    },
+    {
+      "id": 21,
+      "username": "240102486",
+      "password": "$2a$10$TCv/0zlQWWxVrKWGMRqFqeuQH9bbgd.ifUo6cOFTcEs7flf9mzaBK",
+      "nama_lengkap": "LINDA AYU SAPUTRI",
+      "role": "peserta",
+      "nim": "240102486",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.856Z"
+    },
+    {
+      "id": 22,
+      "username": "240102488",
+      "password": "$2a$10$5EnA7QOQMivXryKquJPlZe66B88S9YN9Qeh6j93Dmyv0/nKWpJznq",
+      "nama_lengkap": "MAOLIDA AMETIYA SAPITRI",
+      "role": "peserta",
+      "nim": "240102488",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:16.969Z"
+    },
+    {
+      "id": 23,
+      "username": "240102490",
+      "password": "$2a$10$aDla6BVDRSxeDJyLFICfTO.ow0nL9AcggCB018VQNRWk4gGuvCKRG",
+      "nama_lengkap": "MITA PURNAMA",
+      "role": "peserta",
+      "nim": "240102490",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.069Z"
+    },
+    {
+      "id": 24,
+      "username": "240102492",
+      "password": "$2a$10$DoNpkvW3Kds5DHmtsXrb0eV60TrRDn8LG2q1S/y9dxRoaUzmKAMqm",
+      "nama_lengkap": "NADIATUL SAFITRI",
+      "role": "peserta",
+      "nim": "240102492",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.189Z"
+    },
+    {
+      "id": 25,
+      "username": "240102491",
+      "password": "$2a$10$EclJqqzijK33c8tH7C65VO6hu7jKkyap73XG5po56LTAA17zsGEe2",
+      "nama_lengkap": "MUH.AZHARI AWAN PUTRA",
+      "role": "peserta",
+      "nim": "240102491",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.286Z"
+    },
+    {
+      "id": 26,
+      "username": "240102489",
+      "password": "$2a$10$.o2AA9e4snlkyUdQa3ruF.GeLaW4cULgrHuAldhGKjSKHcRv4lmy.",
+      "nama_lengkap": "MEYVA RAHMA NINDIA",
+      "role": "peserta",
+      "nim": "240102489",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.385Z"
+    },
+    {
+      "id": 27,
+      "username": "240102493",
+      "password": "$2a$10$Q86JuWgGpxgScbY5P/8Lf.LRqwHCg/QBEWu2DTV7U6UJ37T5UXq5.",
+      "nama_lengkap": "NEZA HADIYA PUTRI",
+      "role": "peserta",
+      "nim": "240102493",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.494Z"
+    },
+    {
+      "id": 28,
+      "username": "240102496",
+      "password": "$2a$10$t4VxWNej.F2kkI0/f/zzae778wULfOgvMqJw0hSa.I5u9vUxBRDj6",
+      "nama_lengkap": "NURIYA ADYANA",
+      "role": "peserta",
+      "nim": "240102496",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.602Z"
+    },
+    {
+      "id": 29,
+      "username": "240102494",
+      "password": "$2a$10$e8dXntO9xaVaTJrarrWaQOtc2hM7v6sER6u/cu.2VGTjheDxe/.6O",
+      "nama_lengkap": "NIRA JULIANA ANGGRAINI",
+      "role": "peserta",
+      "nim": "240102494",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.702Z"
+    },
+    {
+      "id": 30,
+      "username": "240102495",
+      "password": "$2a$10$1FUQmSdrZFY01nerINlY0e8YK1v4nHEFemyq0lsBUE50NIwL0FkE2",
+      "nama_lengkap": "NOVIA ARIZA",
+      "role": "peserta",
+      "nim": "240102495",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.802Z"
+    },
+    {
+      "id": 31,
+      "username": "240102497",
+      "password": "$2a$10$Z3NJhysLVyaUolvGeIKe4O3RY6pdVd/D8Y4dm1OHq7uEvR7unXxlq",
+      "nama_lengkap": "OKTAVIA RAMDANI NURHAFIZAH",
+      "role": "peserta",
+      "nim": "240102497",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:17.902Z"
+    },
+    {
+      "id": 32,
+      "username": "240102498",
+      "password": "$2a$10$0j28CgOhtftWYn6ohwUx7OeyuLQ9sbQwM5vQDYcBGbk8wy147MMV2",
+      "nama_lengkap": "RAHMAD FADILLAH HB",
+      "role": "peserta",
+      "nim": "240102498",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.003Z"
+    },
+    {
+      "id": 33,
+      "username": "240102499",
+      "password": "$2a$10$PmckYBm8Btposc2ssqA3eOUuAe2lMRuqdHfhimi3oLZtGfAmLikxi",
+      "nama_lengkap": "RAYA DEZWA QODIRA",
+      "role": "peserta",
+      "nim": "240102499",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.104Z"
+    },
+    {
+      "id": 34,
+      "username": "240102503",
+      "password": "$2a$10$LUfVOzMvJ3Z/PE6sGIFofuopBgnpG5ZOxv4qazuMLJrjCm6/qx8zO",
+      "nama_lengkap": "SIMA JANUARTI",
+      "role": "peserta",
+      "nim": "240102503",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.204Z"
+    },
+    {
+      "id": 35,
+      "username": "240102502",
+      "password": "$2a$10$mD9JJRKcN3v3uHEXfXenmumOGBPaUypS76udp9CYYQfbmUy9WPZrW",
+      "nama_lengkap": "SASKIA AULIA",
+      "role": "peserta",
+      "nim": "240102502",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.303Z"
+    },
+    {
+      "id": 36,
+      "username": "240102506",
+      "password": "$2a$10$g8J0Kujo0aQOcMSD1uSka.uh/08BZ5ffcGYDjOUv1ZNbKn.RTfVTW",
+      "nama_lengkap": "WIDIATUL AENI",
+      "role": "peserta",
+      "nim": "240102506",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.403Z"
+    },
+    {
+      "id": 37,
+      "username": "240102504",
+      "password": "$2a$10$VuHV4.uPjjjWCmhzkK1E0OXvWPm9/AGhvTb3YX8Cnu0oD9WRJJSMu",
+      "nama_lengkap": "SUSAN MISRI",
+      "role": "peserta",
+      "nim": "240102504",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.504Z"
+    },
+    {
+      "id": 38,
+      "username": "240102508",
+      "password": "$2a$10$1l/8/Vpp53PkXLm0iwxeoebA49U6DX1onpMTms5ZG0Ajlw9cDf7Ai",
+      "nama_lengkap": "ZAHRA ADYA ZAHIA",
+      "role": "peserta",
+      "nim": "240102508",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.603Z"
+    },
+    {
+      "id": 39,
+      "username": "240102501",
+      "password": "$2a$10$mUV0RYCi1p0z.FL3gKMXTOtny4QPz9EvK5bGE7G3P.SYyj4xmcxf6",
+      "nama_lengkap": "SAKINATUL WALIDAIN",
+      "role": "peserta",
+      "nim": "240102501",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.702Z"
+    },
+    {
+      "id": 40,
+      "username": "240102500",
+      "password": "$2a$10$zNrp5mZ7lCeUTaOYCWnAaO4jFNhZWGGiCIcpoCdU4NlShusjPCfuC",
+      "nama_lengkap": "RISKA RAMADANI",
+      "role": "peserta",
+      "nim": "240102500",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.801Z"
+    },
+    {
+      "id": 41,
+      "username": "240102505",
+      "password": "$2a$10$dtRPjOM0X8oUAg8QCc7eeeeiLsl01Oqoh7yRQdIuxVlvqekM6CDRS",
+      "nama_lengkap": "TITIK INDAH LESTARI",
+      "role": "peserta",
+      "nim": "240102505",
+      "id_kelas": 5,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:18.902Z"
+    },
+    {
+      "id": 42,
+      "username": "240102548",
+      "password": "$2a$10$dkcMHBNlIolFaK/DQxKgxu0dOp.3Jh6msB1lib8l6vn/9gl2G.UZi",
+      "nama_lengkap": "WIDIYATI",
+      "role": "peserta",
+      "nim": "240102548",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.007Z"
+    },
+    {
+      "id": 43,
+      "username": "240102549",
+      "password": "$2a$10$LzOMRmM0vYreB24dXKZFfup41JrViDDDx9nAv3dj1wJ0wvqqIjetK",
+      "nama_lengkap": "WINA AULIA",
+      "role": "peserta",
+      "nim": "240102549",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.111Z"
+    },
+    {
+      "id": 44,
+      "username": "240102541",
+      "password": "$2a$10$b8S0o0t0f4b35jBUiV1woO2PD7T32jD4Rq9lgemnlxWzA8.FkN7wC",
+      "nama_lengkap": "SANIDATUL AENI",
+      "role": "peserta",
+      "nim": "240102541",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.213Z"
+    },
+    {
+      "id": 45,
+      "username": "240102545",
+      "password": "$2a$10$cSKfJiYE8QSEar5Lrc.Fxu0mzLr//wGgo/L.dD97ILswRLKqGtm8C",
+      "nama_lengkap": "SITI NURMAYANI",
+      "role": "peserta",
+      "nim": "240102545",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.313Z"
+    },
+    {
+      "id": 46,
+      "username": "240102529",
+      "password": "$2a$10$HmwiPRko5isMQw0t3VfshO8CiX0fNyLvVXBsbu.VRXr4cr8h0kATO",
+      "nama_lengkap": "MUHAMAD AMANAH ANWAR",
+      "role": "peserta",
+      "nim": "240102529",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.414Z"
+    },
+    {
+      "id": 47,
+      "username": "240102511",
+      "password": "$2a$10$Wc07dmjg0XlZvbsJkEQrVOHcm/yWUws7RP3qfEBcEr3j0tNKAC.Cm",
+      "nama_lengkap": "AHMAD SYAERAZY",
+      "role": "peserta",
+      "nim": "240102511",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.513Z"
+    },
+    {
+      "id": 48,
+      "username": "240102509",
+      "password": "$2a$10$g8S2FMGeZd8nb84WGdcjteczE8f4HXYmFnQmhTGEHh077M3FZneFa",
+      "nama_lengkap": "ABNA ALIMNA",
+      "role": "peserta",
+      "nim": "240102509",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.612Z"
+    },
+    {
+      "id": 49,
+      "username": "240102512",
+      "password": "$2a$10$OKnUgW7P/CbQGVwPqkA7fuuM.OOpFGl5kkihkzXHjh794HYQWdiSu",
+      "nama_lengkap": "ANISA",
+      "role": "peserta",
+      "nim": "240102512",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.712Z"
+    },
+    {
+      "id": 50,
+      "username": "240102510",
+      "password": "$2a$10$LRNPOzXq7iBKmUhygF9ZJOuOC70xkm9FLCJxuQtanqm1gV1O/4Jv6",
+      "nama_lengkap": "ADELIA MANISA",
+      "role": "peserta",
+      "nim": "240102510",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.811Z"
+    },
+    {
+      "id": 51,
+      "username": "240102513",
+      "password": "$2a$10$04aTllJHYP4XaEClY7VJRuDv0bGeQOpB4zJsYWzvpx8SF6DAE2jae",
+      "nama_lengkap": "ARDELIA RUSNADEWI",
+      "role": "peserta",
+      "nim": "240102513",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:19.913Z"
+    },
+    {
+      "id": 52,
+      "username": "240102516",
+      "password": "$2a$10$KMl8BFMUY1HF4ony3zinTuBd8ZTs0rUfqOC2mHV8gKQh/E6NJlVDm",
+      "nama_lengkap": "DINI ANGGRAINI",
+      "role": "peserta",
+      "nim": "240102516",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.013Z"
+    },
+    {
+      "id": 53,
+      "username": "240102517",
+      "password": "$2a$10$Zn.KuMY4bpIxHTnuPWLPtellHohRQSem/Rs3P7smarnY6om1LFIP6",
+      "nama_lengkap": "DWI APRILIZA",
+      "role": "peserta",
+      "nim": "240102517",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.113Z"
+    },
+    {
+      "id": 54,
+      "username": "240102520",
+      "password": "$2a$10$6QIQ9Zc9f290Fy8dsirjfexitmTxQs686YsYcZ/5q8YrHGLbn1bau",
+      "nama_lengkap": "HANA NABILATUL HUSNA",
+      "role": "peserta",
+      "nim": "240102520",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.216Z"
+    },
+    {
+      "id": 55,
+      "username": "240102524",
+      "password": "$2a$10$2JSVHqQm0J.Jd5W2j4KJzuLelP8rQ1rwrFpv7TesRD4oFTyhQwKnq",
+      "nama_lengkap": "L ISNADI",
+      "role": "peserta",
+      "nim": "240102524",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.325Z"
+    },
+    {
+      "id": 56,
+      "username": "240102519",
+      "password": "$2a$10$mkY9Q/nNDl/1Gd06yZkw7uKugDxiZx2yzSPp0kdKk5UqxV5aNdYDW",
+      "nama_lengkap": "FHATHIHA RAHMAWATY TARRIA",
+      "role": "peserta",
+      "nim": "240102519",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.437Z"
+    },
+    {
+      "id": 57,
+      "username": "240102521",
+      "password": "$2a$10$vDw5QCP9X7/JbdjuVYHuTu5jXLOZ57NodlUqv8Iqu1.UUkgi0WLqS",
+      "nama_lengkap": "HANIFA",
+      "role": "peserta",
+      "nim": "240102521",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.540Z"
+    },
+    {
+      "id": 58,
+      "username": "240102522",
+      "password": "$2a$10$Sy34CZVQUPKWU9wqLm3Ye.3/S.zI1m1Oon.qF/ReObfAc4ajYmQJm",
+      "nama_lengkap": "HARNIATUN",
+      "role": "peserta",
+      "nim": "240102522",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.642Z"
+    },
+    {
+      "id": 59,
+      "username": "240102514",
+      "password": "$2a$10$JmAMI2NShJvlqw86KEYjwOXJtvGkI5rvwmCWJCIjDyTr/psht4zzy",
+      "nama_lengkap": "BAIQ IIN DWI ARIANI",
+      "role": "peserta",
+      "nim": "240102514",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.742Z"
+    },
+    {
+      "id": 60,
+      "username": "240102518",
+      "password": "$2a$10$ZeoXgpL1A6WnQLKJ2rROj.6eUgcLjK.TS8/IWeRMY3buSREUTDHR6",
+      "nama_lengkap": "EVA AGUSTINA",
+      "role": "peserta",
+      "nim": "240102518",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.867Z"
+    },
+    {
+      "id": 61,
+      "username": "240102525",
+      "password": "$2a$10$POwXV5DJNmPVZqRmsP6D5eoI2H6bD9zAy.GZY7J1werJ8oVE3Vqxa",
+      "nama_lengkap": "L. RIKI RAMDANI",
+      "role": "peserta",
+      "nim": "240102525",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:20.968Z"
+    },
+    {
+      "id": 62,
+      "username": "240102526",
+      "password": "$2a$10$UTloavC9jMJSGTnBFGsmvOZTL9JgkSB3KsWptGX4nxblW/lPhNbwa",
+      "nama_lengkap": "LAILY RAHMAWATI",
+      "role": "peserta",
+      "nim": "240102526",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.081Z"
+    },
+    {
+      "id": 63,
+      "username": "240102537",
+      "password": "$2a$10$S1jD12RtHOz0YpZQWI52VOeLWx3o4QQWjqkFLwRGkkJ/JEB9j4Lui",
+      "nama_lengkap": "PAIZAH",
+      "role": "peserta",
+      "nim": "240102537",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.187Z"
+    },
+    {
+      "id": 64,
+      "username": "240102531",
+      "password": "$2a$10$AqRBRDilRHP9a8wxBwx06ufoPIGRrrFien5rSvyC3K6VxkvEqs3j2",
+      "nama_lengkap": "NAZLYA RENJANI PUTRI",
+      "role": "peserta",
+      "nim": "240102531",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.287Z"
+    },
+    {
+      "id": 65,
+      "username": "240102528",
+      "password": "$2a$10$2etNjgU7VeZOwnPCpLH8nOlNRgSD43C6Y0lipeCJlQ1rzlo1CuWaG",
+      "nama_lengkap": "MAULIDA APRILIANI",
+      "role": "peserta",
+      "nim": "240102528",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.411Z"
+    },
+    {
+      "id": 66,
+      "username": "240102536",
+      "password": "$2a$10$UkBaawSN84MhC.e.kIv/K.W6XbRXG61vPpBz2flgIOSrmhaicWE6C",
+      "nama_lengkap": "NURUL RIZKI AHLA",
+      "role": "peserta",
+      "nim": "240102536",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.512Z"
+    },
+    {
+      "id": 67,
+      "username": "240102533",
+      "password": "$2a$10$tFgCfIys3FqUN1lqfK5Ryeit5m9dZoAD11LVfH7kbOor1MJ5YVpiC",
+      "nama_lengkap": "NUR WAHYUNI SOPIA",
+      "role": "peserta",
+      "nim": "240102533",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.613Z"
+    },
+    {
+      "id": 68,
+      "username": "240102534",
+      "password": "$2a$10$egx32HE173nZzxHY/nvzhegG/Y.UnO7P3TRs5NwePetzOamWE.eGW",
+      "nama_lengkap": "NURAN KARUNIAWATI",
+      "role": "peserta",
+      "nim": "240102534",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.725Z"
+    },
+    {
+      "id": 69,
+      "username": "240102527",
+      "password": "$2a$10$H3PBf24FYWkiX/JNaEpzPuHcgRXJjsDaQzkPX3GRPpiSRPsIQnG5e",
+      "nama_lengkap": "LISALATUL ISLAMI",
+      "role": "peserta",
+      "nim": "240102527",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.824Z"
+    },
+    {
+      "id": 70,
+      "username": "240102530",
+      "password": "$2a$10$YEqrxAjoSsHO1ticKWQ3Fu3eerv9iVzSIr.pFB/oAOhYxbqBaBsa6",
+      "nama_lengkap": "MUHAMMAD AL FUKRO",
+      "role": "peserta",
+      "nim": "240102530",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:21.925Z"
+    },
+    {
+      "id": 71,
+      "username": "240102535",
+      "password": "$2a$10$fcWh7Jx7X8hyxANO0JQzoeOkMEpSf5U3U3ND5g3ptMZxVGZg.mijy",
+      "nama_lengkap": "NURHIKMATUL AZIZAH",
+      "role": "peserta",
+      "nim": "240102535",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.036Z"
+    },
+    {
+      "id": 72,
+      "username": "240102532",
+      "password": "$2a$10$MFek6xFwgZeHxSDJiov1Pu/sahxFpKn/01qxRFFmrv9GjQ3N4KQXS",
+      "nama_lengkap": "NILAM FADHILA",
+      "role": "peserta",
+      "nim": "240102532",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.138Z"
+    },
+    {
+      "id": 73,
+      "username": "240102538",
+      "password": "$2a$10$JN78D/cnhvC.x7I8nG3IJuxCanNMQtCXmwiEJjDqkh2Cmo47VQ0zG",
+      "nama_lengkap": "RAHMAT HIDAYATUL HAQ",
+      "role": "peserta",
+      "nim": "240102538",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.247Z"
+    },
+    {
+      "id": 74,
+      "username": "240102539",
+      "password": "$2a$10$QF9.9AtzuqQdE36kLmkg3.G0ZDuwtZ6ZOWo/jMV.eJ0lrwjm/br/W",
+      "nama_lengkap": "RAODATUL JANNAH",
+      "role": "peserta",
+      "nim": "240102539",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.351Z"
+    },
+    {
+      "id": 75,
+      "username": "240102542",
+      "password": "$2a$10$SwgrsUZRAytJillEDAdwJeoiVrrPmWkbEuqE0ZsTXM/LwMG4wDiOq",
+      "nama_lengkap": "SITI FADILA ROSIANI",
+      "role": "peserta",
+      "nim": "240102542",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.453Z"
+    },
+    {
+      "id": 76,
+      "username": "240102544",
+      "password": "$2a$10$BZpaoo3g3Ptw1lbeCHskG.UWv02HtitvUYedHgIUKaVtSQQ0KG9oG",
+      "nama_lengkap": "SITI NIADATUL HUSANI",
+      "role": "peserta",
+      "nim": "240102544",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.554Z"
+    },
+    {
+      "id": 77,
+      "username": "240102540",
+      "password": "$2a$10$TJMBhB0STR.I4ibwadqrg.3y5wm.RW4sqsQQWyDCihGkWtnNOiKvi",
+      "nama_lengkap": "SALWA AL ZURA",
+      "role": "peserta",
+      "nim": "240102540",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.656Z"
+    },
+    {
+      "id": 78,
+      "username": "240102546",
+      "password": "$2a$10$yoVGdqDx2t4Muna6d1AQSu4F209IgG3CyLIN4.RFBs8bMojhkyWfu",
+      "nama_lengkap": "SOFIANA ZUHRATUNNISA",
+      "role": "peserta",
+      "nim": "240102546",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.767Z"
+    },
+    {
+      "id": 79,
+      "username": "240102547",
+      "password": "$2a$10$REIqcn42sB5f9oynSq5uyuWgT4nwcXV6AZ8gcPQld3h3wVO20x.wa",
+      "nama_lengkap": "SYIFA UL INSANI",
+      "role": "peserta",
+      "nim": "240102547",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.867Z"
+    },
+    {
+      "id": 80,
+      "username": "240102550",
+      "password": "$2a$10$x5rVv/nXt5kMtGkbuVjxaekT4HaMLjjcDXrKFI4Tr9TBZlK68J.wC",
+      "nama_lengkap": "ZAEDATUL FITRI",
+      "role": "peserta",
+      "nim": "240102550",
+      "id_kelas": 6,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:22.967Z"
+    },
+    {
+      "id": 81,
+      "username": "240102017",
+      "password": "$2a$10$l7lqXIU7URrVGj8pQ7G8SOv9IMDV05jfAD8YamaLAvLCP9IvNRfyW",
+      "nama_lengkap": "NURUL HUDAINI",
+      "role": "peserta",
+      "nim": "240102017",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:23.473Z"
+    },
+    {
+      "id": 82,
+      "username": "240102590",
+      "password": "$2a$10$xYnkWwzp9mDO/aZhlHE3nOZzO63p5EB4G.uBFNbv.Bd/9uVVHlhEa",
+      "nama_lengkap": "ZUHROTUL ANWARIAH",
+      "role": "peserta",
+      "nim": "240102590",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:23.601Z"
+    },
+    {
+      "id": 83,
+      "username": "240102570",
+      "password": "$2a$10$.psig0540g8POUq8RRvuR.GlbiSjkuBPueLhgp8h8u0mJnQezGnRu",
+      "nama_lengkap": "DENDA WINDA ARIANI",
+      "role": "peserta",
+      "nim": "240102570",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:23.701Z"
+    },
+    {
+      "id": 84,
+      "username": "240102552",
+      "password": "$2a$10$oc7Q9xGssqWJZYfO2wtj7.Y.sSjPF8qtJ3y8J/zPGUWEnVVbrfoiG",
+      "nama_lengkap": "ALGA ANDIKA",
+      "role": "peserta",
+      "nim": "240102552",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:23.801Z"
+    },
+    {
+      "id": 85,
+      "username": "240102559",
+      "password": "$2a$10$ADHBW68Nb3Xh4a92wZaORe8TryWOEAK2r2c0Pq0qMBnuuJZy3XeGe",
+      "nama_lengkap": "DEA SANTIKA",
+      "role": "peserta",
+      "nim": "240102559",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:23.906Z"
+    },
+    {
+      "id": 86,
+      "username": "240102555",
+      "password": "$2a$10$8vZkIXAgLIUKEpVhvC2AAOfLGyqR.Z7ODOkmuanQdRWG2tRsv5vqS",
+      "nama_lengkap": "BAIQ GINA MAULITA",
+      "role": "peserta",
+      "nim": "240102555",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.018Z"
+    },
+    {
+      "id": 87,
+      "username": "240102554",
+      "password": "$2a$10$/b1v7p4EpXQ69ywfSWnnmehGcBBvCyjcqvI3.w0SU2Ot/noD8X5Se",
+      "nama_lengkap": "AULIA FEBRIANTI",
+      "role": "peserta",
+      "nim": "240102554",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.126Z"
+    },
+    {
+      "id": 88,
+      "username": "240102560",
+      "password": "$2a$10$ATtwkKsRqCH1E0LEq1FS6uc6a45bnAX2AVO9J6kPtdTvbqQb0Vxbi",
+      "nama_lengkap": "DEWI YULIANTARI",
+      "role": "peserta",
+      "nim": "240102560",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.232Z"
+    },
+    {
+      "id": 89,
+      "username": "240102563",
+      "password": "$2a$10$fFbRbvhPHewXurRq1OaqPugdoyNGd8MHnibcxMUMjojloewNjL6lK",
+      "nama_lengkap": "GITA ARISTA",
+      "role": "peserta",
+      "nim": "240102563",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.334Z"
+    },
+    {
+      "id": 90,
+      "username": "240102558",
+      "password": "$2a$10$NSXnqwnfKXVc1DoxlkUXqeB/nonTWqq074JiVE1FodpWmyXa.vPuG",
+      "nama_lengkap": "BQ. INTAN",
+      "role": "peserta",
+      "nim": "240102558",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.437Z"
+    },
+    {
+      "id": 91,
+      "username": "240102556",
+      "password": "$2a$10$z2G3Uq3Mqufuh1Jhtcd0c.VtWZq4WgaxyKZMyfPFsVIKH8qyfUtP.",
+      "nama_lengkap": "BAIQ NURHALIMAH",
+      "role": "peserta",
+      "nim": "240102556",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.545Z"
+    },
+    {
+      "id": 92,
+      "username": "240102562",
+      "password": "$2a$10$qfXdjrDTXQ6VWpLSYCpLuOqSFOa9DBAxaVaNYt/9CYksMn1RzDqRO",
+      "nama_lengkap": "FEBY AZIZAH LAYLI",
+      "role": "peserta",
+      "nim": "240102562",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.649Z"
+    },
+    {
+      "id": 93,
+      "username": "240102564",
+      "password": "$2a$10$UHBQfluP3EeGkG..3EeCeuk.TWfXn5yajr/3gwL38tsOxhKl5v8gq",
+      "nama_lengkap": "HESTINA AUDINA",
+      "role": "peserta",
+      "nim": "240102564",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.758Z"
+    },
+    {
+      "id": 94,
+      "username": "240102565",
+      "password": "$2a$10$eDrVnSynQt1E4C5MNykLGO4KcLUfI96/Kui2oztd85B17dbmZQi1O",
+      "nama_lengkap": "HEZMI MUTIARA HIKMAH",
+      "role": "peserta",
+      "nim": "240102565",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.858Z"
+    },
+    {
+      "id": 95,
+      "username": "240102566",
+      "password": "$2a$10$Y7ipmmUfAgjV8QXHattO1.ttfC/huC0hTS68M/LnpYkzTt4aZElzi",
+      "nama_lengkap": "IDYATUL FITRI",
+      "role": "peserta",
+      "nim": "240102566",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:24.963Z"
+    },
+    {
+      "id": 96,
+      "username": "240102569",
+      "password": "$2a$10$s.jaM8Vb2/ptIegTEnAqS.CbISX/DVlVKVl99mb9j7u3QOJV/li92",
+      "nama_lengkap": "MAULA SANDI RIZKI",
+      "role": "peserta",
+      "nim": "240102569",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.076Z"
+    },
+    {
+      "id": 97,
+      "username": "240102574",
+      "password": "$2a$10$nTKTOPunVoNP21PfZ6MU.OwPlLwAKU83SqsCzZkMj..6301SmFkua",
+      "nama_lengkap": "RABITAH",
+      "role": "peserta",
+      "nim": "240102574",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.177Z"
+    },
+    {
+      "id": 98,
+      "username": "240102567",
+      "password": "$2a$10$XKOF7rU.mR91iiq21LUDeufR/RaSX9qjDQIeRakRbveq/yQmhxoa6",
+      "nama_lengkap": "JULIANA",
+      "role": "peserta",
+      "nim": "240102567",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.279Z"
+    },
+    {
+      "id": 99,
+      "username": "240102571",
+      "password": "$2a$10$laODySBg5Zhy6Gtw145WruTkxtYeXvlVMPNBM7RvVtj0AFChcYg4i",
+      "nama_lengkap": "MUHAMMAD LUKMANUL HAKIM",
+      "role": "peserta",
+      "nim": "240102571",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.380Z"
+    },
+    {
+      "id": 100,
+      "username": "240102577",
+      "password": "$2a$10$xfSMcqPNPdjSERwHAx6iCeyk4OA03iA8FHquw/qKipORZAAnnTdXq",
+      "nama_lengkap": "RIKA ROSMIYANTI",
+      "role": "peserta",
+      "nim": "240102577",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.483Z"
+    },
+    {
+      "id": 101,
+      "username": "240102575",
+      "password": "$2a$10$gIN/e1XCLungWuKjyyOVzukezSQCVZT2hDZb6thh1tsfIvM4uzaDO",
+      "nama_lengkap": "RESTI FAOLA MARINI",
+      "role": "peserta",
+      "nim": "240102575",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.583Z"
+    },
+    {
+      "id": 102,
+      "username": "240102572",
+      "password": "$2a$10$mBJ8A8WxrKxCtGAe3sclEuvUxoUbp2uouDZ1wuo3H3wZlQG421DD6",
+      "nama_lengkap": "NURBAYATI KM",
+      "role": "peserta",
+      "nim": "240102572",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.685Z"
+    },
+    {
+      "id": 103,
+      "username": "240102578",
+      "password": "$2a$10$j1Lliq2rrpJ/FHDglO9T6uUDPhRkcAQUf3xSH5UWTfCBvbwEYZU.e",
+      "nama_lengkap": "RIMA AYU HANDAYANI",
+      "role": "peserta",
+      "nim": "240102578",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.789Z"
+    },
+    {
+      "id": 104,
+      "username": "240102580",
+      "password": "$2a$10$wR4Q166Ch7opav4ZkyP70.X2XLQRjakTPtgoo1XNt483J522EUB.C",
+      "nama_lengkap": "RIZKIA ZIADATIN ILMA",
+      "role": "peserta",
+      "nim": "240102580",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.895Z"
+    },
+    {
+      "id": 105,
+      "username": "240102588",
+      "password": "$2a$10$OxlUZkqEIg86sDoImMQZW.fQEilDFELCt8orLRTGw6l6gSreLH.JW",
+      "nama_lengkap": "WIZIAH",
+      "role": "peserta",
+      "nim": "240102588",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:25.995Z"
+    },
+    {
+      "id": 106,
+      "username": "240102583",
+      "password": "$2a$10$N6ekldhuUV4vhslaOBZiUuwZkkSi6NuvLKEGhToGT8SjeHU3.pFDi",
+      "nama_lengkap": "SINTA RAMA DEWI",
+      "role": "peserta",
+      "nim": "240102583",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.098Z"
+    },
+    {
+      "id": 107,
+      "username": "240102586",
+      "password": "$2a$10$tFmqqzwubSRvr5Rh8tHBBOjYbjKMguq.zi5wbveXoxDeEkEJqys4y",
+      "nama_lengkap": "SULIS MAULIA",
+      "role": "peserta",
+      "nim": "240102586",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.201Z"
+    },
+    {
+      "id": 108,
+      "username": "240102581",
+      "password": "$2a$10$JO08trcN15wEs3eQyc5G4.ikAEyRcbker4e1/pbM4cxELJFuCOBhu",
+      "nama_lengkap": "SAHIRA HULWATUL ISNAINI",
+      "role": "peserta",
+      "nim": "240102581",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.307Z"
+    },
+    {
+      "id": 109,
+      "username": "240102573",
+      "password": "$2a$10$QHkpfQxh1XdwSonb4TZF7udLw.5sCQuPvAH20BI9t8Tr7XmU7aq0W",
+      "nama_lengkap": "QORIATUN AWANDA SOLEHAH",
+      "role": "peserta",
+      "nim": "240102573",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.409Z"
+    },
+    {
+      "id": 110,
+      "username": "240102584",
+      "password": "$2a$10$rrgQfoW5JlHKdFM3IPFPQOGEV8GKBDQB1NoXVM76w0Yp1Ro8Be2Be",
+      "nama_lengkap": "SITI NURHAFIZAH",
+      "role": "peserta",
+      "nim": "240102584",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.519Z"
+    },
+    {
+      "id": 111,
+      "username": "240102582",
+      "password": "$2a$10$omTGCFw.YMwSGZZmSGXt0.h0wMxpKBPTnCITuSi6aHwHAuaieiIBK",
+      "nama_lengkap": "SARAH SAFIRA",
+      "role": "peserta",
+      "nim": "240102582",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.619Z"
+    },
+    {
+      "id": 112,
+      "username": "240102576",
+      "password": "$2a$10$ll7ISuQSXGQuLeeE5uGh..j.Mcjtz/oGU4fs1b.IL.hnffG2HTYKO",
+      "nama_lengkap": "RIA AULIA",
+      "role": "peserta",
+      "nim": "240102576",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.721Z"
+    },
+    {
+      "id": 113,
+      "username": "240102589",
+      "password": "$2a$10$8N9sm6BHE.FZKYBhsqwRieNm7lKQpM9agldHvAwP3slbxeEX/in..",
+      "nama_lengkap": "ZIADATURRAHMAH",
+      "role": "peserta",
+      "nim": "240102589",
+      "id_kelas": 7,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.820Z"
+    },
+    {
+      "id": 114,
+      "username": "240102425",
+      "password": "$2a$10$i8UZGnDZUTM87sD7Ke2Ef.IaHHVt5xwYRqtO/C2zfm4PZWRShpM7C",
+      "nama_lengkap": "AHMAD NAUFAL MARZUKI",
+      "role": "peserta",
+      "nim": "240102425",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:26.931Z"
+    },
+    {
+      "id": 115,
+      "username": "240102426",
+      "password": "$2a$10$cEMEJ5nKkugMIMoRDLjFoe91Zrhh7z1U98rv/0ZpaqIs6BYturnsC",
+      "nama_lengkap": "AIDIL MUFTIA NURUL ILMI",
+      "role": "peserta",
+      "nim": "240102426",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.031Z"
+    },
+    {
+      "id": 116,
+      "username": "240102427",
+      "password": "$2a$10$VTKGhwcuFDg66BkZaz5dtOrUW.iKScuq9128.khO.npn0BKCEtq8O",
+      "nama_lengkap": "ANISAFITRI",
+      "role": "peserta",
+      "nim": "240102427",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.134Z"
+    },
+    {
+      "id": 117,
+      "username": "240102429",
+      "password": "$2a$10$UG8CfXtdxVuCjYBT.jZ5jumvz0jKifmKDfgpY/2oadv9zGo1DKcIO",
+      "nama_lengkap": "BAIQ EVA YULIARNI",
+      "role": "peserta",
+      "nim": "240102429",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.241Z"
+    },
+    {
+      "id": 118,
+      "username": "240102428",
+      "password": "$2a$10$FeL/oqfFAIECs1KZMDKdxOtcNx.h1P8CeR5oFIrTSM4dIRUpxPZPe",
+      "nama_lengkap": "AZILA MARYAYUNI",
+      "role": "peserta",
+      "nim": "240102428",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.340Z"
+    },
+    {
+      "id": 119,
+      "username": "240102430",
+      "password": "$2a$10$pCCsBzdP.j.dun8uk3xGVup2VRuF7hGuBsqfrLFZd4.ayjMBArbcq",
+      "nama_lengkap": "CAHYANI HIDAYATUL INDAH",
+      "role": "peserta",
+      "nim": "240102430",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.440Z"
+    },
+    {
+      "id": 120,
+      "username": "240102431",
+      "password": "$2a$10$PINAKXgpQB7jvW30ovxRE.1MMavMI6GPZmAqkvBXxM2wRd3zEEex2",
+      "nama_lengkap": "DINA RIZKI MAULANI",
+      "role": "peserta",
+      "nim": "240102431",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.538Z"
+    },
+    {
+      "id": 121,
+      "username": "240102432",
+      "password": "$2a$10$Ag8xdDvoCtjH4QjajyAl1OYFrWjRLJQoeVAmPLZlYqSb2PzYfYHYa",
+      "nama_lengkap": "EKA DWI YANTI",
+      "role": "peserta",
+      "nim": "240102432",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.637Z"
+    },
+    {
+      "id": 122,
+      "username": "240102434",
+      "password": "$2a$10$hZkJ3UyscLGHLnWVelGikuK2Kz/3DTH1fWdUt2..MoUpwpUwmmnE.",
+      "nama_lengkap": "ERWIN AHADIYAR",
+      "role": "peserta",
+      "nim": "240102434",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.736Z"
+    },
+    {
+      "id": 123,
+      "username": "240102437",
+      "password": "$2a$10$MUTArxNOliwsd95fIzBA5.L7bCHt08P7cXXKwQPJ5kXeRh0A58rci",
+      "nama_lengkap": "HERAWATI",
+      "role": "peserta",
+      "nim": "240102437",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.837Z"
+    },
+    {
+      "id": 124,
+      "username": "240102441",
+      "password": "$2a$10$qVnYW.DdlIYvaRQkiQ1EXeXpxU.uZsLMGLj.lf54/S/4To1mMWIDW",
+      "nama_lengkap": "LALU MIFTAHUL HUDA",
+      "role": "peserta",
+      "nim": "240102441",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:27.940Z"
+    },
+    {
+      "id": 125,
+      "username": "240102440",
+      "password": "$2a$10$Ai6Wn2KgXC7/XoIy.RZFX.XCXc6b6PGbBO9yKCp.VbYufrOjtLa/C",
+      "nama_lengkap": "KIRANI AKILA",
+      "role": "peserta",
+      "nim": "240102440",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.042Z"
+    },
+    {
+      "id": 126,
+      "username": "240102438",
+      "password": "$2a$10$8Y5XjExXp/YJM0XLrmm1sOvW9MyiYINCOR6BsmBlwzGK9mACXy92C",
+      "nama_lengkap": "HULPA IRMAYANI",
+      "role": "peserta",
+      "nim": "240102438",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.149Z"
+    },
+    {
+      "id": 127,
+      "username": "240102435",
+      "password": "$2a$10$GTNrGtyMzGtL2R1FjDp6BeKciu3z1onhVPZVzF4MFq6sWGXZ2VTO2",
+      "nama_lengkap": "FITRA PADMALHOKA SEKARWANGI",
+      "role": "peserta",
+      "nim": "240102435",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.252Z"
+    },
+    {
+      "id": 128,
+      "username": "240102436",
+      "password": "$2a$10$b0ez6cK7HbHuQ8ryEtsS6.fYPHm8JvFHvUttwVYCQUhagvHBb3ZN.",
+      "nama_lengkap": "HAFIZAH",
+      "role": "peserta",
+      "nim": "240102436",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.354Z"
+    },
+    {
+      "id": 129,
+      "username": "240102439",
+      "password": "$2a$10$DksCViFNrUKlpVUEXfxQleYZqq864OlHallrku9jA5/QsSYtJyvKi",
+      "nama_lengkap": "JASLINA RAHMAWATI",
+      "role": "peserta",
+      "nim": "240102439",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.456Z"
+    },
+    {
+      "id": 130,
+      "username": "240102444",
+      "password": "$2a$10$nUSKcZ5yd7TJq1lP5.xZxuLf2XSnKRFnZYq8hgnrResI3zGj4vhmm",
+      "nama_lengkap": "MALINI",
+      "role": "peserta",
+      "nim": "240102444",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.557Z"
+    },
+    {
+      "id": 131,
+      "username": "240102442",
+      "password": "$2a$10$2hWvkT36fYqId/TLZyphzua4YElwOaPMankfqgFPvEAQpmiD5pkU6",
+      "nama_lengkap": "LEDY ALFA LESTARI",
+      "role": "peserta",
+      "nim": "240102442",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.658Z"
+    },
+    {
+      "id": 132,
+      "username": "240102447",
+      "password": "$2a$10$jsyFIENn0rywIo1WDgYlveLtCLzEiGpvFaecjd1GkT5Mm03n52O.i",
+      "nama_lengkap": "MUH.ULIL ALBAB",
+      "role": "peserta",
+      "nim": "240102447",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.765Z"
+    },
+    {
+      "id": 133,
+      "username": "240102445",
+      "password": "$2a$10$Wf5vvbYBWivg4wkqXmAwm.hAJp7F.P/DEqhIaZWp1DlvvlZDeURAK",
+      "nama_lengkap": "MAYA AYU WANDA",
+      "role": "peserta",
+      "nim": "240102445",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.866Z"
+    },
+    {
+      "id": 134,
+      "username": "240102446",
+      "password": "$2a$10$lWdpOYKEmTnFiNzYd.95SO4NxJlFloU04srEE/BY0ambHnFhx.YlS",
+      "nama_lengkap": "MITA LESTARI",
+      "role": "peserta",
+      "nim": "240102446",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:28.967Z"
+    },
+    {
+      "id": 135,
+      "username": "240102448",
+      "password": "$2a$10$CsLbTLCfESpo5xgzriTpB.9OvskH2.LvKaDCdWcfKFk2mio76R/vq",
+      "nama_lengkap": "NADIA AYUNI PUTRI",
+      "role": "peserta",
+      "nim": "240102448",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.069Z"
+    },
+    {
+      "id": 136,
+      "username": "240102449",
+      "password": "$2a$10$Bm4HQ4GupcY7gY9nnlM1a.6jIfTCnXdOSdO5cMdenXeM7oaLKcP16",
+      "nama_lengkap": "NESA PUSPITA ARIYANI",
+      "role": "peserta",
+      "nim": "240102449",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.172Z"
+    },
+    {
+      "id": 137,
+      "username": "240102452",
+      "password": "$2a$10$WoeqsyxcASPU/xJul664behAR/eO9hoHj5OQp6Bwxe77z7Qdsk4gS",
+      "nama_lengkap": "NURLIA RIZKI FITRI",
+      "role": "peserta",
+      "nim": "240102452",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.282Z"
+    },
+    {
+      "id": 138,
+      "username": "240102451",
+      "password": "$2a$10$RZLg4N6HMT2kcOa.oWILtuTk1FwlzLNxfDUJXl9Uj9eEs3tVmoKQq",
+      "nama_lengkap": "NOVITA FEBRIANY SARKILA",
+      "role": "peserta",
+      "nim": "240102451",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.383Z"
+    },
+    {
+      "id": 139,
+      "username": "240102455",
+      "password": "$2a$10$Xahr0lfZ0Y6ziBKlP1N4AOtitTbbPxHac.E1XhjVe0QoZ/9UHUYka",
+      "nama_lengkap": "RISMA WARI ANGGRAINI",
+      "role": "peserta",
+      "nim": "240102455",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.484Z"
+    },
+    {
+      "id": 140,
+      "username": "240102456",
+      "password": "$2a$10$gAmyzAZLYOg9MN.uKag1G.EVhRFHLW4bRSdsAIYxQcOKVNV7VkCcW",
+      "nama_lengkap": "SALSABILA AYU MAULANI",
+      "role": "peserta",
+      "nim": "240102456",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.584Z"
+    },
+    {
+      "id": 141,
+      "username": "240102457",
+      "password": "$2a$10$gM5kVbJsjNp6/XNi36ID9.Yu0Wi/VWVEVsKrLqMU.tk16ZQlnPqaG",
+      "nama_lengkap": "SASTIA SULASTRI",
+      "role": "peserta",
+      "nim": "240102457",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.684Z"
+    },
+    {
+      "id": 142,
+      "username": "240102460",
+      "password": "$2a$10$iO6uiOSOPE/DBSSD8/GvJ.lwQHsSVQvqsEcChzNPVmvd./1VK8O1u",
+      "nama_lengkap": "SOLIDA WARDANI",
+      "role": "peserta",
+      "nim": "240102460",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.785Z"
+    },
+    {
+      "id": 143,
+      "username": "240102458",
+      "password": "$2a$10$kMHLGQ/t762rp3F.mX2Fk.fUy0B.26oZg/hpbeBcLgZjOFGYUPi6y",
+      "nama_lengkap": "SIPAATUL AULIA",
+      "role": "peserta",
+      "nim": "240102458",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.886Z"
+    },
+    {
+      "id": 144,
+      "username": "240102459",
+      "password": "$2a$10$jINbBs99E.HqwAhUSD5GC.kfqLGKkdba55pl8Gj3Np1ypwuI5Hb82",
+      "nama_lengkap": "SITI PATIHATUL HASANAH",
+      "role": "peserta",
+      "nim": "240102459",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:29.987Z"
+    },
+    {
+      "id": 145,
+      "username": "240102463",
+      "password": "$2a$10$QqDywrdZnP/bVt/d265SHef/znkcCCvcJMqzmPWyKTjWD7CwIZVQu",
+      "nama_lengkap": "WIDIYA ASTUTI",
+      "role": "peserta",
+      "nim": "240102463",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.089Z"
+    },
+    {
+      "id": 146,
+      "username": "240102462",
+      "password": "$2a$10$bB3LI7ZlT7oZw8OgQSMjuO6m8zhzGqbfooaPGIUCiMlo1i8OTJHQi",
+      "nama_lengkap": "ULFIANA",
+      "role": "peserta",
+      "nim": "240102462",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.192Z"
+    },
+    {
+      "id": 147,
+      "username": "240102466",
+      "password": "$2a$10$VxRYPcE9ssopDqj9ZHvvfuqBlq/MUgC8zi5C636osux9PURSdQPRm",
+      "nama_lengkap": "ZAHRA ARIANTINA",
+      "role": "peserta",
+      "nim": "240102466",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.294Z"
+    },
+    {
+      "id": 148,
+      "username": "240102464",
+      "password": "$2a$10$KS9333yRTgskNPpoNKXi3uXnQeiJsfDshwXtlPRipRQ4Ln3bbRKJW",
+      "nama_lengkap": "WIWIN ASPIYANI",
+      "role": "peserta",
+      "nim": "240102464",
+      "id_kelas": 8,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.396Z"
+    },
+    {
+      "id": 149,
+      "username": "240102401",
+      "password": "$2a$10$v6zO39Va3ukSSSKWUXbjjOp05UjDfqlC7wydSH0WNDiU7qnEbF1oC",
+      "nama_lengkap": "LATIFA ZAHRONI",
+      "role": "peserta",
+      "nim": "240102401",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.498Z"
+    },
+    {
+      "id": 150,
+      "username": "240102408",
+      "password": "$2a$10$HDsrSsYIrqFirUx1AQ4odeOfdLHQHNin7Ljzts7FarfZ9eNDkDLJa",
+      "nama_lengkap": "NESA AMINARTI",
+      "role": "peserta",
+      "nim": "240102408",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.599Z"
+    },
+    {
+      "id": 151,
+      "username": "240102406",
+      "password": "$2a$10$n55NJ/MiFR/8q.F7QV409OkAaeuidPv0EjKeDcF8y1MBfcsN/Y02y",
+      "nama_lengkap": "NADIA ANDREANI",
+      "role": "peserta",
+      "nim": "240102406",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.699Z"
+    },
+    {
+      "id": 152,
+      "username": "240102404",
+      "password": "$2a$10$5ih4C9YIioTAr5u8PfzgjOAl7mveMxrJTS0QqEl3C.yinDyafndXS",
+      "nama_lengkap": "MIRFA JOHARNIWATI NINGSIH",
+      "role": "peserta",
+      "nim": "240102404",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.798Z"
+    },
+    {
+      "id": 153,
+      "username": "240102407",
+      "password": "$2a$10$W/huKM1PrGNYaKzPvNrmuusIaOKB/GWo5Zx1ibPcuRLR0EET/MTaW",
+      "nama_lengkap": "NAJAH ANDINI",
+      "role": "peserta",
+      "nim": "240102407",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:30.906Z"
+    },
+    {
+      "id": 154,
+      "username": "240102402",
+      "password": "$2a$10$MCz9l1vcXBf3pC43u/ykBuJWHOCWgaivVhKz/N5NADaiW14al9pI.",
+      "nama_lengkap": "M. MAULIDI RIZKI",
+      "role": "peserta",
+      "nim": "240102402",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.007Z"
+    },
+    {
+      "id": 155,
+      "username": "240102403",
+      "password": "$2a$10$hxwhk1lVklMsyAdtERxpme00G7FRUBY65CUrOP59TrJi2OJ1uSX/2",
+      "nama_lengkap": "MALIA JOHAN",
+      "role": "peserta",
+      "nim": "240102403",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.110Z"
+    },
+    {
+      "id": 156,
+      "username": "240102410",
+      "password": "$2a$10$taOW0QV8l0vkMxicLVDtxeagSaCzTSlUudVAF8TciDTrQdNItWQiW",
+      "nama_lengkap": "NOVITA MULIASARI",
+      "role": "peserta",
+      "nim": "240102410",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.211Z"
+    },
+    {
+      "id": 157,
+      "username": "240102412",
+      "password": "$2a$10$K7.XLnKrtkbQ5qTPE5QYwe/Y801b4W0XnE7cBPzQ5ab9YNHMp7/i.",
+      "nama_lengkap": "PATHAINI AZKIA",
+      "role": "peserta",
+      "nim": "240102412",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.325Z"
+    },
+    {
+      "id": 158,
+      "username": "240102411",
+      "password": "$2a$10$fuKxc9xckHxPpXGaDzWO5O.s.te8qQYcBIDBAZWFbeoYcMCgN1giu",
+      "nama_lengkap": "NURSA' BANIA",
+      "role": "peserta",
+      "nim": "240102411",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.437Z"
+    },
+    {
+      "id": 159,
+      "username": "240102409",
+      "password": "$2a$10$oZ2J185vMLiaWvVOcBowcePF9wQWfKnXWqDXZTp5VY1Z.da00/M1O",
+      "nama_lengkap": "NISA HINDINI",
+      "role": "peserta",
+      "nim": "240102409",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.536Z"
+    },
+    {
+      "id": 160,
+      "username": "240102414",
+      "password": "$2a$10$i.aHVJpJptXBkuKCoSRZZeSBp01VOmcQd/AeCoxeoWJb.ejbyw/MG",
+      "nama_lengkap": "RESALIANDRI EKA PUTRI",
+      "role": "peserta",
+      "nim": "240102414",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.646Z"
+    },
+    {
+      "id": 161,
+      "username": "240102418",
+      "password": "$2a$10$5MZ9wg8lndpGISgzfaw9o.aI6/C1..dYMc4yn4deHv5F/qUHGl2/W",
+      "nama_lengkap": "SITI RABIATUL ADAWIYAH",
+      "role": "peserta",
+      "nim": "240102418",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.745Z"
+    },
+    {
+      "id": 162,
+      "username": "240102420",
+      "password": "$2a$10$oJJv4EDTw6vAVaPv4U.oceFU.35vGGqyROdn8QAm6oOJ7CNTwSS6W",
+      "nama_lengkap": "SYARIFATUL ZIL IZZATI",
+      "role": "peserta",
+      "nim": "240102420",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.844Z"
+    },
+    {
+      "id": 163,
+      "username": "240102416",
+      "password": "$2a$10$1lZZ.Pvu6E/jGoXpc1V4DuCTippjZiLlu90yrfIQ6sgOg/cMCfJZG",
+      "nama_lengkap": "SELPIA JUNI LESTARI",
+      "role": "peserta",
+      "nim": "240102416",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:31.955Z"
+    },
+    {
+      "id": 164,
+      "username": "240102417",
+      "password": "$2a$10$/b72tMdWhdlNIsDDX12rkOIxI3ivGPpwjYj3hUpdb3/Yb.xL8f/6e",
+      "nama_lengkap": "SISKA HARDIANA",
+      "role": "peserta",
+      "nim": "240102417",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.054Z"
+    },
+    {
+      "id": 165,
+      "username": "240102415",
+      "password": "$2a$10$oABZyQnFEEWncjrSkFJSXeFbZQp473Mx0P7pCj4XQhTL8X.K7yiQm",
+      "nama_lengkap": "RIZA MAULIDA RAHAYU",
+      "role": "peserta",
+      "nim": "240102415",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.153Z"
+    },
+    {
+      "id": 166,
+      "username": "240102419",
+      "password": "$2a$10$CyA345789P4abTAOcsXDVebHXsH8guBj1NwMbpOx1oSvr0lxLOyFu",
+      "nama_lengkap": "SOPA SOPIATUN ANNA",
+      "role": "peserta",
+      "nim": "240102419",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.256Z"
+    },
+    {
+      "id": 167,
+      "username": "240102422",
+      "password": "$2a$10$U0PUTE0gSluMwHGnt.9eju938Ru494GFh8aUYfC4C9rxG6rdQdlRC",
+      "nama_lengkap": "WIDYA AYU PITRI",
+      "role": "peserta",
+      "nim": "240102422",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.359Z"
+    },
+    {
+      "id": 168,
+      "username": "240102424",
+      "password": "$2a$10$JSGWFjAPKlO1tuHPQI6xyepQGTU4SpkuMofOG5ABobOSdY3W.Hlb2",
+      "nama_lengkap": "ZAHRAUD DANIATI",
+      "role": "peserta",
+      "nim": "240102424",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.468Z"
+    },
+    {
+      "id": 169,
+      "username": "240102423",
+      "password": "$2a$10$fndFxvIQB7bZ93XdtxB8xOyVzqhsP914/DdDWdw1iwvRsE.dQdHoC",
+      "nama_lengkap": "YULIANTI",
+      "role": "peserta",
+      "nim": "240102423",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.580Z"
+    },
+    {
+      "id": 170,
+      "username": "240102421",
+      "password": "$2a$10$anaw1sINuAC23jBS5IjLreK9Hg2ry0Z50f9Dl108cJ4Pw5BuftBay",
+      "nama_lengkap": "ULYATUN NI'AM",
+      "role": "peserta",
+      "nim": "240102421",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.705Z"
+    },
+    {
+      "id": 171,
+      "username": "240102383",
+      "password": "$2a$10$wDDTU/WkfTPewVBZIw5Gses/gD6rPc7PGPjGNi3rtRvpED/7N5crO",
+      "nama_lengkap": "AIDA SASKIA",
+      "role": "peserta",
+      "nim": "240102383",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.809Z"
+    },
+    {
+      "id": 172,
+      "username": "240102384",
+      "password": "$2a$10$k0wWEGAwB.OCbktRu3Uuq.4yZpVMFoehUhS/7he7ojxTRFU18rwTa",
+      "nama_lengkap": "ANISA PATUL RODIAH",
+      "role": "peserta",
+      "nim": "240102384",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:32.910Z"
+    },
+    {
+      "id": 173,
+      "username": "240102387",
+      "password": "$2a$10$0CTkHK/yofR.PgIn6rNp/.ssnBM0L6FgKyJua8Im5J93CTJ8kccly",
+      "nama_lengkap": "BAIQ PITA SARI",
+      "role": "peserta",
+      "nim": "240102387",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.012Z"
+    },
+    {
+      "id": 174,
+      "username": "240102388",
+      "password": "$2a$10$sPxXgB1iTXpj0Ce6ijZj3uY.huWfAXTy1D/7A0j3lkA3rNRsV94aG",
+      "nama_lengkap": "BUNGA WIDIA LESTARI",
+      "role": "peserta",
+      "nim": "240102388",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.114Z"
+    },
+    {
+      "id": 175,
+      "username": "240102386",
+      "password": "$2a$10$0MRfIURohd8ozK5FALRNwOSH7153ULfwtulRP37B8XctoixG2Rp0G",
+      "nama_lengkap": "BAIQ ENDANG WAHYUNINGTIAS",
+      "role": "peserta",
+      "nim": "240102386",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.214Z"
+    },
+    {
+      "id": 176,
+      "username": "240102385",
+      "password": "$2a$10$6Cd09mnaKA3Gs21eZOMaUuBbv9obGb31cdHjgOFfZYdjidoe9va/O",
+      "nama_lengkap": "ATMAZA PRATIWI",
+      "role": "peserta",
+      "nim": "240102385",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.314Z"
+    },
+    {
+      "id": 177,
+      "username": "240102392",
+      "password": "$2a$10$penwdfy.XFcH5ztRaS9OOuUlbGSefIGHg4V8rakdvmSY9Uf4ZaQLC",
+      "nama_lengkap": "EKA APRIANIH",
+      "role": "peserta",
+      "nim": "240102392",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.416Z"
+    },
+    {
+      "id": 178,
+      "username": "240102391",
+      "password": "$2a$10$K09p39JqOmdaZt9BRDH3ZuwQoLLeHzaI0ZPNCs5r73M4Pwiau0oAu",
+      "nama_lengkap": "DZAUKI NUR",
+      "role": "peserta",
+      "nim": "240102391",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.517Z"
+    },
+    {
+      "id": 179,
+      "username": "240102390",
+      "password": "$2a$10$IrSRApHa3mYCUg.HcKJxpOKWIT5NicwZFu/5IepEZo0.ojzUn74p.",
+      "nama_lengkap": "DINA RAHMAWATI PUTRI",
+      "role": "peserta",
+      "nim": "240102390",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.619Z"
+    },
+    {
+      "id": 180,
+      "username": "240102389",
+      "password": "$2a$10$D8Mtx9umLoATD0U/9cNm0eyFLd/G8B1KqT2z9CnmoMcXwJVZ25I76",
+      "nama_lengkap": "DEWI HARLINA",
+      "role": "peserta",
+      "nim": "240102389",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.720Z"
+    },
+    {
+      "id": 181,
+      "username": "240102393",
+      "password": "$2a$10$lyPLC2/YbL5UASI8DZlB8eA9ny/0Iz7RTH/Uvew//vQawPV5QyDH6",
+      "nama_lengkap": "ERFINA",
+      "role": "peserta",
+      "nim": "240102393",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.823Z"
+    },
+    {
+      "id": 182,
+      "username": "240102395",
+      "password": "$2a$10$78/Itv2VLNc19AVitmyXLe1fp2apeR/4wXbW49YC2wwXvzfAVLqm.",
+      "nama_lengkap": "HAYATULAISA SOLIHI",
+      "role": "peserta",
+      "nim": "240102395",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:33.931Z"
+    },
+    {
+      "id": 183,
+      "username": "240102396",
+      "password": "$2a$10$U/2H6DVBuK8frH27mqMy2emT7G46/JrhaoYRmJGKSRPq2kUODVc7m",
+      "nama_lengkap": "HUJJATUL AENI",
+      "role": "peserta",
+      "nim": "240102396",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.033Z"
+    },
+    {
+      "id": 184,
+      "username": "240102397",
+      "password": "$2a$10$Zo0SDYIlIv2hAoqR1RusJOpQrPVv4uFQ3o6azv7w0A1YBB9RFb0Fq",
+      "nama_lengkap": "ISNATUN AULIA",
+      "role": "peserta",
+      "nim": "240102397",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.142Z"
+    },
+    {
+      "id": 185,
+      "username": "240102398",
+      "password": "$2a$10$sc9RrJ.dbdCa3djDYt64HevNBCor3P.gQCq9WvztzFxqhalcoXPoS",
+      "nama_lengkap": "JUNIA SARTIKA",
+      "role": "peserta",
+      "nim": "240102398",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.242Z"
+    },
+    {
+      "id": 186,
+      "username": "240102593",
+      "password": "$2a$10$p0EIAOD8jKc5Sw7i/ZqLbelDSyuSyVAJ9T0cwmfvPARF9LmFw9skS",
+      "nama_lengkap": "AYU ALIVIA DINNOVA",
+      "role": "peserta",
+      "nim": "240102593",
+      "id_kelas": 9,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.340Z"
+    },
+    {
+      "id": 187,
+      "username": "220305002",
+      "password": "$2a$10$QWjrxujJQcyFFKadWUvid.bFFxsdiHBprYz098TYPaw7HG5lcGWoS",
+      "nama_lengkap": "Ahmad Azwar AlFaiz",
+      "role": "peserta",
+      "nim": "220305002",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.441Z"
+    },
+    {
+      "id": 188,
+      "username": "230305004",
+      "password": "$2a$10$kOx67ERgJMp3tjExcRKovev.ZsEnWlpVvjVpcPt5jdswVny7NuqiO",
+      "nama_lengkap": "ALDA MEILANI PUTRI",
+      "role": "peserta",
+      "nim": "230305004",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.540Z"
+    },
+    {
+      "id": 189,
+      "username": "230305005",
+      "password": "$2a$10$xl5KR/NBoKVC8MoCGsnNbOfXvatjslAulrYBBtdNhYgAJVCcbZ/CC",
+      "nama_lengkap": "RINDI ANTIKA",
+      "role": "peserta",
+      "nim": "230305005",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.637Z"
+    },
+    {
+      "id": 190,
+      "username": "230305008",
+      "password": "$2a$10$FWgLfegeyQpZ.peVpXrqM.ElKHHuZAFAqVi7jEhV0/h72mvhKIE1e",
+      "nama_lengkap": "FARIHATUN AINI",
+      "role": "peserta",
+      "nim": "230305008",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.736Z"
+    },
+    {
+      "id": 191,
+      "username": "230305009",
+      "password": "$2a$10$RGiD9alp5oj9uOQ8EZ6jP.y99n/H5R5IOfNMqr7PAW1ZJhfc78ppS",
+      "nama_lengkap": "MERY SEPTIA",
+      "role": "peserta",
+      "nim": "230305009",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.837Z"
+    },
+    {
+      "id": 192,
+      "username": "230305011",
+      "password": "$2a$10$c3R2bU/3TrmMYddhcyuiFuoZDq5qvUpK3ZMBFepJJu304nYexrYKe",
+      "nama_lengkap": "YULIA DWI WAHYUNI",
+      "role": "peserta",
+      "nim": "230305011",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:34.938Z"
+    },
+    {
+      "id": 193,
+      "username": "230305014",
+      "password": "$2a$10$Hov31XQ9hJ4HGamaY907WeRl.Y18b2RK.nlA..XkoS3llYGXhInqi",
+      "nama_lengkap": "RIA APRILIA",
+      "role": "peserta",
+      "nim": "230305014",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.039Z"
+    },
+    {
+      "id": 194,
+      "username": "230305020",
+      "password": "$2a$10$03Hl8EXuVWGoZSDgFgxNm.LPzyyi7ZYfEV0O.HJP7TzrixpNCCTyu",
+      "nama_lengkap": "ARIF SURIADI",
+      "role": "peserta",
+      "nim": "230305020",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.142Z"
+    },
+    {
+      "id": 195,
+      "username": "230305021",
+      "password": "$2a$10$TdL08cPKfKB2.kgczDLQOO/QDnyyFOgJ6MbITQCORP33SpCrtzlgi",
+      "nama_lengkap": "AINUL LUTFI",
+      "role": "peserta",
+      "nim": "230305021",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.246Z"
+    },
+    {
+      "id": 196,
+      "username": "230305023",
+      "password": "$2a$10$yjtbDcd5uUdRpx5xx4fh7uCqZlp/cQMYD07hudRISKYgicXeReTNu",
+      "nama_lengkap": "AHMAD YUSRIL AZIZ MAULANA",
+      "role": "peserta",
+      "nim": "230305023",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.346Z"
+    },
+    {
+      "id": 197,
+      "username": "230305025",
+      "password": "$2a$10$uAxft9ISw0956OgLqyeGHuU3Dpxhy3YsPPViyF5DXmW9ZAIzQ6QXi",
+      "nama_lengkap": "BAIQ RAVIKA AULIA WIRANTI",
+      "role": "peserta",
+      "nim": "230305025",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.446Z"
+    },
+    {
+      "id": 198,
+      "username": "230305026",
+      "password": "$2a$10$x6MUPn.k4nyAmCu5BPRb4e.ufMe01K9QOOYBi0dfdJD6PlzudGz/G",
+      "nama_lengkap": "LAELA FEBRIANA",
+      "role": "peserta",
+      "nim": "230305026",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.547Z"
+    },
+    {
+      "id": 199,
+      "username": "230305027",
+      "password": "$2a$10$4.I3Z6zuPIzNcUt1XaBm7u8Bb5xQJ2qGoZy0o2w3LepllRjRzqkye",
+      "nama_lengkap": "NURIATUL MASRURO",
+      "role": "peserta",
+      "nim": "230305027",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.648Z"
+    },
+    {
+      "id": 200,
+      "username": "230305028",
+      "password": "$2a$10$kQ/O5jXDYqPmK1LoBVoDceo1qyrCRjirsOSpfVOqnz2.vkOEUQyoG",
+      "nama_lengkap": "M. FAQIH AL JUMHURI",
+      "role": "peserta",
+      "nim": "230305028",
+      "id_kelas": 10,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.747Z"
+    },
+    {
+      "id": 201,
+      "username": "260305034",
+      "password": "$2a$10$b.7GZwMQd6BeUIrFsapdZ.sobhymUZy4glL15cuf6aFfF8b1t5V3W",
+      "nama_lengkap": "ZIVA AULIA SEPTIN",
+      "role": "peserta",
+      "nim": "260305034",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.852Z"
+    },
+    {
+      "id": 202,
+      "username": "260305001",
+      "password": "$2a$10$8vADm0gSGl9Haq75ioF.eet2CkZHN6AIwPxUtVWHhblzqJsem3XY6",
+      "nama_lengkap": "MUHAMMAD FATIHULHAQ",
+      "role": "peserta",
+      "nim": "260305001",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:35.966Z"
+    },
+    {
+      "id": 203,
+      "username": "260305002",
+      "password": "$2a$10$mhvySzl2md1GcW8dTsVfveJgIGP6Ysy.zjsG/wvuDpiiugddWGTv2",
+      "nama_lengkap": "DINA AMELIA",
+      "role": "peserta",
+      "nim": "260305002",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.067Z"
+    },
+    {
+      "id": 204,
+      "username": "260305003",
+      "password": "$2a$10$GS6dNvlq7FpFwIcTe1afO.whiP0Gc89DM/uteL2H4hHcqGkBYPFpC",
+      "nama_lengkap": "AYUNDA LESTARI",
+      "role": "peserta",
+      "nim": "260305003",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.171Z"
+    },
+    {
+      "id": 205,
+      "username": "260305004",
+      "password": "$2a$10$PVE9Jtoc2Xt9KfCCAXh82ODHHMeFQ6w2EBIxHlUWAmcyB0jBzdWlK",
+      "nama_lengkap": "NURLATIFA LESTARI",
+      "role": "peserta",
+      "nim": "260305004",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.271Z"
+    },
+    {
+      "id": 206,
+      "username": "260305005",
+      "password": "$2a$10$IDdESsX4oEnQYk1/7KG7F./wJutYokZDxjjs0j2J0.MszTHzt3Pam",
+      "nama_lengkap": "BAIQ RATNA LESTARI",
+      "role": "peserta",
+      "nim": "260305005",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.373Z"
+    },
+    {
+      "id": 207,
+      "username": "260305006",
+      "password": "$2a$10$qSsi.kWZ./nT8hb5G3iL1e48xhWC1HyB/Kbx2sxcUHmk4W2Fb8Oka",
+      "nama_lengkap": "ASLINDAWATI",
+      "role": "peserta",
+      "nim": "260305006",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.473Z"
+    },
+    {
+      "id": 208,
+      "username": "260305007",
+      "password": "$2a$10$hwu1cTaiIlDOyrzASU.Qr.hJyfdu87mRuEj/sHNltgrjN5IlCYeHi",
+      "nama_lengkap": "ANDI SOFIAN",
+      "role": "peserta",
+      "nim": "260305007",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.575Z"
+    },
+    {
+      "id": 209,
+      "username": "260305008",
+      "password": "$2a$10$bmclfKtxkZ2wiF0QN91iPuZOFJBKshyZSDpZ9jH7PXkAZzMm6SDe6",
+      "nama_lengkap": "BAIQ DEWI ANGGRAENI",
+      "role": "peserta",
+      "nim": "260305008",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.682Z"
+    },
+    {
+      "id": 210,
+      "username": "260305010",
+      "password": "$2a$10$mhIIYdSfZPoRTTbX2dc8P.NO2ZwsHoPS7TOyYhpqC4puih9tkDcc6",
+      "nama_lengkap": "DEVI NASTI",
+      "role": "peserta",
+      "nim": "260305010",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.783Z"
+    },
+    {
+      "id": 211,
+      "username": "260305011",
+      "password": "$2a$10$4tiHTKA05IoRKem2qQiTeuYS.GYPWUE01/GITNvpCYweBQi6ivVpe",
+      "nama_lengkap": "M. ALMAR ZUBANI",
+      "role": "peserta",
+      "nim": "260305011",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.884Z"
+    },
+    {
+      "id": 212,
+      "username": "260305012",
+      "password": "$2a$10$7NCEUODSNePcHRP/3sHjUe86btMQfZaeaikGdQLGv2t6..jP7PG4.",
+      "nama_lengkap": "MUHAMMAD KHOLID IQBAL",
+      "role": "peserta",
+      "nim": "260305012",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:36.990Z"
+    },
+    {
+      "id": 213,
+      "username": "260305013",
+      "password": "$2a$10$jeik//33jksQsy1GYDfZaOJibphEPBkz0s1/PkaNL.zLrWLdgfYe.",
+      "nama_lengkap": "MEITSA AQILA ZAHRA",
+      "role": "peserta",
+      "nim": "260305013",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.098Z"
+    },
+    {
+      "id": 214,
+      "username": "260305014",
+      "password": "$2a$10$EPueibvFwdH19mc6x28Kl.NyxytdxJKdHVg0Pn24.glPPiW7o7yNm",
+      "nama_lengkap": "SHOFIA RAHMI",
+      "role": "peserta",
+      "nim": "260305014",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.199Z"
+    },
+    {
+      "id": 215,
+      "username": "260305015",
+      "password": "$2a$10$.6OPoFd..jVBR49jep2BGOT4ajeoB1xg0s5jeT.//b8CwEORlcxUu",
+      "nama_lengkap": "RATNA SARI",
+      "role": "peserta",
+      "nim": "260305015",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.298Z"
+    },
+    {
+      "id": 216,
+      "username": "260305016",
+      "password": "$2a$10$7N/lDMH4wdHo9GE7InVl7OQNkUV6wJIXUN3ybZegroTmPKqSos86C",
+      "nama_lengkap": "AFRIZA RIZKIANI",
+      "role": "peserta",
+      "nim": "260305016",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.400Z"
+    },
+    {
+      "id": 217,
+      "username": "260305017",
+      "password": "$2a$10$3NBwE/8uHfC4TCKThoFE7O4BgkMXNxGikRymukZd0hoosZpf4lzrS",
+      "nama_lengkap": "EKA RAMDANI",
+      "role": "peserta",
+      "nim": "260305017",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.502Z"
+    },
+    {
+      "id": 218,
+      "username": "260305018",
+      "password": "$2a$10$unhJ7Lpu5RaHw5vjKspape1ce65d0.u8eZMiK6QsoCr/3YGnegd5G",
+      "nama_lengkap": "BAIQ AYUDIA DESWITARI",
+      "role": "peserta",
+      "nim": "260305018",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.601Z"
+    },
+    {
+      "id": 219,
+      "username": "260305019",
+      "password": "$2a$10$RdDRYlf/tm95I6qsIOkZFeTD.lSzJbkHqC5MsgNUBSaEacjbjNUOy",
+      "nama_lengkap": "JUMIATI",
+      "role": "peserta",
+      "nim": "260305019",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.700Z"
+    },
+    {
+      "id": 220,
+      "username": "260305021",
+      "password": "$2a$10$bio8CBTto3/SmRNDXQBKT.HQhe7jui3DPFGvW/Nzoi18h4a8jux.S",
+      "nama_lengkap": "HAMDAN FADLI",
+      "role": "peserta",
+      "nim": "260305021",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.799Z"
+    },
+    {
+      "id": 221,
+      "username": "260305022",
+      "password": "$2a$10$pT2H2EQSrLGkJIh/HwUyZO58FIUIgN25qcqrVyDPE1fqsbtdYsGnW",
+      "nama_lengkap": "FATIR MAULANA ZAWAWI",
+      "role": "peserta",
+      "nim": "260305022",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:37.899Z"
+    },
+    {
+      "id": 222,
+      "username": "260305023",
+      "password": "$2a$10$fbC9vlqtLpeZ6MN0hUu18OGnIKgevnm/4L.JTSD4Ea2pqGRHembFG",
+      "nama_lengkap": "TISKA",
+      "role": "peserta",
+      "nim": "260305023",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.002Z"
+    },
+    {
+      "id": 223,
+      "username": "260305024",
+      "password": "$2a$10$.w21sycxioTHqSQgVbxR/O3LHCF4UmL1PDW3cWJY7cQ8Cw269IXGa",
+      "nama_lengkap": "EVA ANGGINA",
+      "role": "peserta",
+      "nim": "260305024",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.106Z"
+    },
+    {
+      "id": 224,
+      "username": "260305025",
+      "password": "$2a$10$tlQCtEbi1yynsP.hqCyt0ON//kJMRckOiyvw.b0HFvCZ.liOOdr3.",
+      "nama_lengkap": "NAJA SHADIKAL WAADI",
+      "role": "peserta",
+      "nim": "260305025",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.218Z"
+    },
+    {
+      "id": 225,
+      "username": "260305026",
+      "password": "$2a$10$IcZ3G4jTBcB9EMMMXZOqAuJqn.68u11FFkg3LsyynAqzAssKbtgPu",
+      "nama_lengkap": "MUH. SUKIMAN LUTFI",
+      "role": "peserta",
+      "nim": "260305026",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.321Z"
+    },
+    {
+      "id": 226,
+      "username": "260305027",
+      "password": "$2a$10$gs9uTAAFEo42dR3Lt3MuA.p/WkCvOv1XKRWvkZuAZh.lU8FOfwLXS",
+      "nama_lengkap": "NATHAN AL-JABAR F",
+      "role": "peserta",
+      "nim": "260305027",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.425Z"
+    },
+    {
+      "id": 227,
+      "username": "260305028",
+      "password": "$2a$10$b0Kgh0C1MpoU9rWQw59Yd.R5IQOI1t2axORT7Dinz9k/Y7u7luhJq",
+      "nama_lengkap": "ALDI SAPUTRA",
+      "role": "peserta",
+      "nim": "260305028",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.536Z"
+    },
+    {
+      "id": 228,
+      "username": "260305029",
+      "password": "$2a$10$/7w8woUW/ornk0bf/AvNDOxhI/VxLmM7w/VlaDDfK77QDt0Y014AG",
+      "nama_lengkap": "GUNTUR GADAFI",
+      "role": "peserta",
+      "nim": "260305029",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.636Z"
+    },
+    {
+      "id": 229,
+      "username": "260305030",
+      "password": "$2a$10$XPa2Lc0d.tIVyhKYZ7DlYOtCNH/Y1AGzVXDqAr2h2QCrXMee97bFS",
+      "nama_lengkap": "SRI WARDANI YULIATMI",
+      "role": "peserta",
+      "nim": "260305030",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.750Z"
+    },
+    {
+      "id": 230,
+      "username": "260305031",
+      "password": "$2a$10$055Vo2UfMSzQj/.E4xBPeOb/2Nt5f31BSU1b8XrreqzYzL0oZR2oW",
+      "nama_lengkap": "AZIZAN HABIB",
+      "role": "peserta",
+      "nim": "260305031",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.857Z"
+    },
+    {
+      "id": 231,
+      "username": "260305032",
+      "password": "$2a$10$bZrcSkU12mTpTnsd.EQ2QuL3TSPt6IIz63aDZWZ3kd3K09i/wDvkO",
+      "nama_lengkap": "MUHAMMAD ABDILLAH JAMIL",
+      "role": "peserta",
+      "nim": "260305032",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:38.969Z"
+    },
+    {
+      "id": 232,
+      "username": "260305033",
+      "password": "$2a$10$PKFGlgQgGq.Jlbm4RF/ayu.n2W7qWqEr7rnMrhwcGnGNdfrXwO8Xy",
+      "nama_lengkap": "AIDH ABDULLAH AL QARNI",
+      "role": "peserta",
+      "nim": "260305033",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.071Z"
+    },
+    {
+      "id": 233,
+      "username": "260305035",
+      "password": "$2a$10$H6Rx.XP9W6JJCyxkS9UGC.dPYDInDqexYVHtE8ULAv/LAxALn/GEm",
+      "nama_lengkap": "GALANG RIZKI",
+      "role": "peserta",
+      "nim": "260305035",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.282Z"
+    },
+    {
+      "id": 234,
+      "username": "260305036",
+      "password": "$2a$10$mrbUg.P41/nITLezcCoTJ.219tYaW8ZjpJodbZHhQ2c39YMUm8HZi",
+      "nama_lengkap": "GIAN ARNA KUSSA",
+      "role": "peserta",
+      "nim": "260305036",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.383Z"
+    },
+    {
+      "id": 235,
+      "username": "260305037",
+      "password": "$2a$10$yoZhQzmCazSEmgX12A/UH.mdzUyDaW4u2C.kUZHX2UGYs5jIpRXZe",
+      "nama_lengkap": "AHMAD HABIB AFIFI",
+      "role": "peserta",
+      "nim": "260305037",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.485Z"
+    },
+    {
+      "id": 236,
+      "username": "260305038",
+      "password": "$2a$10$nU/OxguEhzJC2bZLoVti1uSqNPTbFL30Of5Js/wNTJXS/Q7Se/yTa",
+      "nama_lengkap": "ZANA ARDIKA",
+      "role": "peserta",
+      "nim": "260305038",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.588Z"
+    },
+    {
+      "id": 237,
+      "username": "260305039",
+      "password": "$2a$10$KEbXAt7G.tioc6hMip9sNeGgVEjqHu6n.1eM6GbFxInprHIbdAavu",
+      "nama_lengkap": "SANDI ZIKROL AZIMI",
+      "role": "peserta",
+      "nim": "260305039",
+      "id_kelas": 11,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.687Z"
+    },
+    {
+      "id": 238,
+      "username": "240303009",
+      "password": "$2a$10$4i4504qHuBdZvFR2X.mSd.zslfUs/mmLIRh5wLPb6TE3P/dfORyQ.",
+      "nama_lengkap": "ANISA AULIA PUTRI",
+      "role": "peserta",
+      "nim": "240303009",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.785Z"
+    },
+    {
+      "id": 239,
+      "username": "240303002",
+      "password": "$2a$10$.IjiXUwJQGZcz1RjAc0WNeAMVx5bMLNvdvFRXrYCnO6yzLDCfQ08a",
+      "nama_lengkap": "BAIQ SUCI WIDIANA OKTAVIA",
+      "role": "peserta",
+      "nim": "240303002",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.884Z"
+    },
+    {
+      "id": 240,
+      "username": "240303024",
+      "password": "$2a$10$Oju9DvRflJy/j9QC8FkxJOvoRejz/AyIX8ySTCWhxPOwKaI52CuhS",
+      "nama_lengkap": "RINA FAMIASARI",
+      "role": "peserta",
+      "nim": "240303024",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:39.982Z"
+    },
+    {
+      "id": 241,
+      "username": "240303015",
+      "password": "$2a$10$tfpQV4sIAj565MOvzVRvjuheQcfU1HNqqj0PxIgOK7I3sCHHCwsdy",
+      "nama_lengkap": "HIMAYANA HUSNAENI",
+      "role": "peserta",
+      "nim": "240303015",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.088Z"
+    },
+    {
+      "id": 242,
+      "username": "240303004",
+      "password": "$2a$10$8HR6AJ9mYTPVWNQ4j6yfD.gLVUsqzBNhshkbtQa39E8HEDmU/qy1e",
+      "nama_lengkap": "MAWADDATUL AULIA",
+      "role": "peserta",
+      "nim": "240303004",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.188Z"
+    },
+    {
+      "id": 243,
+      "username": "240303010",
+      "password": "$2a$10$7UkGhNpVWo9UcTD5s/KsguGRAPr901VJYvnYX/eg4RKZdoD/DA0/G",
+      "nama_lengkap": "ATINA NURHIKMAH",
+      "role": "peserta",
+      "nim": "240303010",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.287Z"
+    },
+    {
+      "id": 244,
+      "username": "240303016",
+      "password": "$2a$10$SnBEjKzTgiwQD99es4wFiuxNschhS0f3Tb0fSR.SXi4Af1QSmH5UK",
+      "nama_lengkap": "JUMA'AH AMIN KASBI",
+      "role": "peserta",
+      "nim": "240303016",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.386Z"
+    },
+    {
+      "id": 245,
+      "username": "240303003",
+      "password": "$2a$10$754aXKF9kOjgs8iAIosRuesO/g4JNAfXgcvV1QNsLzlfUTxx6DPmO",
+      "nama_lengkap": "DIANA ANGGIA PUTRI",
+      "role": "peserta",
+      "nim": "240303003",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.484Z"
+    },
+    {
+      "id": 246,
+      "username": "240303017",
+      "password": "$2a$10$hNFXo6.g1gEQ68wcHAOG4.PHHNxOGoLNN8a/64p/7aFzOQTxaUHwa",
+      "nama_lengkap": "JUNITA",
+      "role": "peserta",
+      "nim": "240303017",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.582Z"
+    },
+    {
+      "id": 247,
+      "username": "240303020",
+      "password": "$2a$10$c3KbQyQNk7ST6DeYn1TkAubgRtVU5eufURtyldrBUev20PVvw0NT.",
+      "nama_lengkap": "NIKMATULLOH",
+      "role": "peserta",
+      "nim": "240303020",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.680Z"
+    },
+    {
+      "id": 248,
+      "username": "240303005",
+      "password": "$2a$10$MILBzWdolMa4wYyymtyBnOVUKvFngRCYGgA9.AspwGGpnbxLSwnqm",
+      "nama_lengkap": "YASA WARDIAN",
+      "role": "peserta",
+      "nim": "240303005",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.783Z"
+    },
+    {
+      "id": 249,
+      "username": "240303018",
+      "password": "$2a$10$fTMknS8e4UQLjCammaFYNuvlUlum8TOSJ1BLJ075A9tGtrMgINIfm",
+      "nama_lengkap": "M.HAEKAL",
+      "role": "peserta",
+      "nim": "240303018",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.889Z"
+    },
+    {
+      "id": 250,
+      "username": "240303022",
+      "password": "$2a$10$mS1fMqs1VHiADXq.D6xQmeq4kedfvK2Ukv5SYwpHd8VMYv2be306.",
+      "nama_lengkap": "PITYATUL",
+      "role": "peserta",
+      "nim": "240303022",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:40.993Z"
+    },
+    {
+      "id": 251,
+      "username": "240303006",
+      "password": "$2a$10$vf3KhuMvmLTmIH.fYdFle./SqG1nUia.WGY0e13reZpDYEhR7Bk8O",
+      "nama_lengkap": "ALFINA RAHMAH IDIATUL FITRI",
+      "role": "peserta",
+      "nim": "240303006",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.094Z"
+    },
+    {
+      "id": 252,
+      "username": "240303014",
+      "password": "$2a$10$fxUfL.YcmPOCMgBPo0xYfOJu82V1Tv1lKA20Lc5Q4CGVjUiD7/ydm",
+      "nama_lengkap": "HIDAYATULAELI",
+      "role": "peserta",
+      "nim": "240303014",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.197Z"
+    },
+    {
+      "id": 253,
+      "username": "240303012",
+      "password": "$2a$10$kkSG32F21QoDfyD3e2zrF.HEbLVDwyTy9zRLkZbQU6k48Ty1uw5ya",
+      "nama_lengkap": "EMA NADIA SYAFIQA",
+      "role": "peserta",
+      "nim": "240303012",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.298Z"
+    },
+    {
+      "id": 254,
+      "username": "240303019",
+      "password": "$2a$10$M7PrNiJUAtlWcsZiEIdYdu1bugoOwXllCtJtTM3YaR32AE8ehnsJ2",
+      "nama_lengkap": "NAJWA OKTAVIA RAMADHANI",
+      "role": "peserta",
+      "nim": "240303019",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.405Z"
+    },
+    {
+      "id": 255,
+      "username": "240303013",
+      "password": "$2a$10$SlmxSHQyOSrlTwz3vOaX1eS75CqRWny9GsogaFjQSe/zVQ/sFPEoK",
+      "nama_lengkap": "HANIFA WULAN FITRI",
+      "role": "peserta",
+      "nim": "240303013",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.505Z"
+    },
+    {
+      "id": 256,
+      "username": "240303021",
+      "password": "$2a$10$b1bJS.n6WW.ZUITnXeu0MO7VnWSqhn/swiMd0OEtchlwaGW5Myel2",
+      "nama_lengkap": "NURUL IFLAHATI",
+      "role": "peserta",
+      "nim": "240303021",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.616Z"
+    },
+    {
+      "id": 257,
+      "username": "240303007",
+      "password": "$2a$10$Pq57ij6vTiYBWrKtWPfkt.PnWyE8x0cYeZwySA6sfShsPZ36J7UMK",
+      "nama_lengkap": "ALIFA HAIRUNNISA ZAHRA",
+      "role": "peserta",
+      "nim": "240303007",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.717Z"
+    },
+    {
+      "id": 258,
+      "username": "240303027",
+      "password": "$2a$10$AxvSzeRC2p29TzcAd9V26.bdUwDhgwfSwpjLtPozT7.Bzsv5PESp.",
+      "nama_lengkap": "TANTRI MERI ARTIKA",
+      "role": "peserta",
+      "nim": "240303027",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.818Z"
+    },
+    {
+      "id": 259,
+      "username": "240303029",
+      "password": "$2a$10$K2w6Bq56UQc80.uzcQUe.ueMDbOlpOLYnKHkyYP32xltjbj1X7gBe",
+      "nama_lengkap": "WIDIA HOTIMAH",
+      "role": "peserta",
+      "nim": "240303029",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:41.923Z"
+    },
+    {
+      "id": 260,
+      "username": "240303030",
+      "password": "$2a$10$Y1nrJNSAh2s22MU36otUH.U.sXDBSEdO1JaFYpMu2pwZ5L9BaWLZq",
+      "nama_lengkap": "YEYIK APRIANTI",
+      "role": "peserta",
+      "nim": "240303030",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:42.035Z"
+    },
+    {
+      "id": 261,
+      "username": "240303028",
+      "password": "$2a$10$uCiGr/ab.2Hp/8SMp8vYzupLZE/ImU5ueJxz0xhzKtEBZEjiNjZkW",
+      "nama_lengkap": "VIDIANI NAZIRA",
+      "role": "peserta",
+      "nim": "240303028",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:42.137Z"
+    },
+    {
+      "id": 262,
+      "username": "240303032",
+      "password": "$2a$10$FtBNKhF5awQ8AOM6/6yTFe6o5s.VL7H2Tb/VeGYMmAVXVo4UfRdNu",
+      "nama_lengkap": "Nabila Awalia Ramadani",
+      "role": "peserta",
+      "nim": "240303032",
+      "id_kelas": 12,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-09T00:27:42.238Z"
     }
   ],
   "mahasiswa": [
     {
       "id": 1,
-      "nim": "240305013",
-      "nama_lengkap": "MOH ANWAR KHALID",
-      "id_kelas": 1,
-      "id_user": 2
+      "nim": "240102468",
+      "nama_lengkap": "ALVIYANA KHAIRUN NISA",
+      "id_kelas": 5,
+      "id_user": 7
     },
     {
       "id": 2,
-      "nim": "240305018",
-      "nama_lengkap": "Riyan Ferdianto",
-      "id_kelas": 1,
-      "id_user": 3
+      "nim": "240102469",
+      "nama_lengkap": "ANNISA' HAFIFAH FRIHASTI",
+      "id_kelas": 5,
+      "id_user": 8
     },
     {
       "id": 3,
-      "nim": "230102400",
-      "nama_lengkap": "Ziadatul Ilmi",
-      "id_kelas": 2,
-      "id_user": 4
+      "nim": "240102470",
+      "nama_lengkap": "AZIZA ROSIDA",
+      "id_kelas": 5,
+      "id_user": 9
+    },
+    {
+      "id": 4,
+      "nim": "240102472",
+      "nama_lengkap": "BAIQ TARIK NABILA",
+      "id_kelas": 5,
+      "id_user": 10
+    },
+    {
+      "id": 5,
+      "nim": "240102474",
+      "nama_lengkap": "DIAH ADINDA AURA DIVA",
+      "id_kelas": 5,
+      "id_user": 11
+    },
+    {
+      "id": 6,
+      "nim": "240102473",
+      "nama_lengkap": "DARUL WASIAH",
+      "id_kelas": 5,
+      "id_user": 12
+    },
+    {
+      "id": 7,
+      "nim": "240102479",
+      "nama_lengkap": "FITRIA",
+      "id_kelas": 5,
+      "id_user": 13
+    },
+    {
+      "id": 8,
+      "nim": "240102477",
+      "nama_lengkap": "ERIKA PEBRIANTI",
+      "id_kelas": 5,
+      "id_user": 14
+    },
+    {
+      "id": 9,
+      "nim": "240102475",
+      "nama_lengkap": "DINDA SETIA LESTARI",
+      "id_kelas": 5,
+      "id_user": 15
+    },
+    {
+      "id": 10,
+      "nim": "240102476",
+      "nama_lengkap": "EKA RAHMAWATI",
+      "id_kelas": 5,
+      "id_user": 16
+    },
+    {
+      "id": 11,
+      "nim": "240102482",
+      "nama_lengkap": "HUSNIATI AULIA",
+      "id_kelas": 5,
+      "id_user": 17
+    },
+    {
+      "id": 12,
+      "nim": "240102480",
+      "nama_lengkap": "HAIFA NAJWAN WAHIBAH",
+      "id_kelas": 5,
+      "id_user": 18
+    },
+    {
+      "id": 13,
+      "nim": "240102484",
+      "nama_lengkap": "LAELI AGUS TIA WATI",
+      "id_kelas": 5,
+      "id_user": 19
+    },
+    {
+      "id": 14,
+      "nim": "240102485",
+      "nama_lengkap": "LALU MUH.HISYAM SAPUTRA",
+      "id_kelas": 5,
+      "id_user": 20
+    },
+    {
+      "id": 15,
+      "nim": "240102486",
+      "nama_lengkap": "LINDA AYU SAPUTRI",
+      "id_kelas": 5,
+      "id_user": 21
+    },
+    {
+      "id": 16,
+      "nim": "240102488",
+      "nama_lengkap": "MAOLIDA AMETIYA SAPITRI",
+      "id_kelas": 5,
+      "id_user": 22
+    },
+    {
+      "id": 17,
+      "nim": "240102490",
+      "nama_lengkap": "MITA PURNAMA",
+      "id_kelas": 5,
+      "id_user": 23
+    },
+    {
+      "id": 18,
+      "nim": "240102492",
+      "nama_lengkap": "NADIATUL SAFITRI",
+      "id_kelas": 5,
+      "id_user": 24
+    },
+    {
+      "id": 19,
+      "nim": "240102491",
+      "nama_lengkap": "MUH.AZHARI AWAN PUTRA",
+      "id_kelas": 5,
+      "id_user": 25
+    },
+    {
+      "id": 20,
+      "nim": "240102489",
+      "nama_lengkap": "MEYVA RAHMA NINDIA",
+      "id_kelas": 5,
+      "id_user": 26
+    },
+    {
+      "id": 21,
+      "nim": "240102493",
+      "nama_lengkap": "NEZA HADIYA PUTRI",
+      "id_kelas": 5,
+      "id_user": 27
+    },
+    {
+      "id": 22,
+      "nim": "240102496",
+      "nama_lengkap": "NURIYA ADYANA",
+      "id_kelas": 5,
+      "id_user": 28
+    },
+    {
+      "id": 23,
+      "nim": "240102494",
+      "nama_lengkap": "NIRA JULIANA ANGGRAINI",
+      "id_kelas": 5,
+      "id_user": 29
+    },
+    {
+      "id": 24,
+      "nim": "240102495",
+      "nama_lengkap": "NOVIA ARIZA",
+      "id_kelas": 5,
+      "id_user": 30
+    },
+    {
+      "id": 25,
+      "nim": "240102497",
+      "nama_lengkap": "OKTAVIA RAMDANI NURHAFIZAH",
+      "id_kelas": 5,
+      "id_user": 31
+    },
+    {
+      "id": 26,
+      "nim": "240102498",
+      "nama_lengkap": "RAHMAD FADILLAH HB",
+      "id_kelas": 5,
+      "id_user": 32
+    },
+    {
+      "id": 27,
+      "nim": "240102499",
+      "nama_lengkap": "RAYA DEZWA QODIRA",
+      "id_kelas": 5,
+      "id_user": 33
+    },
+    {
+      "id": 28,
+      "nim": "240102503",
+      "nama_lengkap": "SIMA JANUARTI",
+      "id_kelas": 5,
+      "id_user": 34
+    },
+    {
+      "id": 29,
+      "nim": "240102502",
+      "nama_lengkap": "SASKIA AULIA",
+      "id_kelas": 5,
+      "id_user": 35
+    },
+    {
+      "id": 30,
+      "nim": "240102506",
+      "nama_lengkap": "WIDIATUL AENI",
+      "id_kelas": 5,
+      "id_user": 36
+    },
+    {
+      "id": 31,
+      "nim": "240102504",
+      "nama_lengkap": "SUSAN MISRI",
+      "id_kelas": 5,
+      "id_user": 37
+    },
+    {
+      "id": 32,
+      "nim": "240102508",
+      "nama_lengkap": "ZAHRA ADYA ZAHIA",
+      "id_kelas": 5,
+      "id_user": 38
+    },
+    {
+      "id": 33,
+      "nim": "240102501",
+      "nama_lengkap": "SAKINATUL WALIDAIN",
+      "id_kelas": 5,
+      "id_user": 39
+    },
+    {
+      "id": 34,
+      "nim": "240102500",
+      "nama_lengkap": "RISKA RAMADANI",
+      "id_kelas": 5,
+      "id_user": 40
+    },
+    {
+      "id": 35,
+      "nim": "240102505",
+      "nama_lengkap": "TITIK INDAH LESTARI",
+      "id_kelas": 5,
+      "id_user": 41
+    },
+    {
+      "id": 36,
+      "nim": "240102548",
+      "nama_lengkap": "WIDIYATI",
+      "id_kelas": 6,
+      "id_user": 42
+    },
+    {
+      "id": 37,
+      "nim": "240102549",
+      "nama_lengkap": "WINA AULIA",
+      "id_kelas": 6,
+      "id_user": 43
+    },
+    {
+      "id": 38,
+      "nim": "240102541",
+      "nama_lengkap": "SANIDATUL AENI",
+      "id_kelas": 6,
+      "id_user": 44
+    },
+    {
+      "id": 39,
+      "nim": "240102545",
+      "nama_lengkap": "SITI NURMAYANI",
+      "id_kelas": 6,
+      "id_user": 45
+    },
+    {
+      "id": 40,
+      "nim": "240102529",
+      "nama_lengkap": "MUHAMAD AMANAH ANWAR",
+      "id_kelas": 6,
+      "id_user": 46
+    },
+    {
+      "id": 41,
+      "nim": "240102511",
+      "nama_lengkap": "AHMAD SYAERAZY",
+      "id_kelas": 6,
+      "id_user": 47
+    },
+    {
+      "id": 42,
+      "nim": "240102509",
+      "nama_lengkap": "ABNA ALIMNA",
+      "id_kelas": 6,
+      "id_user": 48
+    },
+    {
+      "id": 43,
+      "nim": "240102512",
+      "nama_lengkap": "ANISA",
+      "id_kelas": 6,
+      "id_user": 49
+    },
+    {
+      "id": 44,
+      "nim": "240102510",
+      "nama_lengkap": "ADELIA MANISA",
+      "id_kelas": 6,
+      "id_user": 50
+    },
+    {
+      "id": 45,
+      "nim": "240102513",
+      "nama_lengkap": "ARDELIA RUSNADEWI",
+      "id_kelas": 6,
+      "id_user": 51
+    },
+    {
+      "id": 46,
+      "nim": "240102516",
+      "nama_lengkap": "DINI ANGGRAINI",
+      "id_kelas": 6,
+      "id_user": 52
+    },
+    {
+      "id": 47,
+      "nim": "240102517",
+      "nama_lengkap": "DWI APRILIZA",
+      "id_kelas": 6,
+      "id_user": 53
+    },
+    {
+      "id": 48,
+      "nim": "240102520",
+      "nama_lengkap": "HANA NABILATUL HUSNA",
+      "id_kelas": 6,
+      "id_user": 54
+    },
+    {
+      "id": 49,
+      "nim": "240102524",
+      "nama_lengkap": "L ISNADI",
+      "id_kelas": 6,
+      "id_user": 55
+    },
+    {
+      "id": 50,
+      "nim": "240102519",
+      "nama_lengkap": "FHATHIHA RAHMAWATY TARRIA",
+      "id_kelas": 6,
+      "id_user": 56
+    },
+    {
+      "id": 51,
+      "nim": "240102521",
+      "nama_lengkap": "HANIFA",
+      "id_kelas": 6,
+      "id_user": 57
+    },
+    {
+      "id": 52,
+      "nim": "240102522",
+      "nama_lengkap": "HARNIATUN",
+      "id_kelas": 6,
+      "id_user": 58
+    },
+    {
+      "id": 53,
+      "nim": "240102514",
+      "nama_lengkap": "BAIQ IIN DWI ARIANI",
+      "id_kelas": 6,
+      "id_user": 59
+    },
+    {
+      "id": 54,
+      "nim": "240102518",
+      "nama_lengkap": "EVA AGUSTINA",
+      "id_kelas": 6,
+      "id_user": 60
+    },
+    {
+      "id": 55,
+      "nim": "240102525",
+      "nama_lengkap": "L. RIKI RAMDANI",
+      "id_kelas": 6,
+      "id_user": 61
+    },
+    {
+      "id": 56,
+      "nim": "240102526",
+      "nama_lengkap": "LAILY RAHMAWATI",
+      "id_kelas": 6,
+      "id_user": 62
+    },
+    {
+      "id": 57,
+      "nim": "240102537",
+      "nama_lengkap": "PAIZAH",
+      "id_kelas": 6,
+      "id_user": 63
+    },
+    {
+      "id": 58,
+      "nim": "240102531",
+      "nama_lengkap": "NAZLYA RENJANI PUTRI",
+      "id_kelas": 6,
+      "id_user": 64
+    },
+    {
+      "id": 59,
+      "nim": "240102528",
+      "nama_lengkap": "MAULIDA APRILIANI",
+      "id_kelas": 6,
+      "id_user": 65
+    },
+    {
+      "id": 60,
+      "nim": "240102536",
+      "nama_lengkap": "NURUL RIZKI AHLA",
+      "id_kelas": 6,
+      "id_user": 66
+    },
+    {
+      "id": 61,
+      "nim": "240102533",
+      "nama_lengkap": "NUR WAHYUNI SOPIA",
+      "id_kelas": 6,
+      "id_user": 67
+    },
+    {
+      "id": 62,
+      "nim": "240102534",
+      "nama_lengkap": "NURAN KARUNIAWATI",
+      "id_kelas": 6,
+      "id_user": 68
+    },
+    {
+      "id": 63,
+      "nim": "240102527",
+      "nama_lengkap": "LISALATUL ISLAMI",
+      "id_kelas": 6,
+      "id_user": 69
+    },
+    {
+      "id": 64,
+      "nim": "240102530",
+      "nama_lengkap": "MUHAMMAD AL FUKRO",
+      "id_kelas": 6,
+      "id_user": 70
+    },
+    {
+      "id": 65,
+      "nim": "240102535",
+      "nama_lengkap": "NURHIKMATUL AZIZAH",
+      "id_kelas": 6,
+      "id_user": 71
+    },
+    {
+      "id": 66,
+      "nim": "240102532",
+      "nama_lengkap": "NILAM FADHILA",
+      "id_kelas": 6,
+      "id_user": 72
+    },
+    {
+      "id": 67,
+      "nim": "240102538",
+      "nama_lengkap": "RAHMAT HIDAYATUL HAQ",
+      "id_kelas": 6,
+      "id_user": 73
+    },
+    {
+      "id": 68,
+      "nim": "240102539",
+      "nama_lengkap": "RAODATUL JANNAH",
+      "id_kelas": 6,
+      "id_user": 74
+    },
+    {
+      "id": 69,
+      "nim": "240102542",
+      "nama_lengkap": "SITI FADILA ROSIANI",
+      "id_kelas": 6,
+      "id_user": 75
+    },
+    {
+      "id": 70,
+      "nim": "240102544",
+      "nama_lengkap": "SITI NIADATUL HUSANI",
+      "id_kelas": 6,
+      "id_user": 76
+    },
+    {
+      "id": 71,
+      "nim": "240102540",
+      "nama_lengkap": "SALWA AL ZURA",
+      "id_kelas": 6,
+      "id_user": 77
+    },
+    {
+      "id": 72,
+      "nim": "240102546",
+      "nama_lengkap": "SOFIANA ZUHRATUNNISA",
+      "id_kelas": 6,
+      "id_user": 78
+    },
+    {
+      "id": 73,
+      "nim": "240102547",
+      "nama_lengkap": "SYIFA UL INSANI",
+      "id_kelas": 6,
+      "id_user": 79
+    },
+    {
+      "id": 74,
+      "nim": "240102550",
+      "nama_lengkap": "ZAEDATUL FITRI",
+      "id_kelas": 6,
+      "id_user": 80
+    },
+    {
+      "id": 75,
+      "nim": "240102017",
+      "nama_lengkap": "NURUL HUDAINI",
+      "id_kelas": 7,
+      "id_user": 81
+    },
+    {
+      "id": 76,
+      "nim": "240102590",
+      "nama_lengkap": "ZUHROTUL ANWARIAH",
+      "id_kelas": 7,
+      "id_user": 82
+    },
+    {
+      "id": 77,
+      "nim": "240102570",
+      "nama_lengkap": "DENDA WINDA ARIANI",
+      "id_kelas": 7,
+      "id_user": 83
+    },
+    {
+      "id": 78,
+      "nim": "240102552",
+      "nama_lengkap": "ALGA ANDIKA",
+      "id_kelas": 7,
+      "id_user": 84
+    },
+    {
+      "id": 79,
+      "nim": "240102559",
+      "nama_lengkap": "DEA SANTIKA",
+      "id_kelas": 7,
+      "id_user": 85
+    },
+    {
+      "id": 80,
+      "nim": "240102555",
+      "nama_lengkap": "BAIQ GINA MAULITA",
+      "id_kelas": 7,
+      "id_user": 86
+    },
+    {
+      "id": 81,
+      "nim": "240102554",
+      "nama_lengkap": "AULIA FEBRIANTI",
+      "id_kelas": 7,
+      "id_user": 87
+    },
+    {
+      "id": 82,
+      "nim": "240102560",
+      "nama_lengkap": "DEWI YULIANTARI",
+      "id_kelas": 7,
+      "id_user": 88
+    },
+    {
+      "id": 83,
+      "nim": "240102563",
+      "nama_lengkap": "GITA ARISTA",
+      "id_kelas": 7,
+      "id_user": 89
+    },
+    {
+      "id": 84,
+      "nim": "240102558",
+      "nama_lengkap": "BQ. INTAN",
+      "id_kelas": 7,
+      "id_user": 90
+    },
+    {
+      "id": 85,
+      "nim": "240102556",
+      "nama_lengkap": "BAIQ NURHALIMAH",
+      "id_kelas": 7,
+      "id_user": 91
+    },
+    {
+      "id": 86,
+      "nim": "240102562",
+      "nama_lengkap": "FEBY AZIZAH LAYLI",
+      "id_kelas": 7,
+      "id_user": 92
+    },
+    {
+      "id": 87,
+      "nim": "240102564",
+      "nama_lengkap": "HESTINA AUDINA",
+      "id_kelas": 7,
+      "id_user": 93
+    },
+    {
+      "id": 88,
+      "nim": "240102565",
+      "nama_lengkap": "HEZMI MUTIARA HIKMAH",
+      "id_kelas": 7,
+      "id_user": 94
+    },
+    {
+      "id": 89,
+      "nim": "240102566",
+      "nama_lengkap": "IDYATUL FITRI",
+      "id_kelas": 7,
+      "id_user": 95
+    },
+    {
+      "id": 90,
+      "nim": "240102569",
+      "nama_lengkap": "MAULA SANDI RIZKI",
+      "id_kelas": 7,
+      "id_user": 96
+    },
+    {
+      "id": 91,
+      "nim": "240102574",
+      "nama_lengkap": "RABITAH",
+      "id_kelas": 7,
+      "id_user": 97
+    },
+    {
+      "id": 92,
+      "nim": "240102567",
+      "nama_lengkap": "JULIANA",
+      "id_kelas": 7,
+      "id_user": 98
+    },
+    {
+      "id": 93,
+      "nim": "240102571",
+      "nama_lengkap": "MUHAMMAD LUKMANUL HAKIM",
+      "id_kelas": 7,
+      "id_user": 99
+    },
+    {
+      "id": 94,
+      "nim": "240102577",
+      "nama_lengkap": "RIKA ROSMIYANTI",
+      "id_kelas": 7,
+      "id_user": 100
+    },
+    {
+      "id": 95,
+      "nim": "240102575",
+      "nama_lengkap": "RESTI FAOLA MARINI",
+      "id_kelas": 7,
+      "id_user": 101
+    },
+    {
+      "id": 96,
+      "nim": "240102572",
+      "nama_lengkap": "NURBAYATI KM",
+      "id_kelas": 7,
+      "id_user": 102
+    },
+    {
+      "id": 97,
+      "nim": "240102578",
+      "nama_lengkap": "RIMA AYU HANDAYANI",
+      "id_kelas": 7,
+      "id_user": 103
+    },
+    {
+      "id": 98,
+      "nim": "240102580",
+      "nama_lengkap": "RIZKIA ZIADATIN ILMA",
+      "id_kelas": 7,
+      "id_user": 104
+    },
+    {
+      "id": 99,
+      "nim": "240102588",
+      "nama_lengkap": "WIZIAH",
+      "id_kelas": 7,
+      "id_user": 105
+    },
+    {
+      "id": 100,
+      "nim": "240102583",
+      "nama_lengkap": "SINTA RAMA DEWI",
+      "id_kelas": 7,
+      "id_user": 106
+    },
+    {
+      "id": 101,
+      "nim": "240102586",
+      "nama_lengkap": "SULIS MAULIA",
+      "id_kelas": 7,
+      "id_user": 107
+    },
+    {
+      "id": 102,
+      "nim": "240102581",
+      "nama_lengkap": "SAHIRA HULWATUL ISNAINI",
+      "id_kelas": 7,
+      "id_user": 108
+    },
+    {
+      "id": 103,
+      "nim": "240102573",
+      "nama_lengkap": "QORIATUN AWANDA SOLEHAH",
+      "id_kelas": 7,
+      "id_user": 109
+    },
+    {
+      "id": 104,
+      "nim": "240102584",
+      "nama_lengkap": "SITI NURHAFIZAH",
+      "id_kelas": 7,
+      "id_user": 110
+    },
+    {
+      "id": 105,
+      "nim": "240102582",
+      "nama_lengkap": "SARAH SAFIRA",
+      "id_kelas": 7,
+      "id_user": 111
+    },
+    {
+      "id": 106,
+      "nim": "240102576",
+      "nama_lengkap": "RIA AULIA",
+      "id_kelas": 7,
+      "id_user": 112
+    },
+    {
+      "id": 107,
+      "nim": "240102589",
+      "nama_lengkap": "ZIADATURRAHMAH",
+      "id_kelas": 7,
+      "id_user": 113
+    },
+    {
+      "id": 108,
+      "nim": "240102425",
+      "nama_lengkap": "AHMAD NAUFAL MARZUKI",
+      "id_kelas": 8,
+      "id_user": 114
+    },
+    {
+      "id": 109,
+      "nim": "240102426",
+      "nama_lengkap": "AIDIL MUFTIA NURUL ILMI",
+      "id_kelas": 8,
+      "id_user": 115
+    },
+    {
+      "id": 110,
+      "nim": "240102427",
+      "nama_lengkap": "ANISAFITRI",
+      "id_kelas": 8,
+      "id_user": 116
+    },
+    {
+      "id": 111,
+      "nim": "240102429",
+      "nama_lengkap": "BAIQ EVA YULIARNI",
+      "id_kelas": 8,
+      "id_user": 117
+    },
+    {
+      "id": 112,
+      "nim": "240102428",
+      "nama_lengkap": "AZILA MARYAYUNI",
+      "id_kelas": 8,
+      "id_user": 118
+    },
+    {
+      "id": 113,
+      "nim": "240102430",
+      "nama_lengkap": "CAHYANI HIDAYATUL INDAH",
+      "id_kelas": 8,
+      "id_user": 119
+    },
+    {
+      "id": 114,
+      "nim": "240102431",
+      "nama_lengkap": "DINA RIZKI MAULANI",
+      "id_kelas": 8,
+      "id_user": 120
+    },
+    {
+      "id": 115,
+      "nim": "240102432",
+      "nama_lengkap": "EKA DWI YANTI",
+      "id_kelas": 8,
+      "id_user": 121
+    },
+    {
+      "id": 116,
+      "nim": "240102434",
+      "nama_lengkap": "ERWIN AHADIYAR",
+      "id_kelas": 8,
+      "id_user": 122
+    },
+    {
+      "id": 117,
+      "nim": "240102437",
+      "nama_lengkap": "HERAWATI",
+      "id_kelas": 8,
+      "id_user": 123
+    },
+    {
+      "id": 118,
+      "nim": "240102441",
+      "nama_lengkap": "LALU MIFTAHUL HUDA",
+      "id_kelas": 8,
+      "id_user": 124
+    },
+    {
+      "id": 119,
+      "nim": "240102440",
+      "nama_lengkap": "KIRANI AKILA",
+      "id_kelas": 8,
+      "id_user": 125
+    },
+    {
+      "id": 120,
+      "nim": "240102438",
+      "nama_lengkap": "HULPA IRMAYANI",
+      "id_kelas": 8,
+      "id_user": 126
+    },
+    {
+      "id": 121,
+      "nim": "240102435",
+      "nama_lengkap": "FITRA PADMALHOKA SEKARWANGI",
+      "id_kelas": 8,
+      "id_user": 127
+    },
+    {
+      "id": 122,
+      "nim": "240102436",
+      "nama_lengkap": "HAFIZAH",
+      "id_kelas": 8,
+      "id_user": 128
+    },
+    {
+      "id": 123,
+      "nim": "240102439",
+      "nama_lengkap": "JASLINA RAHMAWATI",
+      "id_kelas": 8,
+      "id_user": 129
+    },
+    {
+      "id": 124,
+      "nim": "240102444",
+      "nama_lengkap": "MALINI",
+      "id_kelas": 8,
+      "id_user": 130
+    },
+    {
+      "id": 125,
+      "nim": "240102442",
+      "nama_lengkap": "LEDY ALFA LESTARI",
+      "id_kelas": 8,
+      "id_user": 131
+    },
+    {
+      "id": 126,
+      "nim": "240102447",
+      "nama_lengkap": "MUH.ULIL ALBAB",
+      "id_kelas": 8,
+      "id_user": 132
+    },
+    {
+      "id": 127,
+      "nim": "240102445",
+      "nama_lengkap": "MAYA AYU WANDA",
+      "id_kelas": 8,
+      "id_user": 133
+    },
+    {
+      "id": 128,
+      "nim": "240102446",
+      "nama_lengkap": "MITA LESTARI",
+      "id_kelas": 8,
+      "id_user": 134
+    },
+    {
+      "id": 129,
+      "nim": "240102448",
+      "nama_lengkap": "NADIA AYUNI PUTRI",
+      "id_kelas": 8,
+      "id_user": 135
+    },
+    {
+      "id": 130,
+      "nim": "240102449",
+      "nama_lengkap": "NESA PUSPITA ARIYANI",
+      "id_kelas": 8,
+      "id_user": 136
+    },
+    {
+      "id": 131,
+      "nim": "240102452",
+      "nama_lengkap": "NURLIA RIZKI FITRI",
+      "id_kelas": 8,
+      "id_user": 137
+    },
+    {
+      "id": 132,
+      "nim": "240102451",
+      "nama_lengkap": "NOVITA FEBRIANY SARKILA",
+      "id_kelas": 8,
+      "id_user": 138
+    },
+    {
+      "id": 133,
+      "nim": "240102455",
+      "nama_lengkap": "RISMA WARI ANGGRAINI",
+      "id_kelas": 8,
+      "id_user": 139
+    },
+    {
+      "id": 134,
+      "nim": "240102456",
+      "nama_lengkap": "SALSABILA AYU MAULANI",
+      "id_kelas": 8,
+      "id_user": 140
+    },
+    {
+      "id": 135,
+      "nim": "240102457",
+      "nama_lengkap": "SASTIA SULASTRI",
+      "id_kelas": 8,
+      "id_user": 141
+    },
+    {
+      "id": 136,
+      "nim": "240102460",
+      "nama_lengkap": "SOLIDA WARDANI",
+      "id_kelas": 8,
+      "id_user": 142
+    },
+    {
+      "id": 137,
+      "nim": "240102458",
+      "nama_lengkap": "SIPAATUL AULIA",
+      "id_kelas": 8,
+      "id_user": 143
+    },
+    {
+      "id": 138,
+      "nim": "240102459",
+      "nama_lengkap": "SITI PATIHATUL HASANAH",
+      "id_kelas": 8,
+      "id_user": 144
+    },
+    {
+      "id": 139,
+      "nim": "240102463",
+      "nama_lengkap": "WIDIYA ASTUTI",
+      "id_kelas": 8,
+      "id_user": 145
+    },
+    {
+      "id": 140,
+      "nim": "240102462",
+      "nama_lengkap": "ULFIANA",
+      "id_kelas": 8,
+      "id_user": 146
+    },
+    {
+      "id": 141,
+      "nim": "240102466",
+      "nama_lengkap": "ZAHRA ARIANTINA",
+      "id_kelas": 8,
+      "id_user": 147
+    },
+    {
+      "id": 142,
+      "nim": "240102464",
+      "nama_lengkap": "WIWIN ASPIYANI",
+      "id_kelas": 8,
+      "id_user": 148
+    },
+    {
+      "id": 143,
+      "nim": "240102401",
+      "nama_lengkap": "LATIFA ZAHRONI",
+      "id_kelas": 9,
+      "id_user": 149
+    },
+    {
+      "id": 144,
+      "nim": "240102408",
+      "nama_lengkap": "NESA AMINARTI",
+      "id_kelas": 9,
+      "id_user": 150
+    },
+    {
+      "id": 145,
+      "nim": "240102406",
+      "nama_lengkap": "NADIA ANDREANI",
+      "id_kelas": 9,
+      "id_user": 151
+    },
+    {
+      "id": 146,
+      "nim": "240102404",
+      "nama_lengkap": "MIRFA JOHARNIWATI NINGSIH",
+      "id_kelas": 9,
+      "id_user": 152
+    },
+    {
+      "id": 147,
+      "nim": "240102407",
+      "nama_lengkap": "NAJAH ANDINI",
+      "id_kelas": 9,
+      "id_user": 153
+    },
+    {
+      "id": 148,
+      "nim": "240102402",
+      "nama_lengkap": "M. MAULIDI RIZKI",
+      "id_kelas": 9,
+      "id_user": 154
+    },
+    {
+      "id": 149,
+      "nim": "240102403",
+      "nama_lengkap": "MALIA JOHAN",
+      "id_kelas": 9,
+      "id_user": 155
+    },
+    {
+      "id": 150,
+      "nim": "240102410",
+      "nama_lengkap": "NOVITA MULIASARI",
+      "id_kelas": 9,
+      "id_user": 156
+    },
+    {
+      "id": 151,
+      "nim": "240102412",
+      "nama_lengkap": "PATHAINI AZKIA",
+      "id_kelas": 9,
+      "id_user": 157
+    },
+    {
+      "id": 152,
+      "nim": "240102411",
+      "nama_lengkap": "NURSA' BANIA",
+      "id_kelas": 9,
+      "id_user": 158
+    },
+    {
+      "id": 153,
+      "nim": "240102409",
+      "nama_lengkap": "NISA HINDINI",
+      "id_kelas": 9,
+      "id_user": 159
+    },
+    {
+      "id": 154,
+      "nim": "240102414",
+      "nama_lengkap": "RESALIANDRI EKA PUTRI",
+      "id_kelas": 9,
+      "id_user": 160
+    },
+    {
+      "id": 155,
+      "nim": "240102418",
+      "nama_lengkap": "SITI RABIATUL ADAWIYAH",
+      "id_kelas": 9,
+      "id_user": 161
+    },
+    {
+      "id": 156,
+      "nim": "240102420",
+      "nama_lengkap": "SYARIFATUL ZIL IZZATI",
+      "id_kelas": 9,
+      "id_user": 162
+    },
+    {
+      "id": 157,
+      "nim": "240102416",
+      "nama_lengkap": "SELPIA JUNI LESTARI",
+      "id_kelas": 9,
+      "id_user": 163
+    },
+    {
+      "id": 158,
+      "nim": "240102417",
+      "nama_lengkap": "SISKA HARDIANA",
+      "id_kelas": 9,
+      "id_user": 164
+    },
+    {
+      "id": 159,
+      "nim": "240102415",
+      "nama_lengkap": "RIZA MAULIDA RAHAYU",
+      "id_kelas": 9,
+      "id_user": 165
+    },
+    {
+      "id": 160,
+      "nim": "240102419",
+      "nama_lengkap": "SOPA SOPIATUN ANNA",
+      "id_kelas": 9,
+      "id_user": 166
+    },
+    {
+      "id": 161,
+      "nim": "240102422",
+      "nama_lengkap": "WIDYA AYU PITRI",
+      "id_kelas": 9,
+      "id_user": 167
+    },
+    {
+      "id": 162,
+      "nim": "240102424",
+      "nama_lengkap": "ZAHRAUD DANIATI",
+      "id_kelas": 9,
+      "id_user": 168
+    },
+    {
+      "id": 163,
+      "nim": "240102423",
+      "nama_lengkap": "YULIANTI",
+      "id_kelas": 9,
+      "id_user": 169
+    },
+    {
+      "id": 164,
+      "nim": "240102421",
+      "nama_lengkap": "ULYATUN NI'AM",
+      "id_kelas": 9,
+      "id_user": 170
+    },
+    {
+      "id": 165,
+      "nim": "240102383",
+      "nama_lengkap": "AIDA SASKIA",
+      "id_kelas": 9,
+      "id_user": 171
+    },
+    {
+      "id": 166,
+      "nim": "240102384",
+      "nama_lengkap": "ANISA PATUL RODIAH",
+      "id_kelas": 9,
+      "id_user": 172
+    },
+    {
+      "id": 167,
+      "nim": "240102387",
+      "nama_lengkap": "BAIQ PITA SARI",
+      "id_kelas": 9,
+      "id_user": 173
+    },
+    {
+      "id": 168,
+      "nim": "240102388",
+      "nama_lengkap": "BUNGA WIDIA LESTARI",
+      "id_kelas": 9,
+      "id_user": 174
+    },
+    {
+      "id": 169,
+      "nim": "240102386",
+      "nama_lengkap": "BAIQ ENDANG WAHYUNINGTIAS",
+      "id_kelas": 9,
+      "id_user": 175
+    },
+    {
+      "id": 170,
+      "nim": "240102385",
+      "nama_lengkap": "ATMAZA PRATIWI",
+      "id_kelas": 9,
+      "id_user": 176
+    },
+    {
+      "id": 171,
+      "nim": "240102392",
+      "nama_lengkap": "EKA APRIANIH",
+      "id_kelas": 9,
+      "id_user": 177
+    },
+    {
+      "id": 172,
+      "nim": "240102391",
+      "nama_lengkap": "DZAUKI NUR",
+      "id_kelas": 9,
+      "id_user": 178
+    },
+    {
+      "id": 173,
+      "nim": "240102390",
+      "nama_lengkap": "DINA RAHMAWATI PUTRI",
+      "id_kelas": 9,
+      "id_user": 179
+    },
+    {
+      "id": 174,
+      "nim": "240102389",
+      "nama_lengkap": "DEWI HARLINA",
+      "id_kelas": 9,
+      "id_user": 180
+    },
+    {
+      "id": 175,
+      "nim": "240102393",
+      "nama_lengkap": "ERFINA",
+      "id_kelas": 9,
+      "id_user": 181
+    },
+    {
+      "id": 176,
+      "nim": "240102395",
+      "nama_lengkap": "HAYATULAISA SOLIHI",
+      "id_kelas": 9,
+      "id_user": 182
+    },
+    {
+      "id": 177,
+      "nim": "240102396",
+      "nama_lengkap": "HUJJATUL AENI",
+      "id_kelas": 9,
+      "id_user": 183
+    },
+    {
+      "id": 178,
+      "nim": "240102397",
+      "nama_lengkap": "ISNATUN AULIA",
+      "id_kelas": 9,
+      "id_user": 184
+    },
+    {
+      "id": 179,
+      "nim": "240102398",
+      "nama_lengkap": "JUNIA SARTIKA",
+      "id_kelas": 9,
+      "id_user": 185
+    },
+    {
+      "id": 180,
+      "nim": "240102593",
+      "nama_lengkap": "AYU ALIVIA DINNOVA",
+      "id_kelas": 9,
+      "id_user": 186
+    },
+    {
+      "id": 181,
+      "nim": "220305002",
+      "nama_lengkap": "Ahmad Azwar AlFaiz",
+      "id_kelas": 10,
+      "id_user": 187
+    },
+    {
+      "id": 182,
+      "nim": "230305004",
+      "nama_lengkap": "ALDA MEILANI PUTRI",
+      "id_kelas": 10,
+      "id_user": 188
+    },
+    {
+      "id": 183,
+      "nim": "230305005",
+      "nama_lengkap": "RINDI ANTIKA",
+      "id_kelas": 10,
+      "id_user": 189
+    },
+    {
+      "id": 184,
+      "nim": "230305008",
+      "nama_lengkap": "FARIHATUN AINI",
+      "id_kelas": 10,
+      "id_user": 190
+    },
+    {
+      "id": 185,
+      "nim": "230305009",
+      "nama_lengkap": "MERY SEPTIA",
+      "id_kelas": 10,
+      "id_user": 191
+    },
+    {
+      "id": 186,
+      "nim": "230305011",
+      "nama_lengkap": "YULIA DWI WAHYUNI",
+      "id_kelas": 10,
+      "id_user": 192
+    },
+    {
+      "id": 187,
+      "nim": "230305014",
+      "nama_lengkap": "RIA APRILIA",
+      "id_kelas": 10,
+      "id_user": 193
+    },
+    {
+      "id": 188,
+      "nim": "230305020",
+      "nama_lengkap": "ARIF SURIADI",
+      "id_kelas": 10,
+      "id_user": 194
+    },
+    {
+      "id": 189,
+      "nim": "230305021",
+      "nama_lengkap": "AINUL LUTFI",
+      "id_kelas": 10,
+      "id_user": 195
+    },
+    {
+      "id": 190,
+      "nim": "230305023",
+      "nama_lengkap": "AHMAD YUSRIL AZIZ MAULANA",
+      "id_kelas": 10,
+      "id_user": 196
+    },
+    {
+      "id": 191,
+      "nim": "230305025",
+      "nama_lengkap": "BAIQ RAVIKA AULIA WIRANTI",
+      "id_kelas": 10,
+      "id_user": 197
+    },
+    {
+      "id": 192,
+      "nim": "230305026",
+      "nama_lengkap": "LAELA FEBRIANA",
+      "id_kelas": 10,
+      "id_user": 198
+    },
+    {
+      "id": 193,
+      "nim": "230305027",
+      "nama_lengkap": "NURIATUL MASRURO",
+      "id_kelas": 10,
+      "id_user": 199
+    },
+    {
+      "id": 194,
+      "nim": "230305028",
+      "nama_lengkap": "M. FAQIH AL JUMHURI",
+      "id_kelas": 10,
+      "id_user": 200
+    },
+    {
+      "id": 195,
+      "nim": "260305034",
+      "nama_lengkap": "ZIVA AULIA SEPTIN",
+      "id_kelas": 11,
+      "id_user": 201
+    },
+    {
+      "id": 196,
+      "nim": "260305001",
+      "nama_lengkap": "MUHAMMAD FATIHULHAQ",
+      "id_kelas": 11,
+      "id_user": 202
+    },
+    {
+      "id": 197,
+      "nim": "260305002",
+      "nama_lengkap": "DINA AMELIA",
+      "id_kelas": 11,
+      "id_user": 203
+    },
+    {
+      "id": 198,
+      "nim": "260305003",
+      "nama_lengkap": "AYUNDA LESTARI",
+      "id_kelas": 11,
+      "id_user": 204
+    },
+    {
+      "id": 199,
+      "nim": "260305004",
+      "nama_lengkap": "NURLATIFA LESTARI",
+      "id_kelas": 11,
+      "id_user": 205
+    },
+    {
+      "id": 200,
+      "nim": "260305005",
+      "nama_lengkap": "BAIQ RATNA LESTARI",
+      "id_kelas": 11,
+      "id_user": 206
+    },
+    {
+      "id": 201,
+      "nim": "260305006",
+      "nama_lengkap": "ASLINDAWATI",
+      "id_kelas": 11,
+      "id_user": 207
+    },
+    {
+      "id": 202,
+      "nim": "260305007",
+      "nama_lengkap": "ANDI SOFIAN",
+      "id_kelas": 11,
+      "id_user": 208
+    },
+    {
+      "id": 203,
+      "nim": "260305008",
+      "nama_lengkap": "BAIQ DEWI ANGGRAENI",
+      "id_kelas": 11,
+      "id_user": 209
+    },
+    {
+      "id": 204,
+      "nim": "260305010",
+      "nama_lengkap": "DEVI NASTI",
+      "id_kelas": 11,
+      "id_user": 210
+    },
+    {
+      "id": 205,
+      "nim": "260305011",
+      "nama_lengkap": "M. ALMAR ZUBANI",
+      "id_kelas": 11,
+      "id_user": 211
+    },
+    {
+      "id": 206,
+      "nim": "260305012",
+      "nama_lengkap": "MUHAMMAD KHOLID IQBAL",
+      "id_kelas": 11,
+      "id_user": 212
+    },
+    {
+      "id": 207,
+      "nim": "260305013",
+      "nama_lengkap": "MEITSA AQILA ZAHRA",
+      "id_kelas": 11,
+      "id_user": 213
+    },
+    {
+      "id": 208,
+      "nim": "260305014",
+      "nama_lengkap": "SHOFIA RAHMI",
+      "id_kelas": 11,
+      "id_user": 214
+    },
+    {
+      "id": 209,
+      "nim": "260305015",
+      "nama_lengkap": "RATNA SARI",
+      "id_kelas": 11,
+      "id_user": 215
+    },
+    {
+      "id": 210,
+      "nim": "260305016",
+      "nama_lengkap": "AFRIZA RIZKIANI",
+      "id_kelas": 11,
+      "id_user": 216
+    },
+    {
+      "id": 211,
+      "nim": "260305017",
+      "nama_lengkap": "EKA RAMDANI",
+      "id_kelas": 11,
+      "id_user": 217
+    },
+    {
+      "id": 212,
+      "nim": "260305018",
+      "nama_lengkap": "BAIQ AYUDIA DESWITARI",
+      "id_kelas": 11,
+      "id_user": 218
+    },
+    {
+      "id": 213,
+      "nim": "260305019",
+      "nama_lengkap": "JUMIATI",
+      "id_kelas": 11,
+      "id_user": 219
+    },
+    {
+      "id": 214,
+      "nim": "260305021",
+      "nama_lengkap": "HAMDAN FADLI",
+      "id_kelas": 11,
+      "id_user": 220
+    },
+    {
+      "id": 215,
+      "nim": "260305022",
+      "nama_lengkap": "FATIR MAULANA ZAWAWI",
+      "id_kelas": 11,
+      "id_user": 221
+    },
+    {
+      "id": 216,
+      "nim": "260305023",
+      "nama_lengkap": "TISKA",
+      "id_kelas": 11,
+      "id_user": 222
+    },
+    {
+      "id": 217,
+      "nim": "260305024",
+      "nama_lengkap": "EVA ANGGINA",
+      "id_kelas": 11,
+      "id_user": 223
+    },
+    {
+      "id": 218,
+      "nim": "260305025",
+      "nama_lengkap": "NAJA SHADIKAL WAADI",
+      "id_kelas": 11,
+      "id_user": 224
+    },
+    {
+      "id": 219,
+      "nim": "260305026",
+      "nama_lengkap": "MUH. SUKIMAN LUTFI",
+      "id_kelas": 11,
+      "id_user": 225
+    },
+    {
+      "id": 220,
+      "nim": "260305027",
+      "nama_lengkap": "NATHAN AL-JABAR F",
+      "id_kelas": 11,
+      "id_user": 226
+    },
+    {
+      "id": 221,
+      "nim": "260305028",
+      "nama_lengkap": "ALDI SAPUTRA",
+      "id_kelas": 11,
+      "id_user": 227
+    },
+    {
+      "id": 222,
+      "nim": "260305029",
+      "nama_lengkap": "GUNTUR GADAFI",
+      "id_kelas": 11,
+      "id_user": 228
+    },
+    {
+      "id": 223,
+      "nim": "260305030",
+      "nama_lengkap": "SRI WARDANI YULIATMI",
+      "id_kelas": 11,
+      "id_user": 229
+    },
+    {
+      "id": 224,
+      "nim": "260305031",
+      "nama_lengkap": "AZIZAN HABIB",
+      "id_kelas": 11,
+      "id_user": 230
+    },
+    {
+      "id": 225,
+      "nim": "260305032",
+      "nama_lengkap": "MUHAMMAD ABDILLAH JAMIL",
+      "id_kelas": 11,
+      "id_user": 231
+    },
+    {
+      "id": 226,
+      "nim": "260305033",
+      "nama_lengkap": "AIDH ABDULLAH AL QARNI",
+      "id_kelas": 11,
+      "id_user": 232
+    },
+    {
+      "id": 227,
+      "nim": "260305035",
+      "nama_lengkap": "GALANG RIZKI",
+      "id_kelas": 11,
+      "id_user": 233
+    },
+    {
+      "id": 228,
+      "nim": "260305036",
+      "nama_lengkap": "GIAN ARNA KUSSA",
+      "id_kelas": 11,
+      "id_user": 234
+    },
+    {
+      "id": 229,
+      "nim": "260305037",
+      "nama_lengkap": "AHMAD HABIB AFIFI",
+      "id_kelas": 11,
+      "id_user": 235
+    },
+    {
+      "id": 230,
+      "nim": "260305038",
+      "nama_lengkap": "ZANA ARDIKA",
+      "id_kelas": 11,
+      "id_user": 236
+    },
+    {
+      "id": 231,
+      "nim": "260305039",
+      "nama_lengkap": "SANDI ZIKROL AZIMI",
+      "id_kelas": 11,
+      "id_user": 237
+    },
+    {
+      "id": 232,
+      "nim": "240303009",
+      "nama_lengkap": "ANISA AULIA PUTRI",
+      "id_kelas": 12,
+      "id_user": 238
+    },
+    {
+      "id": 233,
+      "nim": "240303002",
+      "nama_lengkap": "BAIQ SUCI WIDIANA OKTAVIA",
+      "id_kelas": 12,
+      "id_user": 239
+    },
+    {
+      "id": 234,
+      "nim": "240303024",
+      "nama_lengkap": "RINA FAMIASARI",
+      "id_kelas": 12,
+      "id_user": 240
+    },
+    {
+      "id": 235,
+      "nim": "240303015",
+      "nama_lengkap": "HIMAYANA HUSNAENI",
+      "id_kelas": 12,
+      "id_user": 241
+    },
+    {
+      "id": 236,
+      "nim": "240303004",
+      "nama_lengkap": "MAWADDATUL AULIA",
+      "id_kelas": 12,
+      "id_user": 242
+    },
+    {
+      "id": 237,
+      "nim": "240303010",
+      "nama_lengkap": "ATINA NURHIKMAH",
+      "id_kelas": 12,
+      "id_user": 243
+    },
+    {
+      "id": 238,
+      "nim": "240303016",
+      "nama_lengkap": "JUMA'AH AMIN KASBI",
+      "id_kelas": 12,
+      "id_user": 244
+    },
+    {
+      "id": 239,
+      "nim": "240303003",
+      "nama_lengkap": "DIANA ANGGIA PUTRI",
+      "id_kelas": 12,
+      "id_user": 245
+    },
+    {
+      "id": 240,
+      "nim": "240303017",
+      "nama_lengkap": "JUNITA",
+      "id_kelas": 12,
+      "id_user": 246
+    },
+    {
+      "id": 241,
+      "nim": "240303020",
+      "nama_lengkap": "NIKMATULLOH",
+      "id_kelas": 12,
+      "id_user": 247
+    },
+    {
+      "id": 242,
+      "nim": "240303005",
+      "nama_lengkap": "YASA WARDIAN",
+      "id_kelas": 12,
+      "id_user": 248
+    },
+    {
+      "id": 243,
+      "nim": "240303018",
+      "nama_lengkap": "M.HAEKAL",
+      "id_kelas": 12,
+      "id_user": 249
+    },
+    {
+      "id": 244,
+      "nim": "240303022",
+      "nama_lengkap": "PITYATUL",
+      "id_kelas": 12,
+      "id_user": 250
+    },
+    {
+      "id": 245,
+      "nim": "240303006",
+      "nama_lengkap": "ALFINA RAHMAH IDIATUL FITRI",
+      "id_kelas": 12,
+      "id_user": 251
+    },
+    {
+      "id": 246,
+      "nim": "240303014",
+      "nama_lengkap": "HIDAYATULAELI",
+      "id_kelas": 12,
+      "id_user": 252
+    },
+    {
+      "id": 247,
+      "nim": "240303012",
+      "nama_lengkap": "EMA NADIA SYAFIQA",
+      "id_kelas": 12,
+      "id_user": 253
+    },
+    {
+      "id": 248,
+      "nim": "240303019",
+      "nama_lengkap": "NAJWA OKTAVIA RAMADHANI",
+      "id_kelas": 12,
+      "id_user": 254
+    },
+    {
+      "id": 249,
+      "nim": "240303013",
+      "nama_lengkap": "HANIFA WULAN FITRI",
+      "id_kelas": 12,
+      "id_user": 255
+    },
+    {
+      "id": 250,
+      "nim": "240303021",
+      "nama_lengkap": "NURUL IFLAHATI",
+      "id_kelas": 12,
+      "id_user": 256
+    },
+    {
+      "id": 251,
+      "nim": "240303007",
+      "nama_lengkap": "ALIFA HAIRUNNISA ZAHRA",
+      "id_kelas": 12,
+      "id_user": 257
+    },
+    {
+      "id": 252,
+      "nim": "240303027",
+      "nama_lengkap": "TANTRI MERI ARTIKA",
+      "id_kelas": 12,
+      "id_user": 258
+    },
+    {
+      "id": 253,
+      "nim": "240303029",
+      "nama_lengkap": "WIDIA HOTIMAH",
+      "id_kelas": 12,
+      "id_user": 259
+    },
+    {
+      "id": 254,
+      "nim": "240303030",
+      "nama_lengkap": "YEYIK APRIANTI",
+      "id_kelas": 12,
+      "id_user": 260
+    },
+    {
+      "id": 255,
+      "nim": "240303028",
+      "nama_lengkap": "VIDIANI NAZIRA",
+      "id_kelas": 12,
+      "id_user": 261
+    },
+    {
+      "id": 256,
+      "nim": "240303032",
+      "nama_lengkap": "Nabila Awalia Ramadani",
+      "id_kelas": 12,
+      "id_user": 262
     }
   ],
   "fakultas": [
@@ -162,73 +4710,97 @@
       "id": 1,
       "kode_prodi": "SI",
       "nama_prodi": "S1 Sistem Informasi",
-      "id_fakultas": 1
+      "id_fakultas": 1,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 2,
       "kode_prodi": "TI",
       "nama_prodi": "S1 Teknik Informatika",
-      "id_fakultas": 1
+      "id_fakultas": 1,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 3,
       "kode_prodi": "TK",
       "nama_prodi": "S1 Teknik Komputer",
-      "id_fakultas": 1
+      "id_fakultas": 1,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 4,
       "kode_prodi": "TL",
       "nama_prodi": "S1 Teknik Lingkungan",
-      "id_fakultas": 1
+      "id_fakultas": 1,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 5,
       "kode_prodi": "BK",
       "nama_prodi": "S1 Bimbingan dan Konseling",
-      "id_fakultas": 2
+      "id_fakultas": 2,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 6,
       "kode_prodi": "PGSD",
       "nama_prodi": "S1 Pendidikan Guru Sekolah Dasar",
-      "id_fakultas": 2
+      "id_fakultas": 2,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 7,
       "kode_prodi": "PBINDO",
       "nama_prodi": "S1 Pendidikan Bahasa Indonesia",
-      "id_fakultas": 3
+      "id_fakultas": 3,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 8,
       "kode_prodi": "PEKO",
       "nama_prodi": "S1 Pendidikan Ekonomi",
-      "id_fakultas": 4
+      "id_fakultas": 4,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 9,
       "kode_prodi": "PMAT",
       "nama_prodi": "S1 Pendidikan Matematika",
-      "id_fakultas": 5
+      "id_fakultas": 5,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 10,
       "kode_prodi": "FARM",
       "nama_prodi": "S1 Farmasi",
-      "id_fakultas": 6
+      "id_fakultas": 6,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 11,
       "kode_prodi": "PI",
       "nama_prodi": "S1 Pendidikan Informatika",
-      "id_fakultas": 5
+      "id_fakultas": 5,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     },
     {
       "id": 12,
       "kode_prodi": "BIO",
       "nama_prodi": "S1 Pendidikan Biologi",
-      "id_fakultas": 5
+      "id_fakultas": 5,
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501"
     }
   ],
   "kelas": [
@@ -237,28 +4809,108 @@
       "nama_kelas": "V (A)",
       "angkatan": 2024,
       "semester": 5,
-      "id_program_studi": 12
+      "id_program_studi": 12,
+      "id_dosen": 6,
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 2,
       "nama_kelas": "PI-A",
       "angkatan": 2026,
       "semester": 1,
-      "id_program_studi": 11
+      "id_program_studi": 11,
+      "id_dosen": 7,
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 3,
       "nama_kelas": "TI-B",
       "angkatan": 2023,
       "semester": 3,
-      "id_program_studi": 2
+      "id_program_studi": 2,
+      "id_dosen": 7,
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 4,
       "nama_kelas": "PGSD",
       "angkatan": 2024,
       "semester": 5,
-      "id_program_studi": 6
+      "id_program_studi": 6,
+      "id_dosen": null,
+      "created_by": "Dr. Budi Santoso, M.Kom"
+    },
+    {
+      "id": 5,
+      "nama_kelas": "PGSD (5L)",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 6,
+      "nama_kelas": "PGSD (5M)",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 7,
+      "nama_kelas": "PGSD (5N)",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 8,
+      "nama_kelas": "PGSD (5K)",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 9,
+      "nama_kelas": "PGSD (5J)",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 10,
+      "nama_kelas": "PI-7A",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 11,
+      "nama_kelas": "PI-IA",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
+    },
+    {
+      "id": 12,
+      "nama_kelas": "BIO-5A",
+      "angkatan": 2026,
+      "semester": 1,
+      "id_program_studi": 1,
+      "id_dosen": 5,
+      "created_by": "admin"
     }
   ],
   "mata_kuliah": [
@@ -266,43 +4918,57 @@
       "id": 1,
       "kode_mk": "EP101",
       "nama_mk": "Etika Profesi",
-      "sks": 2
+      "sks": 2,
+      "id_dosen": 7,
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 2,
       "kode_mk": "PBO101",
       "nama_mk": "Pemrograman Berorientasi Objek",
-      "sks": 3
+      "sks": 3,
+      "id_dosen": 6,
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 3,
       "kode_mk": "BD101",
       "nama_mk": "Basis Data",
-      "sks": 3
+      "sks": 3,
+      "id_dosen": 7,
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 4,
       "kode_mk": "JK101",
       "nama_mk": "Jaringan Komputer",
-      "sks": 3
+      "sks": 3,
+      "id_dosen": 7,
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 5,
       "kode_mk": "SI101",
       "nama_mk": "Sistem Informasi",
-      "sks": 3
+      "sks": 3,
+      "id_dosen": 1,
+      "created_by": "Pengajar"
     },
     {
       "id": 6,
       "kode_mk": "PMP101",
       "nama_mk": "Pengembangan Media Pembelajaran",
-      "sks": 3
+      "sks": 3,
+      "id_dosen": 6,
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 7,
       "kode_mk": "PT101",
       "nama_mk": "Pemrograman Terstruktur",
-      "sks": 3
+      "sks": 3,
+      "id_dosen": 6,
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     }
   ],
   "mata_kuliah_kelas": [
@@ -329,12 +4995,12 @@
       "id_mata_kuliah": 6,
       "jenis_ujian": "Kuis",
       "durasi_menit": 100,
-      "total_nilai": 105,
+      "total_nilai": 101,
       "nilai_lulus": 65,
       "aktif": true,
       "hari_tanggal": "Senin, 15 Juli 2024",
       "waktu": "08:00 - 10:00 / Lab 02",
-      "pengampu": "Samsul Lutfi, S.Pd., M.Pd",
+      "pengampu": "Samsul Lutfi, S.Pd., M.Pd.",
       "smt_sks": "V (A,B) / 3 sks",
       "fakultas_prodi": "MIPA / Pend. Informatika",
       "tahun_akademik": "2024/2025",
@@ -372,7 +5038,13 @@
           "Dilarang bekerja sama!"
         ]
       },
-      "dosen_pembuat": "Administrator Utama"
+      "dosen_pembuat": "Administrator Utama",
+      "id_dosen": 6,
+      "nidn_dosen": "0821098902",
+      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nidn_kaprodi": "0812048501",
+      "nama_pengawas": "Samsul Lutfi, S.Pd., M.Pd.",
+      "nip_pengawas": "0821098902"
     },
     {
       "id": 2,
@@ -390,7 +5062,9 @@
       "fakultas_prodi": "MIPA / Pend. Informatika",
       "tahun_akademik": "2022/2023",
       "petunjuk": "a. Berdo'a sebelum mengerjakan soal !\nb. Isi identitas Anda terlebih dahulu !\nc. Soal Ujian ini kerjakan di rumah (Take Home).\nd. Terakhir, semoga Anda selamat & Sukses dari ujian ini.",
-      "created_at": "2026-10-01T11:43:23.054Z"
+      "created_at": "2026-10-01T11:43:23.054Z",
+      "id_dosen": 6,
+      "dosen_pembuat": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 3,
@@ -408,15 +5082,12 @@
       "fakultas_prodi": "Teknik / S1 Teknik Informatika",
       "tahun_akademik": "2022/2023",
       "petunjuk": "a. Berdo'a sebelum mengerjakan soal !\nb. Kerjakan secara mandiri dan jujur.",
-      "created_at": "2026-10-01T11:43:23.054Z"
+      "created_at": "2026-10-01T11:43:23.054Z",
+      "id_dosen": 7,
+      "dosen_pembuat": "Dr. Budi Santoso, M.Kom"
     }
   ],
   "ujian_kelas": [
-    {
-      "id": 3,
-      "id_ujian": 1,
-      "id_kelas": 1
-    },
     {
       "id": 3,
       "id_ujian": 3,
@@ -426,6 +5097,11 @@
       "id": 3,
       "id_ujian": 2,
       "id_kelas": 1
+    },
+    {
+      "id": 3,
+      "id_ujian": 1,
+      "id_kelas": 2
     }
   ],
   "soal": [

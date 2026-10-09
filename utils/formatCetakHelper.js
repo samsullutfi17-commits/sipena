@@ -44,6 +44,9 @@ export function getUjianFormatCetak(ujian = {}, user = null, settings = {}) {
     nidnKaprodi = ujian.nidn_kaprodi;
   }
 
+  let namaPengawas = (ujian && ujian.nama_pengawas) || '';
+  let nipPengawas = (ujian && ujian.nip_pengawas) || '';
+
   // 1. Default institutional layout matching screenshot
   const defaultFormat = {
     // Kop Surat (Korps)
@@ -102,6 +105,10 @@ export function getUjianFormatCetak(ujian = {}, user = null, settings = {}) {
     jabatan_kiri: 'Ketua Program Studi',
     nama_pejabat_kiri: namaKaprodi,
     nip_kiri: nidnKaprodi,
+    tampilkan_pengawas: ujian && ujian.tampilkan_pengawas !== undefined ? ujian.tampilkan_pengawas : (!!namaPengawas.trim()),
+    jabatan_pengawas: 'Pengawas Ujian',
+    nama_pengawas: namaPengawas,
+    nip_pengawas: nipPengawas,
     jabatan_kanan: 'Dosen Pengampu Mata Kuliah',
     nama_pejabat_kanan: namaDosen,
     nip_kanan: nidnDosen

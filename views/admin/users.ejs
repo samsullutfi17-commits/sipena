@@ -1044,10 +1044,10 @@
                 </div>
 
                 <div class="form-row" id="add_nidn_row" style="display: none;">
-                    <label for="add_nidn">NIDN / NIP Dosen</label>
+                    <label for="add_nidn">NIDN (Nomor Induk Dosen / Pengawas)</label>
                     <input type="text" id="add_nidn" name="nidn" class="filter-control" placeholder="Contoh: 0821098902">
                     <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
-                        * NIDN ini akan otomatis tercantum pada identitas naskah dan tanda tangan pengesahan kisi-kisi.
+                        * NIDN ini akan otomatis tercantum pada identitas naskah, berita acara, dan tanda tangan pengesahan.
                     </small>
                 </div>
 
@@ -1120,10 +1120,10 @@
                 </div>
 
                 <div class="form-row" id="edit_nidn_row" style="display: none;">
-                    <label for="edit_nidn">NIDN / NIP Dosen</label>
+                    <label for="edit_nidn">NIDN (Nomor Induk Dosen / Pengawas)</label>
                     <input type="text" id="edit_nidn" name="nidn" class="filter-control" placeholder="Contoh: 0821098902">
                     <small style="color: #64748b; font-size: 0.8rem; margin-top: 4px; display: block;">
-                        * NIDN ini akan otomatis tercantum pada identitas naskah dan tanda tangan pengesahan kisi-kisi.
+                        * NIDN ini akan otomatis tercantum pada identitas naskah, berita acara, dan tanda tangan pengesahan.
                     </small>
                 </div>
 
@@ -2039,7 +2039,7 @@
                 nimRow.style.display = 'block';
                 kelasRow.style.display = 'block';
                 if (nidnRow) nidnRow.style.display = 'none';
-            } else if (role === 'dosen') {
+            } else if (role === 'dosen' || role === 'pengawas' || role === 'admin') {
                 nimRow.style.display = 'none';
                 kelasRow.style.display = 'none';
                 if (nidnRow) nidnRow.style.display = 'block';
@@ -2058,7 +2058,7 @@
                 nimRow.style.display = 'block';
                 kelasRow.style.display = 'block';
                 if (nidnRow) nidnRow.style.display = 'none';
-            } else if (role === 'dosen') {
+            } else if (role === 'dosen' || role === 'pengawas' || role === 'admin') {
                 nimRow.style.display = 'none';
                 kelasRow.style.display = 'none';
                 if (nidnRow) nidnRow.style.display = 'block';

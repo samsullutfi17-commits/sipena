@@ -664,6 +664,52 @@ export async function generateMatrixDocx(ujian, soalList, settings, user = null)
   if (format.tampilkan_ttd !== false) {
     const borderNone = { style: BorderStyle.NONE, size: 0, color: 'auto' };
     const noBorders = { top: borderNone, bottom: borderNone, left: borderNone, right: borderNone };
+    const hasPengawas = format.tampilkan_pengawas && format.nama_pengawas && format.nama_pengawas.trim();
+    const colWidth = hasPengawas ? 33 : 50;
+
+    const signatureCells = [
+      new TableCell({
+        width: { size: colWidth, type: WidthType.PERCENTAGE },
+        borders: noBorders,
+        children: [
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Mengetahui,', size: 21, font: 'Times New Roman' })] }),
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.jabatan_kiri || 'Ketua Program Studi', bold: true, size: 21, font: 'Times New Roman' })] }),
+          new Paragraph({ text: '', spacing: { before: 450 } }),
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.nama_pejabat_kiri || 'Dr. H. M. Zain, M.Pd.', bold: true, underline: {}, size: 21, font: 'Times New Roman' })] }),
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `NIDN. ${format.nip_kiri || '0812048501'}`, size: 20, font: 'Times New Roman' })] })
+        ]
+      })
+    ];
+
+    if (hasPengawas) {
+      signatureCells.push(
+        new TableCell({
+          width: { size: 34, type: WidthType.PERCENTAGE },
+          borders: noBorders,
+          children: [
+            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Diverifikasi Oleh,', size: 21, font: 'Times New Roman' })] }),
+            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.jabatan_pengawas || 'Pengawas Ujian', bold: true, size: 21, font: 'Times New Roman' })] }),
+            new Paragraph({ text: '', spacing: { before: 450 } }),
+            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.nama_pengawas, bold: true, underline: {}, size: 21, font: 'Times New Roman' })] }),
+            new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `NIDN. ${format.nip_pengawas || '-'}`, size: 20, font: 'Times New Roman' })] })
+          ]
+        })
+      );
+    }
+
+    signatureCells.push(
+      new TableCell({
+        width: { size: colWidth, type: WidthType.PERCENTAGE },
+        borders: noBorders,
+        children: [
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${format.kota_ttd || 'Selong'}, ${format.tanggal_ttd || new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, size: 21, font: 'Times New Roman' })] }),
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.jabatan_kanan || 'Dosen Pengampu Mata Kuliah', bold: true, size: 21, font: 'Times New Roman' })] }),
+          new Paragraph({ text: '', spacing: { before: 450 } }),
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.nama_pejabat_kanan || ujian.pengampu || 'Samsul Lutfi, S.Pd., M.Pd', bold: true, underline: {}, size: 21, font: 'Times New Roman' })] }),
+          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `NIDN. ${format.nip_kanan || '0821098902'}`, size: 20, font: 'Times New Roman' })] })
+        ]
+      })
+    );
 
     children.push(
       new Paragraph({ text: '', spacing: { before: 240 } }),
@@ -671,30 +717,7 @@ export async function generateMatrixDocx(ujian, soalList, settings, user = null)
         width: { size: 100, type: WidthType.PERCENTAGE },
         rows: [
           new TableRow({
-            children: [
-              new TableCell({
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                borders: noBorders,
-                children: [
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Mengetahui,', size: 21, font: 'Times New Roman' })] }),
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.jabatan_kiri || 'Ketua Program Studi', bold: true, size: 21, font: 'Times New Roman' })] }),
-                  new Paragraph({ text: '', spacing: { before: 450 } }),
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.nama_pejabat_kiri || 'Dr. H. M. Zain, M.Pd.', bold: true, underline: {}, size: 21, font: 'Times New Roman' })] }),
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `NIDN/NIP. ${format.nip_kiri || '0812048501'}`, size: 20, font: 'Times New Roman' })] })
-                ]
-              }),
-              new TableCell({
-                width: { size: 50, type: WidthType.PERCENTAGE },
-                borders: noBorders,
-                children: [
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${format.kota_ttd || 'Selong'}, ${format.tanggal_ttd || new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`, size: 21, font: 'Times New Roman' })] }),
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.jabatan_kanan || 'Dosen Pengampu Mata Kuliah', bold: true, size: 21, font: 'Times New Roman' })] }),
-                  new Paragraph({ text: '', spacing: { before: 450 } }),
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: format.nama_pejabat_kanan || ujian.pengampu || 'Samsul Lutfi, S.Pd., M.Pd', bold: true, underline: {}, size: 21, font: 'Times New Roman' })] }),
-                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `NIDN/NIP. ${format.nip_kanan || '0821098902'}`, size: 20, font: 'Times New Roman' })] })
-                ]
-              })
-            ]
+            children: signatureCells
           })
         ]
       })

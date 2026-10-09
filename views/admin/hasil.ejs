@@ -40,6 +40,11 @@
                         Rekapitulasi perolehan nilai, persentase kelulusan, dan status pengerjaan ujian mahasiswa.
                     </p>
                 </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="triggerCetakBeritaAcara(event)" class="btn-primary-action" style="background: #1b4d3e; color: #ffffff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(27,77,62,0.2); cursor: pointer;">
+                        <i class="fas fa-print"></i> Cetak Berita Acara & Rekap Nilai
+                    </button>
+                </div>
             </div>
 
             <% if (typeof message !== 'undefined' && message) { %>
@@ -58,7 +63,7 @@
                 <form method="GET" action="/admin/hasil" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) auto; gap: 14px; align-items: flex-end;">
                     <div style="display: flex; flex-direction: column; gap: 6px;">
                         <label style="font-size: 0.85rem; font-weight: 600; color: #0f172a;">Filter Penilaian</label>
-                        <select name="ujian_id" class="form-select" style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                        <select name="ujian_id" id="filter_ujian_id" class="form-select" style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                             <option value="">-- Semua Penilaian --</option>
                             <% ujianList.forEach(function(u) { %>
                                 <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>><%= u.judul_ujian %></option>
@@ -68,7 +73,7 @@
 
                     <div style="display: flex; flex-direction: column; gap: 6px;">
                         <label style="font-size: 0.85rem; font-weight: 600; color: #0f172a;">Filter Kelas Peserta</label>
-                        <select name="kelas_id" class="form-select" style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                        <select name="kelas_id" id="filter_kelas_id" class="form-select" style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                             <option value="">-- Semua Kelas --</option>
                             <% kelasList.forEach(function(k) { %>
                                 <option value="<%= k.id %>" <%= k.id === selectedKelasId ? 'selected' : '' %>><%= k.nama_kelas %></option>
@@ -81,9 +86,12 @@
                         <input type="text" name="search" value="<%= search %>" class="form-control" placeholder="Ketik nama atau NIM mahasiswa..." style="padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                     </div>
 
-                    <div style="display: flex; gap: 8px;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         <button type="submit" class="btn-primary-action" style="padding: 9px 18px; border-radius: 8px; font-size: 0.9rem;">
                             <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <button type="button" onclick="triggerCetakBeritaAcara(event)" class="btn-primary-action" style="background: #1b4d3e; padding: 9px 16px; border-radius: 8px; font-size: 0.9rem;" title="Cetak Berita Acara & Rekap Nilai">
+                            <i class="fas fa-print"></i> Cetak Berita Acara
                         </button>
                         <a href="/admin/hasil" class="btn-action-secondary" style="padding: 9px 14px; border-radius: 8px; font-size: 0.9rem; text-decoration: none;" title="Reset Filter">
                             <i class="fas fa-rotate-left"></i>
@@ -209,6 +217,14 @@
     </div>
 
     <script>
+        function triggerCetakBeritaAcara(e) {
+            if (e) e.preventDefault();
+            const uId = document.getElementById('filter_ujian_id') ? document.getElementById('filter_ujian_id').value : '';
+            const kId = document.getElementById('filter_kelas_id') ? document.getElementById('filter_kelas_id').value : '';
+            const url = `/admin/hasil/cetak?ujian_id=${encodeURIComponent(uId)}&kelas_id=${encodeURIComponent(kId)}`;
+            window.open(url, '_blank');
+        }
+
         function openEditNilaiModal(sesiId, nama, nilai) {
             document.getElementById('edit_nilai_sesi_id').value = sesiId;
             document.getElementById('edit_nilai_nama').value = nama;

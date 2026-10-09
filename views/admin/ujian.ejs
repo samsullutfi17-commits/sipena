@@ -179,6 +179,10 @@
                                                     <i class="fas fa-chalkboard-user"></i> Pengampu: <%= exam.pengampu || exam.dosen_pembuat %>
                                                 </small>
                                             <% } %>
+                                            <div style="margin-top: 4px; display: flex; flex-direction: column; gap: 2px; font-size: 0.76rem; color: #64748b;">
+                                                <span><i class="fas fa-user-tie" style="color: #1b4d3e;"></i> Kaprodi: <strong style="color: #334155;"><%= exam.nama_kaprodi || (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %></strong></span>
+                                                <span><i class="fas fa-user-shield" style="color: #2563eb;"></i> Pengawas: <strong style="color: <%= exam.nama_pengawas ? '#166534' : '#94a3b8' %>;"><%= exam.nama_pengawas || 'Belum ditunjuk' %></strong></span>
+                                            </div>
                                         </td>
                                         <td>
                                             <span style="font-weight: 500; color: #1e293b;"><%= exam.nama_mk %></span>
@@ -299,29 +303,63 @@
                     </div>
                 </div>
 
-                <!-- Identitas Pengesahan (Dosen & Kaprodi) -->
+                <!-- Identitas Pengesahan (Dosen, Pengawas, & Kaprodi) -->
                 <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
-                    <div style="font-weight: 700; color: #166534; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-signature"></i> Identitas Dosen Pengampu & Ketua Program Studi (Pengesahan)
+                    <div style="font-weight: 700; color: #166534; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                        <span><i class="fas fa-signature"></i> Pejabat Pengesahan & Pengawas Ujian</span>
+                        <span style="font-size: 0.75rem; background: #dcfce7; color: #15803d; font-weight: 600; padding: 2px 8px; border-radius: 4px;">
+                            Otomatis ke Dokumen Cetak & Export Word
+                        </span>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Dosen Pengampu</label>
-                            <input type="text" name="pengampu" value="<%= (typeof adminNama !== 'undefined' && adminNama) ? adminNama : (settings ? settings.nama_dosen : 'Samsul Lutfi, S.Pd., M.Pd') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+
+                    <!-- 1. DOSEN PENGAMPU -->
+                    <div style="margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">Dosen Pengampu / Pembuat</label>
+                            <select id="quick_select_dosen_create" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickDosenCreate(this)">
+                                <option value="">-- Pilih dari Daftar Dosen --</option>
+                                <% (typeof dosenList !== 'undefined' ? dosenList : []).forEach(function(d) { %>
+                                    <option value="<%= d.nama_lengkap %>" data-nidn="<%= d.nidn || d.username || '' %>"><%= d.nama_lengkap %></option>
+                                <% }); %>
+                            </select>
                         </div>
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Dosen</label>
-                            <input type="text" name="nidn_dosen" value="<%= (settings ? settings.nidn_dosen : '0821098902') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+                            <input type="text" name="pengampu" id="create_pengampu" value="<%= (typeof adminNama !== 'undefined' && adminNama) ? adminNama : (settings ? settings.nama_dosen : 'Samsul Lutfi, S.Pd., M.Pd') %>" placeholder="Nama Dosen Pengampu" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;" required>
+                            <input type="text" name="nidn_dosen" id="create_nidn_dosen" value="<%= (settings ? settings.nidn_dosen : '0821098902') %>" placeholder="NIDN Dosen" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Ketua Program Studi</label>
-                            <input type="text" name="nama_kaprodi" value="<%= (settings ? settings.nama_kaprodi : 'Dr. H. M. Zain, M.Pd.') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+
+                    <!-- 2. KETUA PROGRAM STUDI (KAPRODI) -->
+                    <div style="margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">Ketua Program Studi (Kaprodi)</label>
+                            <select id="quick_select_kaprodi_create" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickKaprodiCreate(this)">
+                                <option value="">-- Ambil dari Program Studi --</option>
+                                <% (typeof prodiList !== 'undefined' ? prodiList : []).forEach(function(p) { %>
+                                    <option value="<%= p.nama_kaprodi || (settings && settings.nama_kaprodi) || '' %>" data-nidn="<%= p.nidn_kaprodi || (settings && settings.nidn_kaprodi) || '' %>"><%= p.nama_prodi %> (<%= p.nama_kaprodi || 'Kaprodi' %>)</option>
+                                <% }); %>
+                            </select>
                         </div>
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Kaprodi</label>
-                            <input type="text" name="nidn_kaprodi" value="<%= (settings ? settings.nidn_kaprodi : '0812048501') %>" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+                            <input type="text" name="nama_kaprodi" id="create_nama_kaprodi" value="<%= (settings ? settings.nama_kaprodi : 'Dr. H. M. Zain, M.Pd.') %>" placeholder="Nama Ketua Program Studi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;" required>
+                            <input type="text" name="nidn_kaprodi" id="create_nidn_kaprodi" value="<%= (settings ? settings.nidn_kaprodi : '0812048501') %>" placeholder="NIDN Kaprodi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                    </div>
+
+                    <!-- 3. PENGAWAS UJIAN -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">Pengawas Ujian</label>
+                            <select id="quick_select_pengawas_create" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickPengawasCreate(this)">
+                                <option value="">-- Tunjuk dari Daftar Pengawas / Dosen --</option>
+                                <% (typeof pengawasList !== 'undefined' ? pengawasList : []).forEach(function(pw) { %>
+                                    <option value="<%= pw.nama_lengkap %>" data-nip="<%= pw.nidn || (pw.username === 'samsullutfi' || (pw.nama_lengkap && pw.nama_lengkap.includes('Samsul')) ? '0821098902' : (settings && settings.nidn_dosen) || '') %>"><%= pw.nama_lengkap %> (<%= pw.role.toUpperCase() %>)</option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+                            <input type="text" name="nama_pengawas" id="create_nama_pengawas" placeholder="Nama Pengawas Ujian (opsional)" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                            <input type="text" name="nip_pengawas" id="create_nip_pengawas" placeholder="NIDN Pengawas" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         </div>
                     </div>
                 </div>
@@ -403,29 +441,63 @@
                     </div>
                 </div>
 
-                <!-- Identitas Pengesahan (Dosen & Kaprodi) -->
+                <!-- Identitas Pengesahan (Dosen, Pengawas, & Kaprodi) -->
                 <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
-                    <div style="font-weight: 700; color: #166534; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-signature"></i> Identitas Dosen Pengampu & Ketua Program Studi (Pengesahan)
+                    <div style="font-weight: 700; color: #166534; font-size: 0.88rem; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                        <span><i class="fas fa-signature"></i> Pejabat Pengesahan & Pengawas Ujian</span>
+                        <span style="font-size: 0.75rem; background: #dcfce7; color: #15803d; font-weight: 600; padding: 2px 8px; border-radius: 4px;">
+                            Otomatis ke Dokumen Cetak & Export Word
+                        </span>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Dosen Pengampu</label>
-                            <input type="text" name="pengampu" id="edit_pengampu" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+
+                    <!-- 1. DOSEN PENGAMPU -->
+                    <div style="margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">Dosen Pengampu / Pembuat</label>
+                            <select id="quick_select_dosen_edit" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickDosenEdit(this)">
+                                <option value="">-- Pilih dari Daftar Dosen --</option>
+                                <% (typeof dosenList !== 'undefined' ? dosenList : []).forEach(function(d) { %>
+                                    <option value="<%= d.nama_lengkap %>" data-nidn="<%= d.nidn || d.username || '' %>"><%= d.nama_lengkap %></option>
+                                <% }); %>
+                            </select>
                         </div>
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Dosen</label>
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+                            <input type="text" name="pengampu" id="edit_pengampu" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;" required>
                             <input type="text" name="nidn_dosen" id="edit_nidn_dosen" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">Nama Ketua Program Studi</label>
-                            <input type="text" name="nama_kaprodi" id="edit_nama_kaprodi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+
+                    <!-- 2. KETUA PROGRAM STUDI (KAPRODI) -->
+                    <div style="margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">Ketua Program Studi (Kaprodi)</label>
+                            <select id="quick_select_kaprodi_edit" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickKaprodiEdit(this)">
+                                <option value="">-- Ambil dari Program Studi --</option>
+                                <% (typeof prodiList !== 'undefined' ? prodiList : []).forEach(function(p) { %>
+                                    <option value="<%= p.nama_kaprodi || (settings && settings.nama_kaprodi) || '' %>" data-nidn="<%= p.nidn_kaprodi || (settings && settings.nidn_kaprodi) || '' %>"><%= p.nama_prodi %> (<%= p.nama_kaprodi || 'Kaprodi' %>)</option>
+                                <% }); %>
+                            </select>
                         </div>
-                        <div>
-                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b; display: block; margin-bottom: 4px;">NIDN / NIP Kaprodi</label>
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+                            <input type="text" name="nama_kaprodi" id="edit_nama_kaprodi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;" required>
                             <input type="text" name="nidn_kaprodi" id="edit_nidn_kaprodi" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                    </div>
+
+                    <!-- 3. PENGAWAS UJIAN -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label style="font-size: 0.8rem; font-weight: 600; color: #1e293b;">Pengawas Ujian</label>
+                            <select id="quick_select_pengawas_edit" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickPengawasEdit(this)">
+                                <option value="">-- Tunjuk dari Daftar Pengawas / Dosen --</option>
+                                <% (typeof pengawasList !== 'undefined' ? pengawasList : []).forEach(function(pw) { %>
+                                    <option value="<%= pw.nama_lengkap %>" data-nip="<%= pw.nidn || pw.nim || pw.username || '' %>"><%= pw.nama_lengkap %> (<%= pw.role.toUpperCase() %>)</option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+                            <input type="text" name="nama_pengawas" id="edit_nama_pengawas" placeholder="Nama Pengawas Ujian (opsional)" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                            <input type="text" name="nip_pengawas" id="edit_nip_pengawas" placeholder="NIDN Pengawas" class="form-control" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         </div>
                     </div>
                 </div>
@@ -533,6 +605,8 @@
             document.getElementById('edit_nidn_dosen').value = exam.nidn_dosen || '0821098902';
             document.getElementById('edit_nama_kaprodi').value = exam.nama_kaprodi || <%- JSON.stringify((settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.') %>;
             document.getElementById('edit_nidn_kaprodi').value = exam.nidn_kaprodi || <%- JSON.stringify((settings && settings.nidn_kaprodi) || '0812048501') %>;
+            document.getElementById('edit_nama_pengawas').value = exam.nama_pengawas || '';
+            document.getElementById('edit_nip_pengawas').value = exam.nip_pengawas || '';
 
             // Check checkboxes for assigned classes
             const assignedIds = (exam.kelas_list || []).map(k => String(k.id));
@@ -541,6 +615,61 @@
             });
 
             openModal('edit-modal');
+        }
+
+        // Quick select helpers for Dosen, Kaprodi, and Pengawas (Create & Edit)
+        function applyQuickDosenCreate(el) {
+            if (!el.value) return;
+            document.getElementById('create_pengampu').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nidn) {
+                document.getElementById('create_nidn_dosen').value = opt.dataset.nidn;
+            }
+        }
+
+        function applyQuickKaprodiCreate(el) {
+            if (!el.value) return;
+            document.getElementById('create_nama_kaprodi').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nidn) {
+                document.getElementById('create_nidn_kaprodi').value = opt.dataset.nidn;
+            }
+        }
+
+        function applyQuickPengawasCreate(el) {
+            if (!el.value) return;
+            document.getElementById('create_nama_pengawas').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nip) {
+                document.getElementById('create_nip_pengawas').value = opt.dataset.nip;
+            }
+        }
+
+        function applyQuickDosenEdit(el) {
+            if (!el.value) return;
+            document.getElementById('edit_pengampu').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nidn) {
+                document.getElementById('edit_nidn_dosen').value = opt.dataset.nidn;
+            }
+        }
+
+        function applyQuickKaprodiEdit(el) {
+            if (!el.value) return;
+            document.getElementById('edit_nama_kaprodi').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nidn) {
+                document.getElementById('edit_nidn_kaprodi').value = opt.dataset.nidn;
+            }
+        }
+
+        function applyQuickPengawasEdit(el) {
+            if (!el.value) return;
+            document.getElementById('edit_nama_pengawas').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nip) {
+                document.getElementById('edit_nip_pengawas').value = opt.dataset.nip;
+            }
         }
 
         window.addEventListener('click', function(e) {

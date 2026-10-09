@@ -780,6 +780,35 @@
             <% }); %>
         </div>
 
+        <!-- TANDA TANGAN / PENGESAHAN NASKAH UJIAN -->
+        <div style="margin-top: 36px; padding-top: 18px; border-top: 1px dashed #94a3b8; page-break-inside: avoid;">
+            <div style="display: flex; justify-content: space-between; gap: 16px; text-align: center; margin-top: 10px;">
+                <div style="flex: 1;">
+                    <p style="margin: 0 0 4px; font-size: 10pt;">Mengetahui,</p>
+                    <p style="margin: 0; font-weight: bold; font-size: 10pt;"><%= formatCetak.jabatan_kiri || 'Ketua Program Studi' %></p>
+                    <div style="height: 55px;"></div>
+                    <p style="margin: 0; font-weight: bold; text-decoration: underline; font-size: 10pt;"><%= formatCetak.nama_pejabat_kiri || (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %></p>
+                    <p style="margin: 2px 0 0; font-size: 9pt;">NIDN. <%= formatCetak.nip_kiri || (settings && settings.nidn_kaprodi) || '0812048501' %></p>
+                </div>
+                <% if (formatCetak.nama_pengawas || formatCetak.tampilkan_pengawas) { %>
+                <div style="flex: 1;">
+                    <p style="margin: 0 0 4px; font-size: 10pt;">Diverifikasi Oleh,</p>
+                    <p style="margin: 0; font-weight: bold; font-size: 10pt;"><%= formatCetak.jabatan_pengawas || 'Pengawas Ujian' %></p>
+                    <div style="height: 55px;"></div>
+                    <p style="margin: 0; font-weight: bold; text-decoration: underline; font-size: 10pt;"><%= formatCetak.nama_pengawas || 'Pengawas Ujian' %></p>
+                    <p style="margin: 2px 0 0; font-size: 9pt;">NIDN. <%= formatCetak.nip_pengawas || '-' %></p>
+                </div>
+                <% } %>
+                <div style="flex: 1;">
+                    <p style="margin: 0 0 4px; font-size: 10pt;"><%= formatCetak.kota_ttd || 'Selong' %>, <%= formatCetak.tanggal_ttd || new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+                    <p style="margin: 0; font-weight: bold; font-size: 10pt;"><%= formatCetak.jabatan_kanan || 'Dosen Pengampu Mata Kuliah' %></p>
+                    <div style="height: 55px;"></div>
+                    <p style="margin: 0; font-weight: bold; text-decoration: underline; font-size: 10pt;"><%= formatCetak.nama_pejabat_kanan || ujian.pengampu || (settings && settings.nama_dosen) || 'Samsul Lutfi, S.Pd., M.Pd' %></p>
+                    <p style="margin: 2px 0 0; font-size: 9pt;">NIDN. <%= formatCetak.nip_kanan || (settings && settings.nidn_dosen) || '0821098902' %></p>
+                </div>
+            </div>
+        </div>
+
         <!-- 7. LAMPIRAN I: KUNCI JAWABAN & PEDOMAN PENILAIAN -->
         <div class="appendix-section">
             <div class="appendix-title">LAMPIRAN I: KUNCI JAWABAN & PEDOMAN PENILAIAN</div>
@@ -970,7 +999,7 @@
                                 <input type="text" id="cfg_nama_dosen" class="form-control" value="<%= formatCetak.nama_pejabat_kanan || (formatCetak.identitas_rows && formatCetak.identitas_rows.find(r => (r.kiri_label||'').toLowerCase().includes('dosen')) ? formatCetak.identitas_rows.find(r => (r.kiri_label||'').toLowerCase().includes('dosen')).kiri_val : '') || (currentUser ? currentUser.nama_lengkap : 'Samsul Lutfi, S.Pd., M.Pd') %>">
                             </div>
                             <div class="form-group" style="margin: 0;">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">NIDN / NIP Dosen</label>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">NIDN Dosen</label>
                                 <input type="text" id="cfg_nip_dosen" class="form-control" value="<%= formatCetak.nip_kanan || (currentUser && currentUser.nidn) || '0821098902' %>">
                             </div>
                         </div>
@@ -980,8 +1009,24 @@
                                 <input type="text" id="cfg_nama_kaprodi" class="form-control" value="<%= formatCetak.nama_pejabat_kiri || (settings && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>">
                             </div>
                             <div class="form-group" style="margin: 0;">
-                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">NIDN / NIP Kaprodi</label>
+                                <label style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 4px;">NIDN Kaprodi</label>
                                 <input type="text" id="cfg_nip_kaprodi" class="form-control" value="<%= formatCetak.nip_kiri || (settings && settings.nidn_kaprodi) || '0812048501' %>">
+                            </div>
+                        </div>
+
+                        <!-- Pengawas Ujian -->
+                        <div style="border-top: 1px dashed #86efac; padding-top: 10px; margin-top: 10px;">
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 6px; cursor: pointer;">
+                                <input type="checkbox" id="cfg_tampilkan_pengawas" <%= (formatCetak.tampilkan_pengawas || formatCetak.nama_pengawas) ? 'checked' : '' %>>
+                                <span>Pengawas Ujian</span>
+                            </label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group" style="margin: 0;">
+                                    <input type="text" id="cfg_nama_pengawas" class="form-control" placeholder="Nama Pengawas Ujian" value="<%= formatCetak.nama_pengawas || '' %>">
+                                </div>
+                                <div class="form-group" style="margin: 0;">
+                                    <input type="text" id="cfg_nip_pengawas" class="form-control" placeholder="NIDN Pengawas" value="<%= formatCetak.nip_pengawas || '' %>">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1350,6 +1395,9 @@
                     nip_kanan: document.getElementById('cfg_nip_dosen') ? document.getElementById('cfg_nip_dosen').value : '',
                     nama_pejabat_kiri: document.getElementById('cfg_nama_kaprodi') ? document.getElementById('cfg_nama_kaprodi').value : '',
                     nip_kiri: document.getElementById('cfg_nip_kaprodi') ? document.getElementById('cfg_nip_kaprodi').value : '',
+                    tampilkan_pengawas: document.getElementById('cfg_tampilkan_pengawas') ? document.getElementById('cfg_tampilkan_pengawas').checked : false,
+                    nama_pengawas: document.getElementById('cfg_nama_pengawas') ? document.getElementById('cfg_nama_pengawas').value : '',
+                    nip_pengawas: document.getElementById('cfg_nip_pengawas') ? document.getElementById('cfg_nip_pengawas').value : '',
                     tampilkan_petunjuk: document.getElementById('cfg_tampilkan_petunjuk').checked,
                     judul_petunjuk: document.getElementById('cfg_judul_petunjuk').value,
                     petunjuk_items: currentPetunjukItems

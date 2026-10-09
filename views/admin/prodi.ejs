@@ -135,12 +135,20 @@
                     <input type="text" name="nama_prodi" required class="form-control" placeholder="Contoh: S1 Teknik Informatika" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Nama Ketua Program Studi (Kaprodi)</label>
-                    <input type="text" name="nama_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" value="<%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label style="font-weight: 600; font-size: 0.88rem;">Nama Ketua Program Studi (Kaprodi)</label>
+                        <select id="quick_select_kaprodi_prodi_tambah" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickKaprodiProdiTambah(this)">
+                            <option value="">-- Pilih dari Daftar Dosen --</option>
+                            <% (typeof dosenList !== 'undefined' ? dosenList : []).forEach(function(d) { %>
+                                <option value="<%= d.nama_lengkap %>" data-nidn="<%= d.nidn || d.username || '' %>"><%= d.nama_lengkap %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <input type="text" name="nama_kaprodi" id="tambah_nama_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" value="<%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 18px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">NIDN / NIP Kaprodi</label>
-                    <input type="text" name="nidn_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" value="<%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">NIDN Kaprodi</label>
+                    <input type="text" name="nidn_kaprodi" id="tambah_nidn_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" value="<%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
                     <button type="button" class="btn btn-secondary" onclick="document.getElementById('modal-prodi').style.display='none'" style="padding: 9px 18px; border-radius: 8px;">Batal</button>
@@ -181,11 +189,19 @@
                     <input type="text" name="nama_prodi" id="edit_nama_prodi" required class="form-control" placeholder="Contoh: S1 Teknik Informatika" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Nama Ketua Program Studi (Kaprodi)</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label style="font-weight: 600; font-size: 0.88rem;">Nama Ketua Program Studi (Kaprodi)</label>
+                        <select id="quick_select_kaprodi_prodi_edit" class="form-select" style="font-size: 0.75rem; padding: 2px 6px; height: auto; border: 1px solid #cbd5e1; border-radius: 4px; background: white;" onchange="applyQuickKaprodiProdiEdit(this)">
+                            <option value="">-- Pilih dari Daftar Dosen --</option>
+                            <% (typeof dosenList !== 'undefined' ? dosenList : []).forEach(function(d) { %>
+                                <option value="<%= d.nama_lengkap %>" data-nidn="<%= d.nidn || d.username || '' %>"><%= d.nama_lengkap %></option>
+                            <% }); %>
+                        </select>
+                    </div>
                     <input type="text" name="nama_kaprodi" id="edit_nama_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 18px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">NIDN / NIP Kaprodi</label>
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">NIDN Kaprodi</label>
                     <input type="text" name="nidn_kaprodi" id="edit_nidn_kaprodi" class="form-control" placeholder="Contoh: <%= (typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
@@ -235,6 +251,24 @@
 
         const defaultKaprodiName = <%- JSON.stringify((typeof settings !== 'undefined' && settings.nama_kaprodi) || 'Dr. H. M. Zain, M.Pd.') %>;
         const defaultKaprodiNidn = <%- JSON.stringify((typeof settings !== 'undefined' && settings.nidn_kaprodi) || '0812048501') %>;
+
+        function applyQuickKaprodiProdiTambah(el) {
+            if (!el.value) return;
+            document.getElementById('tambah_nama_kaprodi').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nidn) {
+                document.getElementById('tambah_nidn_kaprodi').value = opt.dataset.nidn;
+            }
+        }
+
+        function applyQuickKaprodiProdiEdit(el) {
+            if (!el.value) return;
+            document.getElementById('edit_nama_kaprodi').value = el.value;
+            const opt = el.options[el.selectedIndex];
+            if (opt && opt.dataset.nidn) {
+                document.getElementById('edit_nidn_kaprodi').value = opt.dataset.nidn;
+            }
+        }
 
         function openModalEditProdi(p) {
             document.getElementById('edit_prodi_id').value = p.id;

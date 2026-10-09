@@ -111,6 +111,125 @@
             color: #0f172a;
         }
 
+        /* Searchable Custom Select for Jenis Penilaian */
+        .searchable-select-wrap {
+            position: relative;
+            display: inline-block;
+            min-width: 270px;
+        }
+
+        .searchable-trigger {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            user-select: none;
+        }
+
+        .searchable-trigger:hover, .searchable-trigger.active {
+            border-color: #1b4d3e;
+            box-shadow: 0 0 0 3px rgba(27, 77, 62, 0.12);
+        }
+
+        .searchable-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 320px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            box-shadow: 0 12px 28px -4px rgba(0,0,0,0.18), 0 4px 8px -2px rgba(0,0,0,0.08);
+            z-index: 1050;
+            overflow: hidden;
+            animation: fadeInMenu 0.15s ease-out;
+        }
+
+        .searchable-dropdown.show {
+            display: block;
+        }
+
+        .searchable-search-box {
+            padding: 10px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .searchable-search-input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            font-size: 0.86rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            background: #ffffff;
+            transition: border-color 0.15s;
+        }
+
+        .searchable-search-input:focus {
+            border-color: #1b4d3e;
+        }
+
+        .searchable-search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .searchable-options-list {
+            max-height: 240px;
+            overflow-y: auto;
+            margin: 0;
+            padding: 6px 0;
+            list-style: none;
+        }
+
+        .searchable-option-item {
+            padding: 9px 14px;
+            font-size: 0.88rem;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: background 0.12s;
+        }
+
+        .searchable-option-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .searchable-option-item.selected {
+            background: #f0fdf4;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .searchable-empty-hint {
+            padding: 14px;
+            text-align: center;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            display: none;
+        }
+
         .dropdown-menu-cetak {
             display: none;
             position: absolute;
@@ -201,16 +320,58 @@
                         <h2 class="page-title"><i class="fas fa-question-circle"></i> Bank Soal</h2>
                         <p class="page-subtitle">Kelola butir soal evaluasi, kunci jawaban, bobot poin, dan indikator kisi-kisi.</p>
                     </div>
-                    <select class="form-select" onchange="window.location.href='/admin/soal?ujian_id=' + this.value" style="width: auto; padding: 8px 14px; font-weight: 600; border-radius: 8px; border: 1.5px solid #cbd5e1; margin-top: 4px;">
-                        <% ujianList.forEach(function(u) { %>
-                            <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>>
-                                <%= u.judul_ujian %>
-                            </option>
-                        <% }); %>
-                    </select>
+
+                    <!-- Pilihan Jenis Penilaian Rapi dengan Pencarian -->
+                    <div class="searchable-select-wrap" id="wrapPilihPenilaianSoal">
+                        <% 
+                            const activeUjian = ujianList.find(u => u.id === selectedUjianId);
+                            const activeTitle = activeUjian ? activeUjian.judul_ujian : 'Pilih Jenis Penilaian...';
+                        %>
+                        <div class="searchable-trigger" id="triggerPilihPenilaianSoal" onclick="toggleSearchablePenilaianSoal(event)">
+                            <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <i class="fas fa-file-signature" style="color: #1b4d3e; font-size: 0.95rem;"></i>
+                                <span id="labelPilihPenilaianSoal" style="overflow: hidden; text-overflow: ellipsis;"><%= activeTitle %></span>
+                            </div>
+                            <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: #64748b; transition: transform 0.2s;" id="chevronPenilaianSoal"></i>
+                        </div>
+                        <div class="searchable-dropdown" id="dropdownPilihPenilaianSoal">
+                            <div class="searchable-search-box">
+                                <i class="fas fa-search searchable-search-icon"></i>
+                                <input type="text" class="searchable-search-input" id="searchPenilaianSoalInput" placeholder="Cari nama ujian / jenis penilaian..." oninput="filterOptionsPenilaianSoal(this.value)" autocomplete="off">
+                            </div>
+                            <ul class="searchable-options-list" id="listPenilaianSoal">
+                                <% ujianList.forEach(function(u) { %>
+                                    <li class="searchable-option-item <%= u.id === selectedUjianId ? 'selected' : '' %>" data-title="<%= (u.judul_ujian || '').toLowerCase() %>" onclick="selectPenilaianSoal(<%= u.id %>)">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas <%= u.id === selectedUjianId ? 'fa-check-circle text-success' : 'fa-circle-dot text-muted' %>" style="font-size: 0.85rem;"></i>
+                                            <span><%= u.judul_ujian %></span>
+                                        </div>
+                                        <% if (u.id === selectedUjianId) { %>
+                                            <span style="font-size: 0.72rem; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Aktif</span>
+                                        <% } %>
+                                    </li>
+                                <% }); %>
+                            </ul>
+                            <div class="searchable-empty-hint" id="emptyPenilaianSoalHint">
+                                <i class="fas fa-search" style="margin-right: 4px;"></i> Jenis penilaian tidak ditemukan
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- TATA LETAK FITUR: 1. + Tambah Soal Manual, 2. Generate Soal, 3. Cetak / Export -->
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <!-- 1. + Tambah Soal Manual -->
+                    <button type="button" class="btn-primary-action" onclick="openModal('create-soal-modal')">
+                        <i class="fas fa-plus"></i> Tambah Soal Manual
+                    </button>
+
+                    <!-- 2. AI Generate Soal -->
+                    <button type="button" class="btn btn-accent" style="border-radius: 8px; font-weight: 600; padding: 10px 18px;" onclick="openModal('ai-modal')">
+                        <i class="fas fa-wand-magic-sparkles"></i> AI Generate Soal
+                    </button>
+
+                    <!-- 3. Cetak / Export -->
                     <div class="dropdown-cetak">
                         <button type="button" class="btn-cetak-soal" onclick="toggleCetakMenuSoal(event)">
                             <i class="fas fa-print" style="color: #1b4d3e;"></i> Cetak / Export <i class="fas fa-caret-down"></i>
@@ -261,13 +422,6 @@
                             </a>
                         </div>
                     </div>
-
-                    <button type="button" class="btn btn-accent" style="border-radius: 8px; font-weight: 600; padding: 10px 18px;" onclick="openModal('ai-modal')">
-                        <i class="fas fa-wand-magic-sparkles"></i> AI Generate Soal
-                    </button>
-                    <button type="button" class="btn-primary-action" onclick="openModal('create-soal-modal')">
-                        <i class="fas fa-plus"></i> Tambah Soal Manual
-                    </button>
                 </div>
             </div>
 
@@ -864,6 +1018,50 @@
             }
         }
 
+        // Searchable Custom Select Penilaian in Soal
+        function toggleSearchablePenilaianSoal(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('dropdownPilihPenilaianSoal');
+            const chevron = document.getElementById('chevronPenilaianSoal');
+            const isShown = dd.classList.contains('show');
+            if (isShown) {
+                dd.classList.remove('show');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                dd.classList.add('show');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+                const input = document.getElementById('searchPenilaianSoalInput');
+                if (input) {
+                    input.value = '';
+                    filterOptionsPenilaianSoal('');
+                    setTimeout(() => input.focus(), 60);
+                }
+            }
+        }
+
+        function filterOptionsPenilaianSoal(query) {
+            const q = (query || '').toLowerCase().trim();
+            const items = document.querySelectorAll('#listPenilaianSoal .searchable-option-item');
+            let matchCount = 0;
+            items.forEach(item => {
+                const title = item.getAttribute('data-title') || '';
+                if (title.includes(q)) {
+                    item.style.display = 'flex';
+                    matchCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            const emptyHint = document.getElementById('emptyPenilaianSoalHint');
+            if (emptyHint) {
+                emptyHint.style.display = matchCount === 0 ? 'block' : 'none';
+            }
+        }
+
+        function selectPenilaianSoal(ujianId) {
+            window.location.href = '/admin/soal?ujian_id=' + ujianId;
+        }
+
         window.addEventListener('click', function(e) {
             if (e.target.classList.contains('custom-modal-overlay')) {
                 e.target.style.display = 'none';
@@ -871,6 +1069,13 @@
             const cetakMenu = document.getElementById('cetakDropdownSoal');
             if (cetakMenu && cetakMenu.classList.contains('show') && !e.target.closest('.dropdown-cetak')) {
                 cetakMenu.classList.remove('show');
+            }
+            const wrapPenilaian = document.getElementById('wrapPilihPenilaianSoal');
+            if (wrapPenilaian && !wrapPenilaian.contains(e.target)) {
+                const dd = document.getElementById('dropdownPilihPenilaianSoal');
+                const chevron = document.getElementById('chevronPenilaianSoal');
+                if (dd) dd.classList.remove('show');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
             }
         });
 

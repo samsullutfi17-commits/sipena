@@ -105,15 +105,28 @@ class DataStore {
 
   save() {
     this.saveLocal();
-    if (this.firestore) {
+    if (this.firestore && !this.firestoreQuotaExceeded) {
+      this.scheduleSyncToFirebase();
+    }
+  }
+
+  scheduleSyncToFirebase() {
+    if (this.firestoreSyncTimer) return;
+    this.firestoreSyncTimer = setTimeout(() => {
+      this.firestoreSyncTimer = null;
       this.syncToFirebase().catch(err => {
         console.warn('[SIPENA] Cloud save notice:', err.message);
       });
-    }
+    }, 15000); // Debounce cloud writes to 15 seconds to stay safely within free quotas
   }
 
   initFirebase() {
     try {
+      this.firestoreSyncTimer = null;
+      this.firestoreQuotaExceeded = false;
+      this.lastSyncPayloadHash = null;
+      this.isSyncing = false;
+
       const configPath = path.join(__dirname, '..', 'firebase-applet-config.json');
       if (fs.existsSync(configPath)) {
         const cfg = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
@@ -130,7 +143,7 @@ class DataStore {
   }
 
   async syncFromFirebase() {
-    if (!this.firestore) return;
+    if (!this.firestore || this.firestoreQuotaExceeded) return;
     try {
       const ref = doc(this.firestore, 'system_state', 'current_db');
       const snap = await getDoc(ref);
@@ -140,27 +153,55 @@ class DataStore {
           const parsed = JSON.parse(cloudData.payload);
           this.applyData(parsed);
           this.saveLocal();
+          this.lastSyncPayloadHash = cloudData.updated_at || 'synced';
           console.log('[SIPENA] Sinkronisasi data awan berhasil (Firestore updated: ' + (cloudData.updated_at || '-') + ')');
         }
       } else {
         await this.syncToFirebase();
       }
     } catch (err) {
-      console.warn('[SIPENA] Sync from Firebase note:', err.message);
+      if (err.code === 'resource-exhausted' || (err.message && err.message.includes('RESOURCE_EXHAUSTED'))) {
+        this.firestoreQuotaExceeded = true;
+        console.warn('[SIPENA] Firestore free tier quota exhausted. Running seamlessly using local JSON persistence.');
+      } else {
+        console.warn('[SIPENA] Sync from Firebase note:', err.message);
+      }
     }
   }
 
   async syncToFirebase() {
-    if (!this.firestore) return;
+    if (!this.firestore || this.firestoreQuotaExceeded || this.isSyncing) return;
     try {
+      this.isSyncing = true;
       const payload = this.getSnapshot();
+      const payloadString = JSON.stringify(payload);
+      
+      // Avoid writing if content hasn't changed
+      if (this.lastWrittenPayload === payloadString) {
+        this.isSyncing = false;
+        return;
+      }
+
       const ref = doc(this.firestore, 'system_state', 'current_db');
+      const now = new Date().toISOString();
       await setDoc(ref, {
-        payload: JSON.stringify(payload),
-        updated_at: new Date().toISOString()
+        payload: payloadString,
+        updated_at: now
       });
+      this.lastWrittenPayload = payloadString;
     } catch (err) {
-      console.warn('[SIPENA] Save to Firebase note:', err.message);
+      if (err.code === 'resource-exhausted' || (err.message && err.message.includes('RESOURCE_EXHAUSTED'))) {
+        this.firestoreQuotaExceeded = true;
+        console.warn('[SIPENA] Firestore free daily write limit reached. Local disk persistence is active and intact.');
+        // Retry quota check after 1 hour
+        setTimeout(() => {
+          this.firestoreQuotaExceeded = false;
+        }, 60 * 60 * 1000);
+      } else {
+        console.warn('[SIPENA] Save to Firebase note:', err.message);
+      }
+    } finally {
+      this.isSyncing = false;
     }
   }
 
@@ -188,14 +229,26 @@ class DataStore {
 
   applyData(data) {
     if (!data || typeof data !== 'object') return false;
-    if (Array.isArray(data.users)) this.users = data.users;
+    if (Array.isArray(data.users)) {
+      this.users = data.users.map(u => ({
+        ...u,
+        nidn: u.nidn || (u.username === 'samsullutfi' || (u.nama_lengkap && u.nama_lengkap.includes('Samsul')) ? '0821098902' : '')
+      }));
+    }
     if (Array.isArray(data.mahasiswa)) this.mahasiswa = data.mahasiswa;
     if (Array.isArray(data.fakultas)) this.fakultas = data.fakultas;
     if (Array.isArray(data.program_studi)) this.program_studi = data.program_studi;
     if (Array.isArray(data.kelas)) this.kelas = data.kelas;
     if (Array.isArray(data.mata_kuliah)) this.mata_kuliah = data.mata_kuliah;
     if (Array.isArray(data.mata_kuliah_kelas)) this.mata_kuliah_kelas = data.mata_kuliah_kelas;
-    if (Array.isArray(data.ujian)) this.ujian = data.ujian;
+    if (Array.isArray(data.ujian)) {
+      this.ujian = data.ujian.map(u => ({
+        ...u,
+        nidn_dosen: (!u.nidn_dosen || u.nidn_dosen === 'samsullutfi' || !/^\d+$/.test(u.nidn_dosen)) ? '0821098902' : u.nidn_dosen,
+        nip_pengawas: (u.nip_pengawas === 'samsullutfi' || (!u.nip_pengawas && u.nama_pengawas && u.nama_pengawas.includes('Samsul'))) ? '0821098902' : (u.nip_pengawas || ''),
+        nidn_kaprodi: (!u.nidn_kaprodi || !/^\d+$/.test(u.nidn_kaprodi)) ? '0812048501' : u.nidn_kaprodi
+      }));
+    }
     if (Array.isArray(data.ujian_kelas)) this.ujian_kelas = data.ujian_kelas;
     if (Array.isArray(data.soal)) this.soal = data.soal;
     if (Array.isArray(data.opsi_jawaban)) this.opsi_jawaban = data.opsi_jawaban;

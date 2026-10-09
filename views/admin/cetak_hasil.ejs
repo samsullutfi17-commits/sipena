@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita Acara & Rekapitulasi Hasil Penilaian - <%= ujian ? ujian.judul_ujian : 'SIPENA' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #525659;
+            color: #000;
+            line-height: 1.4;
+            padding: 20px;
+        }
+
+        .no-print-bar {
+            max-width: 900px;
+            margin: 0 auto 16px;
+            background: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-print {
+            background: #1b4d3e;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-print:hover {
+            background: #143d22;
+        }
+
+        .btn-back {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .paper-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-height: 1050px;
+        }
+
+        /* KOP SURAT */
+        .kop-table {
+            width: 100%;
+            border-bottom: 3px double #000;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .kop-logo {
+            width: 90px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .kop-logo img {
+            max-width: 85px;
+            max-height: 85px;
+            object-fit: contain;
+        }
+
+        .kop-text {
+            text-align: center;
+            vertical-align: middle;
+            padding-left: 10px;
+        }
+
+        .kop-inst {
+            font-size: 15pt;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .kop-sub {
+            font-size: 13pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .kop-address {
+            font-size: 9pt;
+            margin-top: 4px;
+        }
+
+        .kop-contact {
+            font-size: 8.5pt;
+            font-style: italic;
+        }
+
+        /* TITLE */
+        .doc-title {
+            text-align: center;
+            font-size: 12.5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            text-decoration: underline;
+        }
+
+        .doc-subtitle {
+            text-align: center;
+            font-size: 10.5pt;
+            margin-bottom: 20px;
+        }
+
+        /* METADATA TABLE */
+        .meta-table {
+            width: 100%;
+            margin-bottom: 18px;
+            font-size: 10pt;
+            border-collapse: collapse;
+        }
+
+        .meta-table td {
+            padding: 3px 6px;
+            vertical-align: top;
+        }
+
+        .meta-label {
+            width: 22%;
+            font-weight: bold;
+        }
+
+        .meta-sep {
+            width: 2%;
+            text-align: center;
+        }
+
+        .meta-val {
+            width: 26%;
+        }
+
+        /* DATA TABLE */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+            margin-bottom: 25px;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid #000;
+            padding: 6px 8px;
+        }
+
+        .data-table th {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* SIGNATURES */
+        .sig-container {
+            width: 100%;
+            margin-top: 30px;
+            page-break-inside: avoid;
+        }
+
+        .sig-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            text-align: center;
+            font-size: 10pt;
+        }
+
+        .sig-col {
+            flex: 1;
+        }
+
+        .sig-space {
+            height: 65px;
+        }
+
+        .sig-name {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+
+            .no-print-bar {
+                display: none !important;
+            }
+
+            .paper-container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print-bar">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <a href="/admin/hasil" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Kembali ke Menu Laporan
+            </a>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #334155;">Ujian:</label>
+                <select id="pilihUjian" onchange="ubahFilterCetak()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; background: white; max-width: 220px;">
+                    <% (typeof ujianList !== 'undefined' ? ujianList : []).forEach(function(u) { %>
+                        <option value="<%= u.id %>" <%= (ujian && u.id === ujian.id) ? 'selected' : '' %>><%= u.judul_ujian %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 0.85rem; font-weight: 600; color: #334155;">Kelas / Grup:</label>
+                <select id="pilihKelas" onchange="ubahFilterCetak()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; background: white; max-width: 180px;">
+                    <option value="" <%= (!kelas) ? 'selected' : '' %>>-- Semua Kelas --</option>
+                    <% (typeof kelasList !== 'undefined' ? kelasList : []).forEach(function(k) { %>
+                        <option value="<%= k.id %>" <%= (kelas && k.id === kelas.id) ? 'selected' : '' %>><%= k.nama_kelas %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px; font-size: 0.82rem; color: #475569; margin-left: 6px;">
+                <label style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                    <input type="checkbox" id="togglePengawas" checked onchange="toggleSig('colSigPengawas', this.checked)"> Pengawas Ujian
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" title="Centang jika ingin memunculkan tanda tangan Kaprodi">
+                    <input type="checkbox" id="toggleKaprodi" onchange="toggleSig('colSigKaprodi', this.checked)"> Ketua Program Studi
+                </label>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button type="button" class="btn-print" onclick="window.print()">
+                <i class="fas fa-print"></i> Cetak Dokumen / Simpan PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="paper-container">
+        <!-- KOP SURAT RESMI -->
+        <table class="kop-table">
+            <tr>
+                <td class="kop-logo">
+                    <img src="<%= (settings && settings.logo_path && !settings.logo_path.endsWith('.svg')) ? settings.logo_path : '/assets/img/logo_hamzanwadi.png' %>" alt="Logo Universitas Hamzanwadi" onerror="this.src='/assets/img/logo_hamzanwadi.png'">
+                </td>
+                <td class="kop-text">
+                    <div class="kop-inst"><%= (settings && settings.nama_institusi) || 'UNIVERSITAS HAMZANWADI' %></div>
+                    <div class="kop-sub"><%= (settings && settings.fakultas_institusi) || (prodi ? prodi.nama_prodi : 'FAKULTAS MATEMATIKA DAN ILMU PENGETAHUAN ALAM') %></div>
+                    <div class="kop-address"><%= (settings && settings.alamat_institusi) || 'Jl. TGKH. Muhammad Zainuddin Abdul Madjid No. 132, Pancor, Kec. Selong, Kabupaten Lombok Timur, Nusa Tenggara Barat 83611' %></div>
+                    <div class="kop-contact"><%= (settings && settings.telepon_institusi) || 'Telp. (0376) 22954, Website: http://hamzanwadi.ac.id, email: universitas@hamzanwadi.ac.id' %></div>
+                </td>
+            </tr>
+        </table>
+
+        <!-- JUDUL DOKUMEN -->
+        <div class="doc-title">BERITA ACARA & REKAPITULASI HASIL PENILAIAN UJIAN</div>
+        <div class="doc-subtitle">Semester Ganjil / Genap Tahun Akademik <%= (settings && settings.tahun_akademik) || '2024/2025' %></div>
+
+        <!-- IDENTITAS UJIAN & PEJABAT -->
+        <table class="meta-table">
+            <tr>
+                <td class="meta-label">Mata Kuliah</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= matkul ? matkul.nama_mk : (ujian ? ujian.nama_mk : '-') %></td>
+                <td class="meta-label">Dosen Pengampu</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= namaDosen %></td>
+            </tr>
+            <tr>
+                <td class="meta-label">Jenis Penilaian</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= ujian ? ujian.jenis_ujian : 'UTS' %> (<%= ujian ? ujian.judul_ujian : '-' %>)</td>
+                <td class="meta-label">NIDN</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= nidnDosen %></td>
+            </tr>
+            <tr>
+                <td class="meta-label">Program Studi</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= prodi ? prodi.nama_prodi : '-' %></td>
+                <td class="meta-label">Tahun Akademik</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= (settings && settings.tahun_akademik) || '2024/2025' %></td>
+            </tr>
+            <tr>
+                <td class="meta-label">Kelas / Grup</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= typeof namaKelasDisplay !== 'undefined' ? namaKelasDisplay : (kelas ? kelas.nama_kelas : 'Semua Kelas') %></td>
+                <td class="meta-label">Tanggal Pelaksanaan</td>
+                <td class="meta-sep">:</td>
+                <td class="meta-val"><%= new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %></td>
+            </tr>
+        </table>
+
+        <!-- TABEL REKAP NILAI MAHASISWA -->
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 17%;">NIM</th>
+                    <th style="width: 38%;">Nama Lengkap Mahasiswa</th>
+                    <th style="width: 14%;">Kelas</th>
+                    <th style="width: 12%;">Nilai Akhir</th>
+                    <th style="width: 14%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (results.length === 0) { %>
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 20px; color: #64748b;">
+                            Belum ada rekapitulasi data nilai peserta pada ujian ini.
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% results.forEach(function(r, idx) { %>
+                        <tr>
+                            <td style="text-align: center;"><%= idx + 1 %></td>
+                            <td style="text-align: center; font-family: monospace; font-size: 9.5pt;"><%= r.nim %></td>
+                            <td><%= r.nama_lengkap %></td>
+                            <td style="text-align: center;"><%= r.nama_kelas %></td>
+                            <td style="text-align: center; font-weight: bold;"><%= r.nilai_total %></td>
+                            <td style="text-align: center; font-weight: 500;">
+                                <%= r.status_lulus %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
+
+        <!-- PENGESAHAN RESMI (DIVERIFIKASI OLEH PENGAWAS & DOSEN PENGAMPU) -->
+        <div class="sig-container">
+            <div class="sig-grid" style="display: flex; justify-content: space-around; gap: 30px;">
+                <!-- 1. KETUA PROGRAM STUDI (SEMBUNYI SECARA STANDAR) -->
+                <div class="sig-col" id="colSigKaprodi" style="display: none;">
+                    <p>Mengetahui,</p>
+                    <p style="font-weight: bold;">Ketua Program Studi</p>
+                    <div class="sig-space"></div>
+                    <p class="sig-name"><%= namaKaprodi %></p>
+                    <p style="font-size: 9.5pt;">NIDN. <%= nidnKaprodi %></p>
+                </div>
+
+                <!-- 2. PENGAWAS UJIAN -->
+                <div class="sig-col" id="colSigPengawas">
+                    <p>Diverifikasi Oleh,</p>
+                    <p style="font-weight: bold;">Pengawas Ujian</p>
+                    <div class="sig-space"></div>
+                    <p class="sig-name"><%= namaPengawas || 'Pengawas Ujian' %></p>
+                    <p style="font-size: 9.5pt;">NIDN. <%= nidnPengawas %></p>
+                </div>
+
+                <!-- 3. DOSEN PENGAMPU MATA KULIAH -->
+                <div class="sig-col">
+                    <p><%= (settings && settings.kota_institusi) || 'Selong' %>, <%= new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+                    <p style="font-weight: bold;">Dosen Pengampu Mata Kuliah</p>
+                    <div class="sig-space"></div>
+                    <p class="sig-name"><%= namaDosen %></p>
+                    <p style="font-size: 9.5pt;">NIDN. <%= nidnDosen %></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function ubahFilterCetak() {
+            const uId = document.getElementById('pilihUjian') ? document.getElementById('pilihUjian').value : '';
+            const kId = document.getElementById('pilihKelas') ? document.getElementById('pilihKelas').value : '';
+            window.location.href = `/admin/hasil/cetak?ujian_id=${encodeURIComponent(uId)}&kelas_id=${encodeURIComponent(kId)}`;
+        }
+
+        function toggleSig(colId, show) {
+            const el = document.getElementById(colId);
+            if (el) el.style.display = show ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>

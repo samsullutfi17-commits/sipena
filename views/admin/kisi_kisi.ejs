@@ -20,8 +20,30 @@
             flex-wrap: wrap;
         }
 
-        .btn-kisi-ai {
+        .btn-tambah-manual {
             background-color: #1e5631 !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .btn-tambah-manual:hover {
+            background-color: #143d22 !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-kisi-ai {
+            background-color: #0284c7 !important;
             color: #ffffff !important;
             border: none;
             padding: 8px 18px;
@@ -36,7 +58,7 @@
         }
 
         .btn-kisi-ai:hover {
-            background-color: #143d22 !important;
+            background-color: #0369a1 !important;
             transform: translateY(-1px);
         }
 
@@ -124,6 +146,125 @@
         .dropdown-item-cetak:hover {
             background: #f8fafc;
             color: var(--primary);
+        }
+
+        /* Searchable Custom Select for Jenis Penilaian */
+        .searchable-select-wrap {
+            position: relative;
+            flex: 1;
+            width: 100%;
+        }
+
+        .searchable-trigger {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            user-select: none;
+        }
+
+        .searchable-trigger:hover, .searchable-trigger.active {
+            border-color: #1e5631;
+            box-shadow: 0 0 0 3px rgba(30, 86, 49, 0.12);
+        }
+
+        .searchable-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            box-shadow: 0 12px 28px -4px rgba(0,0,0,0.18), 0 4px 8px -2px rgba(0,0,0,0.08);
+            z-index: 1050;
+            overflow: hidden;
+            animation: fadeInMenu 0.15s ease-out;
+        }
+
+        .searchable-dropdown.show {
+            display: block;
+        }
+
+        .searchable-search-box {
+            padding: 10px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .searchable-search-input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            font-size: 0.88rem;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            background: #ffffff;
+            transition: border-color 0.15s;
+        }
+
+        .searchable-search-input:focus {
+            border-color: #1e5631;
+        }
+
+        .searchable-search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .searchable-options-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin: 0;
+            padding: 6px 0;
+            list-style: none;
+        }
+
+        .searchable-option-item {
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: background 0.12s;
+        }
+
+        .searchable-option-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .searchable-option-item.selected {
+            background: #f0fdf4;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .searchable-empty-hint {
+            padding: 14px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            display: none;
         }
 
         /* Selector row */
@@ -278,19 +419,23 @@
                     </p>
                 </div>
 
-                <!-- 3 Action Buttons in RED BOX of Image 1 -->
+                <!-- 3 Action Buttons in RED BOX of Image 1: 1. + Tambah Soal Manual, 2. Generate Soal dari Kisi-Kisi / Generate Kisi-Kisi, 3. Cetak / Export -->
                 <div class="kisi-header-actions">
-                    <button type="button" class="btn-kisi-ai" onclick="openGenKisiModal()">
-                        <i class="fas fa-pen"></i> Generate Kisi-Kisi AI
-                    </button>
+                    <a href="/admin/soal?ujian_id=<%= selectedUjianId %>" class="btn-tambah-manual" title="Tambah Soal Manual ke Bank Soal">
+                        <i class="fas fa-plus"></i> Tambah Soal Manual
+                    </a>
 
                     <button type="button" class="btn-soal-ai" onclick="openGenSoalModal()">
                         <i class="fas fa-bolt"></i> Generate Soal dari Kisi-Kisi
                     </button>
 
+                    <button type="button" class="btn-kisi-ai" onclick="openGenKisiModal()">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Kisi-Kisi AI
+                    </button>
+
                     <div class="dropdown-cetak">
                         <button type="button" class="btn-cetak" onclick="toggleCetakMenu(event)">
-                            <i class="fas fa-print"></i> Cetak <i class="fas fa-caret-down"></i>
+                            <i class="fas fa-print"></i> Cetak / Export <i class="fas fa-caret-down"></i>
                         </button>
                         <div class="dropdown-menu-cetak" id="cetakDropdown">
                             <a href="/admin/kisi_kisi/export_pdf?ujian_id=<%= selectedUjianId %>" target="_blank" class="dropdown-item-cetak">
@@ -348,18 +493,46 @@
                 </div>
             </div>
 
-            <!-- Exam Selector matching Image 1 -->
+            <!-- Exam Selector with Searchable Custom Select -->
             <div class="kisi-selector-box">
                 <label class="kisi-selector-label">
-                    <i class="fas fa-file-alt" style="color: #1e5631;"></i> Pilih Ujian:
+                    <i class="fas fa-file-alt" style="color: #1e5631;"></i> Pilih Jenis Penilaian:
                 </label>
-                <select class="kisi-selector-select" onchange="window.location.href='/admin/kisi_kisi?ujian_id=' + this.value">
-                    <% ujianList.forEach(function(u) { %>
-                        <option value="<%= u.id %>" <%= u.id === selectedUjianId ? 'selected' : '' %>>
-                            <%= u.judul_ujian %>
-                        </option>
-                    <% }); %>
-                </select>
+                <div class="searchable-select-wrap" id="wrapPilihPenilaianKisi">
+                    <% 
+                        const activeUjianKisi = ujianList.find(u => u.id === selectedUjianId);
+                        const activeTitleKisi = activeUjianKisi ? activeUjianKisi.judul_ujian : 'Pilih Jenis Penilaian...';
+                    %>
+                    <div class="searchable-trigger" id="triggerPilihPenilaianKisi" onclick="toggleSearchablePenilaianKisi(event)">
+                        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <i class="fas fa-file-signature" style="color: #1e5631; font-size: 0.95rem;"></i>
+                            <span id="labelPilihPenilaianKisi" style="overflow: hidden; text-overflow: ellipsis;"><%= activeTitleKisi %></span>
+                        </div>
+                        <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: #64748b; transition: transform 0.2s;" id="chevronPenilaianKisi"></i>
+                    </div>
+                    <div class="searchable-dropdown" id="dropdownPilihPenilaianKisi">
+                        <div class="searchable-search-box">
+                            <i class="fas fa-search searchable-search-icon"></i>
+                            <input type="text" class="searchable-search-input" id="searchPenilaianKisiInput" placeholder="Cari jenis penilaian / ujian..." oninput="filterOptionsPenilaianKisi(this.value)" autocomplete="off">
+                        </div>
+                        <ul class="searchable-options-list" id="listPenilaianKisi">
+                            <% ujianList.forEach(function(u) { %>
+                                <li class="searchable-option-item <%= u.id === selectedUjianId ? 'selected' : '' %>" data-title="<%= (u.judul_ujian || '').toLowerCase() %>" onclick="selectPenilaianKisi(<%= u.id %>)">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas <%= u.id === selectedUjianId ? 'fa-check-circle text-success' : 'fa-circle-dot text-muted' %>" style="font-size: 0.85rem;"></i>
+                                        <span><%= u.judul_ujian %></span>
+                                    </div>
+                                    <% if (u.id === selectedUjianId) { %>
+                                        <span style="font-size: 0.72rem; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Aktif</span>
+                                    <% } %>
+                                </li>
+                            <% }); %>
+                        </ul>
+                        <div class="searchable-empty-hint" id="emptyPenilaianKisiHint">
+                            <i class="fas fa-search" style="margin-right: 4px;"></i> Jenis penilaian tidak ditemukan
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 5 Metric Summary Cards matching Image 1 (25, 100, 8, 14, 3) -->
@@ -937,6 +1110,50 @@
 
         const soalListDb = <%- JSON.stringify(soalList) %>;
 
+        // Searchable Custom Select Penilaian in Kisi-Kisi
+        function toggleSearchablePenilaianKisi(e) {
+            e.stopPropagation();
+            const dd = document.getElementById('dropdownPilihPenilaianKisi');
+            const chevron = document.getElementById('chevronPenilaianKisi');
+            const isShown = dd.classList.contains('show');
+            if (isShown) {
+                dd.classList.remove('show');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+            } else {
+                dd.classList.add('show');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+                const input = document.getElementById('searchPenilaianKisiInput');
+                if (input) {
+                    input.value = '';
+                    filterOptionsPenilaianKisi('');
+                    setTimeout(() => input.focus(), 60);
+                }
+            }
+        }
+
+        function filterOptionsPenilaianKisi(query) {
+            const q = (query || '').toLowerCase().trim();
+            const items = document.querySelectorAll('#listPenilaianKisi .searchable-option-item');
+            let matchCount = 0;
+            items.forEach(item => {
+                const title = item.getAttribute('data-title') || '';
+                if (title.includes(q)) {
+                    item.style.display = 'flex';
+                    matchCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            const emptyHint = document.getElementById('emptyPenilaianKisiHint');
+            if (emptyHint) {
+                emptyHint.style.display = matchCount === 0 ? 'block' : 'none';
+            }
+        }
+
+        function selectPenilaianKisi(ujianId) {
+            window.location.href = '/admin/kisi_kisi?ujian_id=' + ujianId;
+        }
+
         // Toggle Cetak Dropdown
         function toggleCetakMenu(e) {
             e.stopPropagation();
@@ -948,6 +1165,13 @@
             const d = document.getElementById('cetakDropdown');
             if (d && !e.target.closest('.dropdown-cetak')) {
                 d.classList.remove('show');
+            }
+            const wrap = document.getElementById('wrapPilihPenilaianKisi');
+            if (wrap && !wrap.contains(e.target)) {
+                const dd = document.getElementById('dropdownPilihPenilaianKisi');
+                const chevron = document.getElementById('chevronPenilaianKisi');
+                if (dd) dd.classList.remove('show');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
             }
         });
 

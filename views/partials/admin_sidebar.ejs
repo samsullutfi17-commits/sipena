@@ -16,6 +16,7 @@
         <a href="/admin/users" class="nav-item <%= currentPath === '/admin/users' ? 'active' : '' %>"><i class="fas fa-users"></i> Pengguna</a>
         <% } else if (adminRole === 'dosen') { %>
         <div style="padding: 12px 22px 4px 22px; font-size: 0.72rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Pengelolaan Dosen</div>
+        <a href="/admin/prodi" class="nav-item <%= currentPath === '/admin/prodi' ? 'active' : '' %>"><i class="fas fa-sitemap"></i> Program Studi</a>
         <a href="/admin/kelas" class="nav-item <%= currentPath === '/admin/kelas' ? 'active' : '' %>"><i class="fas fa-users-rectangle"></i> Kelas / Grup</a>
         <a href="/admin/matkul" class="nav-item <%= currentPath === '/admin/matkul' ? 'active' : '' %>"><i class="fas fa-book"></i> Materi</a>
         <a href="/admin/users" class="nav-item <%= currentPath === '/admin/users' ? 'active' : '' %>"><i class="fas fa-user-graduate"></i> Mahasiswa / Peserta</a>

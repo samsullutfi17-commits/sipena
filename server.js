@@ -65,10 +65,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Periodic save to keep disk persistence synced
+// Periodic save to keep disk persistence synced (every 60 seconds)
 const persistInterval = setInterval(() => {
-  try { db.save(); } catch (e) {}
-}, 10000);
+  try { db.saveLocal(); } catch (e) {}
+}, 60000);
 persistInterval.unref();
 
 // In-memory cross-request session cache (resilient to 3rd-party cookie blocking in iframes)
@@ -839,6 +839,7 @@ app.get(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
     : db.kelas;
 
   const dosenList = db.users.filter(u => u.role === 'dosen' || u.username.includes('samsul') || u.username === 'admin');
+  const pengawasList = db.users.filter(u => u.role === 'pengawas' || u.role === 'dosen' || u.role === 'admin');
   res.render('admin/ujian', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
@@ -846,6 +847,7 @@ app.get(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
     matkulList,
     kelasList,
     dosenList,
+    pengawasList,
     prodiList: db.program_studi,
     settings: db.pengaturan,
     message: req.query.msg || '',
@@ -873,6 +875,8 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
       const nidnDosen = (req.body.nidn_dosen && req.body.nidn_dosen.trim()) || (currentUser && currentUser.nidn) || db.pengaturan.nidn_dosen || '0821098902';
       const namaKaprodi = (req.body.nama_kaprodi && req.body.nama_kaprodi.trim()) || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
       const nidnKaprodi = (req.body.nidn_kaprodi && req.body.nidn_kaprodi.trim()) || db.pengaturan.nidn_kaprodi || '0812048501';
+      const namaPengawas = (req.body.nama_pengawas && req.body.nama_pengawas.trim()) || '';
+      const nipPengawas = (req.body.nip_pengawas && req.body.nip_pengawas.trim()) || '';
 
       db.ujian.push({
         id: newId,
@@ -888,6 +892,8 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
         nidn_dosen: nidnDosen,
         nama_kaprodi: namaKaprodi,
         nidn_kaprodi: nidnKaprodi,
+        nama_pengawas: namaPengawas,
+        nip_pengawas: nipPengawas,
         id_dosen: currentUser ? currentUser.id : null,
         created_at: new Date()
       });
@@ -920,6 +926,8 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
       if (req.body.nidn_dosen !== undefined) u.nidn_dosen = (req.body.nidn_dosen || '').trim() || u.nidn_dosen;
       if (req.body.nama_kaprodi !== undefined) u.nama_kaprodi = (req.body.nama_kaprodi || '').trim() || u.nama_kaprodi;
       if (req.body.nidn_kaprodi !== undefined) u.nidn_kaprodi = (req.body.nidn_kaprodi || '').trim() || u.nidn_kaprodi;
+      if (req.body.nama_pengawas !== undefined) u.nama_pengawas = (req.body.nama_pengawas || '').trim();
+      if (req.body.nip_pengawas !== undefined) u.nip_pengawas = (req.body.nip_pengawas || '').trim();
 
       if (req.body.kelas_ids !== undefined) {
         db.ujian_kelas = db.ujian_kelas.filter(uk => uk.id_ujian !== id);
@@ -1163,9 +1171,13 @@ app.get(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
     results = results.filter(r => r.nama_lengkap.toLowerCase().includes(search) || r.nim.toLowerCase().includes(search));
   }
 
-  const userKelasList = (currentUser && currentUser.role === 'dosen')
-    ? db.kelas.filter(k => isKelasOwner(k, currentUser))
-    : db.kelas;
+  let userKelasList = db.kelas;
+  if (currentUser && currentUser.role === 'dosen') {
+    const myExamIds = userExams.map(u => u.id);
+    const assignedKelasIds = db.ujian_kelas.filter(uk => myExamIds.includes(uk.id_ujian)).map(uk => uk.id_kelas);
+    userKelasList = db.kelas.filter(k => isKelasOwner(k, currentUser) || assignedKelasIds.includes(k.id));
+    if (userKelasList.length === 0) userKelasList = db.kelas;
+  }
 
   res.render('admin/hasil', {
     adminNama: req.session.admin_nama,
@@ -1235,6 +1247,179 @@ app.post(['/admin/hasil', '/admin/hasil.php'], requireAdmin, (req, res) => {
   }
 
   res.redirect('/admin/hasil');
+});
+
+// Admin Cetak Rekapitulasi Hasil & Berita Acara Ujian
+app.get(['/admin/hasil/cetak', '/admin/hasil/cetak.php'], requireAdmin, (req, res) => {
+  const currentUser = getCurrentUser(req);
+  const ujianId = parseInt(req.query.ujian_id, 10) || 0;
+  const kelasId = parseInt(req.query.kelas_id, 10) || 0;
+
+  const userExams = (currentUser && currentUser.role === 'dosen')
+    ? db.ujian.filter(u => isExamOwner(u, currentUser))
+    : db.ujian;
+
+  let userKelasList = db.kelas;
+  if (currentUser && currentUser.role === 'dosen') {
+    const myExamIds = userExams.map(u => u.id);
+    const assignedKelasIds = db.ujian_kelas.filter(uk => myExamIds.includes(uk.id_ujian)).map(uk => uk.id_kelas);
+    userKelasList = db.kelas.filter(k => isKelasOwner(k, currentUser) || assignedKelasIds.includes(k.id));
+    if (userKelasList.length === 0) userKelasList = db.kelas;
+  }
+
+  const targetUjian = userExams.find(u => u.id === ujianId) || (userExams.length > 0 ? userExams[0] : null);
+  const targetKelas = db.kelas.find(k => k.id === kelasId) || null;
+  const matkul = targetUjian ? db.mata_kuliah.find(m => m.id === targetUjian.id_mata_kuliah) : null;
+  const prodi = (targetKelas && db.program_studi.find(p => p.id === targetKelas.id_program_studi))
+    || (matkul && db.program_studi.find(p => p.id === matkul.id_program_studi))
+    || (db.program_studi.length > 0 ? db.program_studi[0] : null);
+
+  // Resolve list of students accurately based on selected class or exam
+  let results = [];
+  if (targetKelas) {
+    const studentsInKelas = db.mahasiswa.filter(m => m.id_kelas === targetKelas.id);
+    if (studentsInKelas.length > 0) {
+      results = studentsInKelas.map(mhs => {
+        const sesi = targetUjian ? db.sesi_ujian.find(s => s.id_ujian === targetUjian.id && s.id_mahasiswa === mhs.id) : null;
+        const passingGrade = (targetUjian && targetUjian.nilai_lulus) || 60;
+        return {
+          id: sesi ? sesi.id : mhs.id,
+          id_mahasiswa: mhs.id,
+          id_ujian: targetUjian ? targetUjian.id : 0,
+          nama_lengkap: mhs.nama_lengkap,
+          nim: mhs.nim,
+          id_kelas: targetKelas.id,
+          nama_kelas: targetKelas.nama_kelas,
+          judul_ujian: targetUjian ? targetUjian.judul_ujian : '-',
+          nilai_total: sesi ? (sesi.nilai_total !== undefined ? sesi.nilai_total : 0) : '-',
+          nilai_lulus: passingGrade,
+          status_lulus: sesi ? ((sesi.nilai_total || 0) >= passingGrade ? 'Lulus' : 'Tidak Lulus') : 'Belum Mengikuti'
+        };
+      });
+    } else {
+      // Fallback: search sesi_ujian matching targetKelas
+      results = db.sesi_ujian.filter(s => {
+        const m = db.mahasiswa.find(x => x.id === s.id_mahasiswa);
+        return m && m.id_kelas === targetKelas.id && (!targetUjian || s.id_ujian === targetUjian.id);
+      }).map(s => {
+        const mhs = db.mahasiswa.find(m => m.id === s.id_mahasiswa);
+        const passingGrade = (targetUjian && targetUjian.nilai_lulus) || 60;
+        return {
+          ...s,
+          nama_lengkap: mhs ? mhs.nama_lengkap : 'Peserta',
+          nim: mhs ? mhs.nim : '-',
+          id_kelas: targetKelas.id,
+          nama_kelas: targetKelas.nama_kelas,
+          judul_ujian: targetUjian ? targetUjian.judul_ujian : '-',
+          nilai_lulus: passingGrade,
+          status_lulus: (s.nilai_total || 0) >= passingGrade ? 'Lulus' : 'Tidak Lulus'
+        };
+      });
+    }
+  } else {
+    // Semua Kelas
+    let sessions = db.sesi_ujian.slice();
+    if (targetUjian) {
+      sessions = sessions.filter(s => s.id_ujian === targetUjian.id);
+    }
+    if (sessions.length > 0) {
+      results = sessions.map(s => {
+        const mhs = db.mahasiswa.find(m => m.id === s.id_mahasiswa);
+        const kelas = mhs ? db.kelas.find(k => k.id === mhs.id_kelas) : null;
+        const u = db.ujian.find(x => x.id === s.id_ujian);
+        const passingGrade = (u && u.nilai_lulus) || 60;
+        return {
+          ...s,
+          nama_lengkap: mhs ? mhs.nama_lengkap : 'Peserta',
+          nim: mhs ? mhs.nim : '-',
+          id_kelas: mhs ? mhs.id_kelas : null,
+          nama_kelas: kelas ? kelas.nama_kelas : '-',
+          judul_ujian: u ? u.judul_ujian : '-',
+          nilai_lulus: passingGrade,
+          status_lulus: (s.nilai_total || 0) >= passingGrade ? 'Lulus' : 'Tidak Lulus'
+        };
+      });
+    } else if (targetUjian) {
+      const assignedKelasIds = db.ujian_kelas.filter(uk => uk.id_ujian === targetUjian.id).map(uk => uk.id_kelas);
+      const students = db.mahasiswa.filter(m => assignedKelasIds.includes(m.id_kelas));
+      results = students.map(mhs => {
+        const kelas = db.kelas.find(k => k.id === mhs.id_kelas);
+        const passingGrade = (targetUjian && targetUjian.nilai_lulus) || 60;
+        return {
+          id: mhs.id,
+          id_mahasiswa: mhs.id,
+          id_ujian: targetUjian.id,
+          nama_lengkap: mhs.nama_lengkap,
+          nim: mhs.nim,
+          id_kelas: mhs.id_kelas,
+          nama_kelas: kelas ? kelas.nama_kelas : '-',
+          judul_ujian: targetUjian.judul_ujian,
+          nilai_total: '-',
+          nilai_lulus: passingGrade,
+          status_lulus: 'Belum Mengikuti'
+        };
+      });
+    }
+  }
+
+  // Resolve Kelas display accurately
+  let namaKelasDisplay = 'Semua Kelas';
+  if (targetKelas) {
+    namaKelasDisplay = targetKelas.nama_kelas;
+  } else if (targetUjian) {
+    const assignedKelasIds = db.ujian_kelas.filter(uk => uk.id_ujian === targetUjian.id).map(uk => uk.id_kelas);
+    const assignedClasses = db.kelas.filter(k => assignedKelasIds.includes(k.id));
+    if (assignedClasses.length > 0) {
+      namaKelasDisplay = assignedClasses.map(k => k.nama_kelas).join(', ');
+    } else if (results.length > 0) {
+      const uniqueKelas = [...new Set(results.map(r => r.nama_kelas).filter(k => k && k !== '-'))];
+      if (uniqueKelas.length > 0) namaKelasDisplay = uniqueKelas.join(', ');
+    }
+  }
+
+  const namaKaprodi = (targetUjian && targetUjian.nama_kaprodi) || (prodi && prodi.nama_kaprodi) || db.pengaturan.nama_kaprodi || 'Dr. H. M. Zain, M.Pd.';
+  let cleanNidnKaprodi = (targetUjian && targetUjian.nidn_kaprodi) || (prodi && prodi.nidn_kaprodi) || db.pengaturan.nidn_kaprodi || '0812048501';
+  if (!cleanNidnKaprodi || !/^\d+$/.test(cleanNidnKaprodi)) {
+    cleanNidnKaprodi = '0812048501';
+  }
+
+  const namaDosen = (targetUjian && targetUjian.pengampu) || (currentUser && currentUser.nama_lengkap) || db.pengaturan.nama_dosen || 'Samsul Lutfi, S.Pd., M.Pd.';
+  let cleanNidnDosen = (targetUjian && targetUjian.nidn_dosen) || (currentUser && currentUser.nidn) || db.pengaturan.nidn_dosen || '0821098902';
+  if (!cleanNidnDosen || cleanNidnDosen === 'samsullutfi' || !/^\d+$/.test(cleanNidnDosen)) {
+    cleanNidnDosen = '0821098902';
+  }
+
+  const namaPengawas = (targetUjian && targetUjian.nama_pengawas) || '';
+  let cleanNidnPengawas = (targetUjian && targetUjian.nip_pengawas) || '';
+  if (!cleanNidnPengawas && namaPengawas) {
+    const matchedUser = db.users.find(u => u.nama_lengkap === namaPengawas);
+    cleanNidnPengawas = (matchedUser && matchedUser.nidn) || '';
+  }
+  if (!cleanNidnPengawas || !/^\d+$/.test(cleanNidnPengawas)) {
+    cleanNidnPengawas = '0821098902';
+  }
+
+  res.render('admin/cetak_hasil', {
+    adminNama: req.session.admin_nama,
+    adminRole: req.session.admin_role,
+    ujian: targetUjian,
+    ujianList: userExams,
+    kelasList: userKelasList,
+    selectedUjianId: targetUjian ? targetUjian.id : 0,
+    selectedKelasId: targetKelas ? targetKelas.id : 0,
+    matkul,
+    kelas: targetKelas,
+    namaKelasDisplay,
+    prodi,
+    results,
+    namaKaprodi,
+    nidnKaprodi: cleanNidnKaprodi,
+    namaDosen,
+    nidnDosen: cleanNidnDosen,
+    namaPengawas,
+    nidnPengawas: cleanNidnPengawas,
+    settings: db.pengaturan
+  });
 });
 
 // Admin Detail Hasil
@@ -1427,6 +1612,12 @@ app.post(['/admin/api/simpan_format_cetak'], requireAdmin, (req, res) => {
     }
     if (format_cetak.nip_kiri && format_cetak.nip_kiri.trim()) {
       ujian.nidn_kaprodi = format_cetak.nip_kiri.trim();
+    }
+    if (format_cetak.nama_pengawas !== undefined) {
+      ujian.nama_pengawas = (format_cetak.nama_pengawas || '').trim();
+    }
+    if (format_cetak.nip_pengawas !== undefined) {
+      ujian.nip_pengawas = (format_cetak.nip_pengawas || '').trim();
     }
 
     // Sinkronisasi data dasar ujian bila diperbarui pada form identitas
@@ -2667,8 +2858,8 @@ app.post(['/admin/fakultas', '/admin/fakultas.php'], requireAdminOnly, (req, res
   res.redirect('/admin/fakultas?msg=' + encodeURIComponent('Data fakultas berhasil diperbarui!'));
 });
 
-// Admin Master Data: Prodi
-app.get(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
+// Admin Master Data: Prodi (Accessible by Admin and Dosen)
+app.get(['/admin/prodi', '/admin/prodi.php'], requireAdmin, (req, res) => {
   const prodis = db.program_studi.map(p => {
     const f = db.fakultas.find(fak => fak.id === p.id_fakultas);
     return {
@@ -2679,17 +2870,19 @@ app.get(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
     };
   });
 
+  const dosenList = db.users.filter(u => u.role === 'dosen' || u.username.includes('samsul') || u.username === 'admin');
   res.render('admin/prodi', {
     adminNama: req.session.admin_nama,
     adminRole: req.session.admin_role,
     prodiList: prodis,
     fakultasList: db.fakultas,
+    dosenList: dosenList,
     settings: db.pengaturan,
     message: req.query.msg || ''
   });
 });
 
-app.post(['/admin/prodi', '/admin/prodi.php'], requireAdminOnly, (req, res) => {
+app.post(['/admin/prodi', '/admin/prodi.php'], requireAdmin, (req, res) => {
   const { action, kode_prodi, nama_prodi, id_fakultas, id, nama_kaprodi, nidn_kaprodi } = req.body;
   if (action === 'create' && kode_prodi && nama_prodi) {
     const newId = db.program_studi.length ? Math.max(...db.program_studi.map(p => p.id)) + 1 : 1;
