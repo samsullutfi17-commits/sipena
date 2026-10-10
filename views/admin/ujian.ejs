@@ -120,10 +120,26 @@
         <%- include('../partials/admin_sidebar', { currentPath: '/admin/ujian', adminRole: adminRole }) %>
 
         <main class="admin-main">
-            <nav class="breadcrumb" style="margin-bottom: 14px;">
+            <nav class="breadcrumb" style="margin-bottom: 12px;">
                 <a href="/admin/dashboard">Beranda</a> &raquo;
                 <span>Penilaian</span>
             </nav>
+
+            <!-- TAB NAVIGASI ELEGAN: PENILAIAN, BANK SOAL, KISI-KISI -->
+            <div class="nav-tabs-wrapper">
+                <a href="/admin/ujian" class="nav-tab-pill active">
+                    <i class="fas fa-file-lines"></i>
+                    <span>Daftar Penilaian</span>
+                </a>
+                <a href="/admin/soal" class="nav-tab-pill">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Bank Soal</span>
+                </a>
+                <a href="/admin/kisi_kisi" class="nav-tab-pill">
+                    <i class="fas fa-table-cells"></i>
+                    <span>Matriks Kisi-Kisi</span>
+                </a>
+            </div>
 
             <div class="page-header-row">
                 <div>

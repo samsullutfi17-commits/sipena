@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exported_at": "2026-10-10T12:54:06.695Z",
+  "exported_at": "2026-10-10T12:53:51.409Z",
   "users": [
     {
       "id": 5,
@@ -5069,8 +5069,7 @@
       "semester": 5,
       "id_program_studi": 12,
       "id_dosen": 6,
-      "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 2,
@@ -5079,8 +5078,7 @@
       "semester": 1,
       "id_program_studi": 11,
       "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 3,
@@ -5089,8 +5087,7 @@
       "semester": 3,
       "id_program_studi": 2,
       "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 4,
@@ -5099,8 +5096,7 @@
       "semester": 5,
       "id_program_studi": 6,
       "id_dosen": null,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 5,
@@ -5109,8 +5105,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 6,
@@ -5119,8 +5114,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 7,
@@ -5129,8 +5123,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 8,
@@ -5139,8 +5132,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 9,
@@ -5149,8 +5141,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 10,
@@ -5159,8 +5150,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 11,
@@ -5169,8 +5159,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     },
     {
       "id": 12,
@@ -5179,8 +5168,7 @@
       "semester": 1,
       "id_program_studi": 1,
       "id_dosen": 5,
-      "created_by": "admin",
-      "id_prodi": null
+      "created_by": "admin"
     }
   ],
   "mata_kuliah": [
@@ -5190,8 +5178,7 @@
       "nama_mk": "Etika Profesi",
       "sks": 2,
       "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 2,
@@ -5199,8 +5186,7 @@
       "nama_mk": "Pemrograman Berorientasi Objek",
       "sks": 3,
       "id_dosen": 6,
-      "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 3,
@@ -5208,8 +5194,7 @@
       "nama_mk": "Basis Data",
       "sks": 3,
       "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 4,
@@ -5217,8 +5202,7 @@
       "nama_mk": "Jaringan Komputer",
       "sks": 3,
       "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "created_by": "Dr. Budi Santoso, M.Kom"
     },
     {
       "id": 5,
@@ -5226,8 +5210,7 @@
       "nama_mk": "Sistem Informasi",
       "sks": 3,
       "id_dosen": 1,
-      "created_by": "Pengajar",
-      "id_prodi": null
+      "created_by": "Pengajar"
     },
     {
       "id": 6,
@@ -5235,8 +5218,7 @@
       "nama_mk": "Pengembangan Media Pembelajaran",
       "sks": 3,
       "id_dosen": 6,
-      "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     },
     {
       "id": 7,
@@ -5244,8 +5226,7 @@
       "nama_mk": "Pemrograman Terstruktur",
       "sks": 3,
       "id_dosen": 6,
-      "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
+      "created_by": "Samsul Lutfi, S.Pd., M.Pd"
     }
   ],
   "mata_kuliah_kelas": [

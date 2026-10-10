@@ -188,15 +188,51 @@
                             <strong style="color: #0f172a; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
                                 <i class="fas fa-file-arrow-up" style="color: #16a34a;"></i> Pulihkan Data dari Cadangan (.json)
                             </strong>
-                            <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 14px; line-height: 1.45;">
+                            <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 12px; line-height: 1.45;">
                                 Unggah berkas JSON cadangan yang pernah Anda unduh untuk memulihkan seluruh data dan pengaturan secara langsung.
                             </p>
                         </div>
-                        <form method="POST" action="/admin/pengaturan/restore" enctype="multipart/form-data" onsubmit="return confirm('Peringatan: Seluruh data saat ini akan ditimpa dengan data dari berkas cadangan JSON. Lanjutkan pemulihan?')">
-                            <div style="display: flex; gap: 8px;">
-                                <input type="file" name="backup_file" accept=".json" required style="font-size: 0.8rem; padding: 6px; border: 1px solid #cbd5e1; border-radius: 6px; background: white; flex: 1;">
-                                <button type="submit" class="btn" style="background: #16a34a; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; font-size: 0.82rem; cursor: pointer; white-space: nowrap;">
-                                    <i class="fas fa-upload"></i> Pulihkan
+
+                        <!-- Area Unggah & Pulihkan Cadangan -->
+                        <form id="formRestoreBackup" method="POST" action="/admin/pengaturan/restore" enctype="multipart/form-data" onsubmit="event.preventDefault(); handleRestoreSubmit();">
+                            <input type="file" id="inputBackupFile" name="backup_file" accept=".json,application/json" style="display: none;" onchange="onBackupFileSelected(this)">
+                            
+                            <!-- Dropzone Interaktif -->
+                            <div id="dropZoneBackup" onclick="document.getElementById('inputBackupFile').click()" style="border: 2px dashed #cbd5e1; border-radius: 9px; padding: 14px; background: #ffffff; text-align: center; cursor: pointer; transition: all 0.2s ease; margin-bottom: 12px;">
+                                <div id="dropZoneDefault">
+                                    <i class="fas fa-cloud-arrow-up" style="font-size: 1.6rem; color: #16a34a; margin-bottom: 6px;"></i>
+                                    <div style="font-size: 0.84rem; font-weight: 600; color: #1e293b;">Pilih atau Tarik Berkas Cadangan (.json)</div>
+                                    <div style="font-size: 0.74rem; color: #64748b; margin-top: 2px;">Klik untuk memilih file cadangan JSON dari perangkat Anda</div>
+                                </div>
+                                <div id="dropZoneSelected" style="display: none;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left;">
+                                        <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1;">
+                                            <div style="width: 38px; height: 38px; border-radius: 8px; background: #dcfce7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                                <i class="fas fa-file-code" style="font-size: 1.25rem; color: #16a34a;"></i>
+                                            </div>
+                                            <div style="overflow: hidden; flex: 1;">
+                                                <div id="selectedFileName" style="font-size: 0.84rem; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">backup.json</div>
+                                                <div id="selectedFileSize" style="font-size: 0.74rem; color: #64748b;">0 KB</div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 6px;">
+                                            <span style="background: #dcfce7; color: #15803d; font-size: 0.72rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; border: 1px solid #86efac;">
+                                                <i class="fas fa-circle-check"></i> Siap
+                                            </span>
+                                            <button type="button" onclick="event.stopPropagation(); resetSelectedBackupFile();" title="Ganti berkas" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #64748b; border-radius: 6px; padding: 4px 7px; cursor: pointer; font-size: 0.75rem;">
+                                                <i class="fas fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button type="button" id="btnPulihkanCadangan" onclick="handleRestoreSubmit()" class="btn" style="background: #16a34a; color: white; border: none; padding: 10px 16px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); transition: background 0.15s ease;">
+                                    <i class="fas fa-upload"></i> Pulihkan Data dari Berkas
+                                </button>
+                                <button type="button" onclick="openRestoreMasterConfirm()" class="btn" title="Kembalikan data ke cadangan master bawaan sistem" style="background: #ffffff; color: #475569; border: 1px solid #cbd5e1; padding: 10px 12px; border-radius: 7px; font-weight: 600; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-rotate-left" style="color: #ca8a04;"></i> Master Baku
                                 </button>
                             </div>
                         </form>
@@ -213,15 +249,504 @@
                             Menyimpan seluruh data aktif saat ini (Nama Kaprodi, akun dosen/mahasiswa, bank soal) sebagai data dasar sistem. Jika server mengalami restart atau tanpa koneksi eksternal sekalipun, sistem akan selalu menggunakan data ini sebagai data awal resmi.
                         </p>
                     </div>
-                    <form method="POST" action="/admin/pengaturan/set_default_master" onsubmit="return confirm('Tetapkan seluruh data aktif saat ini sebagai data master bawaan sistem?')">
-                        <button type="submit" class="btn" style="background: #ca8a04; color: white; border: none; padding: 10px 18px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                    <div>
+                        <button type="button" onclick="openSetDefaultMasterConfirm()" class="btn" style="background: #ca8a04; color: white; border: none; padding: 10px 18px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
                             <i class="fas fa-bookmark"></i> Jadikan Master Baku
                         </button>
-                    </form>
+                    </div>
                 </div>
             </div>
 
+            <!-- ========================================== -->
+            <!-- MODAL 1: KONFIRMASI PEMULIHAN BERKAS CADANGAN -->
+            <!-- ========================================== -->
+            <div id="modalRestoreFileConfirm" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); z-index: 99998; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px);">
+                <div style="background: #ffffff; border-radius: 14px; max-width: 480px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden; animation: popIn 0.2s ease-out;">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: #fef3c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-triangle-exclamation" style="color: #d97706; font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; color: #0f172a; font-size: 1.05rem; font-weight: 700;">Konfirmasi Pemulihan Database</h3>
+                            <p style="margin: 2px 0 0; font-size: 0.8rem; color: #64748b;">Pastikan berkas cadangan sesuai dengan data SIPENA</p>
+                        </div>
+                    </div>
+                    <div style="padding: 20px 24px;">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                            <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Berkas Cadangan Terpilih:</div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-file-code" style="color: #16a34a; font-size: 1.2rem;"></i>
+                                <div style="overflow: hidden;">
+                                    <div id="confirmRestoreFileName" style="font-weight: 700; color: #0f172a; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">filename.json</div>
+                                    <div id="confirmRestoreFileSize" style="font-size: 0.76rem; color: #64748b;">0 KB</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background: #fff7ed; border-left: 4px solid #ea580c; padding: 12px 14px; border-radius: 0 8px 8px 0; margin-bottom: 8px;">
+                            <p style="margin: 0; font-size: 0.82rem; color: #9a3412; line-height: 1.45;">
+                                <strong>Peringatan Penting:</strong> Seluruh data aktif (penilaian, butir soal, pengguna, dan pengaturan) akan ditimpa dan disinkronkan sesuai data di dalam berkas cadangan ini.
+                            </p>
+                        </div>
+                    </div>
+                    <div style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" onclick="closeRestoreModal('modalRestoreFileConfirm')" class="btn" style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 9px 18px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                            Batal
+                        </button>
+                        <button type="button" id="btnExecuteFileRestore" onclick="executeFileRestore()" class="btn" style="background: #16a34a; border: none; color: white; padding: 9px 20px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <i class="fas fa-upload"></i> Ya, Pulihkan Sekarang
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- MODAL 2: KONFIRMASI PULIHKAN MASTER BAKU -->
+            <!-- ========================================== -->
+            <div id="modalRestoreMasterConfirm" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); z-index: 99998; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px);">
+                <div style="background: #ffffff; border-radius: 14px; max-width: 460px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden; animation: popIn 0.2s ease-out;">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: #fefce8; border: 1px solid #fef08a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-rotate-left" style="color: #ca8a04; font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; color: #0f172a; font-size: 1.05rem; font-weight: 700;">Pulihkan Cadangan Master Baku</h3>
+                            <p style="margin: 2px 0 0; font-size: 0.8rem; color: #64748b;">Kembalikan ke data bawaan resmi sistem</p>
+                        </div>
+                    </div>
+                    <div style="padding: 20px 24px;">
+                        <p style="font-size: 0.86rem; color: #334155; margin: 0 0 12px; line-height: 1.5;">
+                            Apakah Anda yakin ingin memulihkan seluruh data sistem ke <strong>Cadangan Master Baku</strong> yang tersimpan di sistem?
+                        </p>
+                        <div style="background: #f8fafc; border-left: 4px solid #ca8a04; padding: 10px 14px; border-radius: 0 8px 8px 0;">
+                            <p style="margin: 0; font-size: 0.8rem; color: #854d0e; line-height: 1.4;">
+                                Seluruh bank soal, kelas, dan akun bawaan akan dimuat ulang ke keadaan master baku yang pernah ditetapkan.
+                            </p>
+                        </div>
+                    </div>
+                    <div style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" onclick="closeRestoreModal('modalRestoreMasterConfirm')" class="btn" style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 9px 18px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                            Batal
+                        </button>
+                        <button type="button" id="btnExecuteMasterRestore" onclick="executeMasterRestore()" class="btn" style="background: #ca8a04; border: none; color: white; padding: 9px 20px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-rotate-left"></i> Ya, Pulihkan Master
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- MODAL 3: KONFIRMASI TETAPKAN MASTER BAKU -->
+            <!-- ========================================== -->
+            <div id="modalSetMasterConfirm" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); z-index: 99998; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px);">
+                <div style="background: #ffffff; border-radius: 14px; max-width: 460px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; overflow: hidden; animation: popIn 0.2s ease-out;">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 10px; background: #fefce8; border: 1px solid #fef08a; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fas fa-bookmark" style="color: #ca8a04; font-size: 1.25rem;"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; color: #0f172a; font-size: 1.05rem; font-weight: 700;">Tetapkan Master Baku Sistem</h3>
+                            <p style="margin: 2px 0 0; font-size: 0.8rem; color: #64748b;">Simpan keadaan saat ini sebagai basis sistem</p>
+                        </div>
+                    </div>
+                    <div style="padding: 20px 24px;">
+                        <p style="font-size: 0.86rem; color: #334155; margin: 0 0 12px; line-height: 1.5;">
+                            Seluruh data aktif saat ini (data prodi, dosen, mahasiswa, ujian, dan bank soal) akan disimpan sebagai berkas <strong>Master Baku</strong> sistem.
+                        </p>
+                    </div>
+                    <div style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" onclick="closeRestoreModal('modalSetMasterConfirm')" class="btn" style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 9px 18px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+                            Batal
+                        </button>
+                        <button type="button" onclick="executeSetMaster()" class="btn" style="background: #ca8a04; border: none; color: white; padding: 9px 20px; border-radius: 7px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-check"></i> Ya, Tetapkan Master
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- MODAL 4: NOTIFIKASI LAYAR STATUS PEMULIHAN (POPUP UTAMA) -->
+            <!-- ======================================================== -->
+            <div id="modalRestoreStatus" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 99999; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px);">
+                <div style="background: #ffffff; border-radius: 16px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid #e2e8f0; overflow: hidden; animation: popIn 0.25s ease-out; text-align: center;">
+                    
+                    <!-- STATE A: SEDANG MEMPROSES (LOADING) -->
+                    <div id="statusStateLoading" style="display: none; padding: 36px 28px;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: #e0f2fe; margin: 0 auto 18px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2.4rem; color: #0284c7;"></i>
+                        </div>
+                        <h3 style="margin: 0 0 8px; color: #0f172a; font-size: 1.25rem; font-weight: 700;">Sedang Memulihkan Database...</h3>
+                        <p id="statusLoadingDesc" style="margin: 0 0 20px; font-size: 0.86rem; color: #64748b; line-height: 1.5;">
+                            Membaca berkas cadangan JSON, memvalidasi struktur data, dan memperbarui basis data lokal sistem. Mohon jangan menutup halaman ini...
+                        </p>
+                        <div style="height: 6px; background: #f1f5f9; border-radius: 9999px; overflow: hidden; max-width: 320px; margin: 0 auto;">
+                            <div style="height: 100%; background: #0284c7; width: 60%; border-radius: 9999px; animation: pulse 1.2s infinite ease-in-out;"></div>
+                        </div>
+                    </div>
+
+                    <!-- STATE B: BERHASIL (SUCCESS) -->
+                    <div id="statusStateSuccess" style="display: none; padding: 32px 28px;">
+                        <div style="width: 76px; height: 76px; border-radius: 50%; background: #dcfce7; border: 3px solid #86efac; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(22, 163, 74, 0.2);">
+                            <i class="fas fa-circle-check" style="font-size: 2.8rem; color: #16a34a;"></i>
+                        </div>
+                        <h3 style="margin: 0 0 6px; color: #15803d; font-size: 1.35rem; font-weight: 800;">Pemulihan Database Berhasil!</h3>
+                        <p id="statusSuccessMsg" style="margin: 0 0 18px; font-size: 0.88rem; color: #334155; line-height: 1.5;">
+                            Seluruh data dari berkas cadangan telah sukses dimuat dan disimpan ke penyimpanan sistem SIPENA.
+                        </p>
+
+                        <!-- Ringkasan Statistik Data -->
+                        <div id="statusSuccessSummary" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; text-align: left;">
+                            <div style="font-size: 0.76rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+                                <i class="fas fa-list-check" style="color: #16a34a;"></i> Rincian Entitas yang Dipulihkan:
+                            </div>
+                            <div id="summaryBadgeContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <!-- Badges injected via JS -->
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button type="button" onclick="window.location.href='/admin/pengaturan'" class="btn" style="background: #16a34a; color: white; border: none; padding: 11px 24px; border-radius: 8px; font-weight: 700; font-size: 0.88rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.3);">
+                                <i class="fas fa-arrows-rotate"></i> Selesai & Muat Ulang Halaman
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STATE C: GAGAL (ERROR) -->
+                    <div id="statusStateError" style="display: none; padding: 32px 28px;">
+                        <div style="width: 76px; height: 76px; border-radius: 50%; background: #fee2e2; border: 3px solid #fca5a5; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.2);">
+                            <i class="fas fa-circle-xmark" style="font-size: 2.8rem; color: #dc2626;"></i>
+                        </div>
+                        <h3 style="margin: 0 0 6px; color: #b91c1c; font-size: 1.35rem; font-weight: 800;">Pemulihan Database Gagal</h3>
+                        <p id="statusErrorMsg" style="margin: 0 0 18px; font-size: 0.88rem; color: #475569; line-height: 1.5;">
+                            Terjadi kesalahan saat memproses berkas cadangan.
+                        </p>
+
+                        <div style="background: #fff5f5; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; text-align: left;">
+                            <div style="font-size: 0.8rem; font-weight: 700; color: #991b1b; margin-bottom: 6px;">
+                                <i class="fas fa-circle-info"></i> Petunjuk Solusi:
+                            </div>
+                            <ul style="margin: 0; padding-left: 18px; font-size: 0.78rem; color: #7f1d1d; line-height: 1.5;">
+                                <li>Pastikan berkas yang diunggah adalah file berekstensi <strong>.json</strong>.</li>
+                                <li>Gunakan berkas cadangan resmi yang diunduh dari menu <strong>Unduh Cadangan Lengkap</strong>.</li>
+                                <li>Periksa apakah berkas tidak rusak atau kosong.</li>
+                            </ul>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button type="button" onclick="closeRestoreModal('modalRestoreStatus')" class="btn" style="background: #64748b; color: white; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: 0.86rem; cursor: pointer;">
+                                <i class="fas fa-xmark"></i> Tutup & Coba Lagi
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <style>
+                @keyframes popIn {
+                    0% { transform: scale(0.92); opacity: 0; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                .summary-item-card {
+                    background: #ffffff;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    padding: 8px 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 0.82rem;
+                }
+            </style>
+
             <script>
+                // Drag & Drop and File Selection Handling
+                const dropZone = document.getElementById('dropZoneBackup');
+                const inputBackup = document.getElementById('inputBackupFile');
+                let currentSelectedFile = null;
+
+                if (dropZone) {
+                    ['dragenter', 'dragover'].forEach(eventName => {
+                        dropZone.addEventListener(eventName, (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dropZone.style.borderColor = '#16a34a';
+                            dropZone.style.background = '#f0fdf4';
+                        }, false);
+                    });
+
+                    ['dragleave', 'drop'].forEach(eventName => {
+                        dropZone.addEventListener(eventName, (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dropZone.style.borderColor = '#cbd5e1';
+                            dropZone.style.background = '#ffffff';
+                        }, false);
+                    });
+
+                    dropZone.addEventListener('drop', (e) => {
+                        const dt = e.dataTransfer;
+                        if (dt && dt.files && dt.files.length > 0) {
+                            inputBackup.files = dt.files;
+                            onBackupFileSelected(inputBackup);
+                        }
+                    }, false);
+                }
+
+                function formatBytes(bytes, decimals = 1) {
+                    if (!bytes || bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const dm = decimals < 0 ? 0 : decimals;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+                }
+
+                function onBackupFileSelected(input) {
+                    const file = input.files && input.files[0];
+                    if (!file) {
+                        resetSelectedBackupFile();
+                        return;
+                    }
+
+                    if (!file.name.toLowerCase().endsWith('.json') && file.type !== 'application/json') {
+                        showRestoreStatusError('Berkas yang dipilih bukan berkas JSON (.json). Harap pilih file cadangan SIPENA yang valid.');
+                        resetSelectedBackupFile();
+                        return;
+                    }
+
+                    currentSelectedFile = file;
+                    document.getElementById('dropZoneDefault').style.display = 'none';
+                    document.getElementById('dropZoneSelected').style.display = 'block';
+                    document.getElementById('selectedFileName').textContent = file.name;
+                    document.getElementById('selectedFileSize').textContent = formatBytes(file.size);
+                }
+
+                function resetSelectedBackupFile() {
+                    currentSelectedFile = null;
+                    if (inputBackup) inputBackup.value = '';
+                    document.getElementById('dropZoneDefault').style.display = 'block';
+                    document.getElementById('dropZoneSelected').style.display = 'none';
+                }
+
+                function handleRestoreSubmit() {
+                    if (!currentSelectedFile && (!inputBackup.files || !inputBackup.files[0])) {
+                        // Prompt user to select file
+                        inputBackup.click();
+                        return;
+                    }
+
+                    const file = currentSelectedFile || inputBackup.files[0];
+                    document.getElementById('confirmRestoreFileName').textContent = file.name;
+                    document.getElementById('confirmRestoreFileSize').textContent = formatBytes(file.size);
+                    openRestoreModal('modalRestoreFileConfirm');
+                }
+
+                function openRestoreModal(modalId) {
+                    const el = document.getElementById(modalId);
+                    if (el) {
+                        el.style.display = 'flex';
+                    }
+                }
+
+                function closeRestoreModal(modalId) {
+                    const el = document.getElementById(modalId);
+                    if (el) {
+                        el.style.display = 'none';
+                    }
+                }
+
+                function openRestoreMasterConfirm() {
+                    openRestoreModal('modalRestoreMasterConfirm');
+                }
+
+                function openSetDefaultMasterConfirm() {
+                    openRestoreModal('modalSetMasterConfirm');
+                }
+
+                function showRestoreStatusLoading(msg) {
+                    document.getElementById('statusStateLoading').style.display = 'block';
+                    document.getElementById('statusStateSuccess').style.display = 'none';
+                    document.getElementById('statusStateError').style.display = 'none';
+                    if (msg) {
+                        document.getElementById('statusLoadingDesc').textContent = msg;
+                    }
+                    openRestoreModal('modalRestoreStatus');
+                }
+
+                function showRestoreStatusSuccess(message, summary) {
+                    document.getElementById('statusStateLoading').style.display = 'none';
+                    document.getElementById('statusStateError').style.display = 'none';
+                    document.getElementById('statusStateSuccess').style.display = 'block';
+                    
+                    document.getElementById('statusSuccessMsg').textContent = message || 'Database berhasil dipulihkan secara penuh!';
+
+                    const container = document.getElementById('summaryBadgeContainer');
+                    container.innerHTML = '';
+
+                    const items = [
+                        { label: 'Penilaian / Ujian', icon: 'fa-book-bookmark', color: '#0284c7', count: summary?.ujian },
+                        { label: 'Butir Soal & Opsi', icon: 'fa-list-ol', color: '#16a34a', count: summary?.soal },
+                        { label: 'Akun Pengguna', icon: 'fa-users', color: '#ca8a04', count: summary?.users },
+                        { label: 'Data Mahasiswa', icon: 'fa-user-graduate', color: '#9333ea', count: summary?.mahasiswa },
+                        { label: 'Kelas Perkuliahan', icon: 'fa-chalkboard-user', color: '#2563eb', count: summary?.kelas },
+                        { label: 'Program Studi', icon: 'fa-graduation-cap', color: '#0d9488', count: summary?.program_studi }
+                    ];
+
+                    let renderedCount = 0;
+                    items.forEach(item => {
+                        if (item.count !== undefined && item.count !== null && item.count > 0) {
+                            renderedCount++;
+                            const div = document.createElement('div');
+                            div.className = 'summary-item-card';
+                            div.innerHTML = `
+                                <i class="fas ${item.icon}" style="color: ${item.color}; font-size: 1rem; width: 18px; text-align: center;"></i>
+                                <div style="overflow: hidden; flex: 1;">
+                                    <div style="font-weight: 700; color: #0f172a; font-size: 0.85rem;">${item.count} Data</div>
+                                    <div style="font-size: 0.72rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.label}</div>
+                                </div>
+                            `;
+                            container.appendChild(div);
+                        }
+                    });
+
+                    if (renderedCount === 0) {
+                        container.innerHTML = `
+                            <div style="grid-column: span 2; text-align: center; color: #15803d; font-size: 0.82rem; padding: 6px;">
+                                <i class="fas fa-check-circle"></i> Seluruh pengaturan sistem dan konfigurasi telah sukses diperbarui.
+                            </div>
+                        `;
+                    }
+
+                    openRestoreModal('modalRestoreStatus');
+                }
+
+                function showRestoreStatusError(errMsg) {
+                    document.getElementById('statusStateLoading').style.display = 'none';
+                    document.getElementById('statusStateSuccess').style.display = 'none';
+                    document.getElementById('statusStateError').style.display = 'block';
+                    
+                    document.getElementById('statusErrorMsg').textContent = errMsg || 'Terjadi kegagalan saat memulihkan database.';
+                    openRestoreModal('modalRestoreStatus');
+                }
+
+                async function executeFileRestore() {
+                    closeRestoreModal('modalRestoreFileConfirm');
+                    const file = currentSelectedFile || (inputBackup.files && inputBackup.files[0]);
+                    if (!file) {
+                        showRestoreStatusError('Tidak ada berkas yang dipilih.');
+                        return;
+                    }
+
+                    showRestoreStatusLoading('Membaca berkas "' + file.name + '" (' + formatBytes(file.size) + ')...');
+
+                    // Step 1: Pre-validate JSON on client
+                    try {
+                        const fileText = await file.text();
+                        let parsedJson;
+                        try {
+                            parsedJson = JSON.parse(fileText);
+                        } catch (parseErr) {
+                            showRestoreStatusError('Format berkas tidak valid: Berkas bukan JSON yang valid (' + parseErr.message + ').');
+                            return;
+                        }
+
+                        // Step 2: Upload to server via FormData or JSON
+                        showRestoreStatusLoading('Mengirim data ke server dan memulihkan seluruh tabel SIPENA...');
+                        
+                        const formData = new FormData();
+                        formData.append('backup_file', file);
+                        formData.append('is_ajax', '1');
+
+                        const res = await fetch('/admin/pengaturan/restore', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const data = await res.json().catch(() => null);
+
+                        if (res.ok && data && data.success) {
+                            showRestoreStatusSuccess(data.message, data.summary);
+                            resetSelectedBackupFile();
+                        } else {
+                            const errMessage = (data && data.message) ? data.message : ('Server error: Status HTTP ' + res.status);
+                            showRestoreStatusError(errMessage);
+                        }
+                    } catch (err) {
+                        showRestoreStatusError('Terjadi kesalahan koneksi atau jaringan: ' + err.message);
+                    }
+                }
+
+                async function executeMasterRestore() {
+                    closeRestoreModal('modalRestoreMasterConfirm');
+                    showRestoreStatusLoading('Mengembalikan seluruh data ke Cadangan Master Baku Sistem...');
+
+                    try {
+                        const res = await fetch('/admin/pengaturan/restore_master', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ is_ajax: 1 })
+                        });
+
+                        const data = await res.json().catch(() => null);
+
+                        if (res.ok && data && data.success) {
+                            showRestoreStatusSuccess(data.message, data.summary);
+                        } else {
+                            const errMessage = (data && data.message) ? data.message : ('Gagal memulihkan cadangan master: HTTP ' + res.status);
+                            showRestoreStatusError(errMessage);
+                        }
+                    } catch (err) {
+                        showRestoreStatusError('Kesalahan jaringan saat memulihkan master: ' + err.message);
+                    }
+                }
+
+                async function executeSetMaster() {
+                    closeRestoreModal('modalSetMasterConfirm');
+                    showRestoreStatusLoading('Menyimpan seluruh data aktif saat ini sebagai Master Baku Sistem...');
+
+                    try {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = '/admin/pengaturan/set_default_master';
+                        document.body.appendChild(form);
+                        form.submit();
+                    } catch (err) {
+                        showRestoreStatusError('Gagal menetapkan master: ' + err.message);
+                    }
+                }
+
+                // Check on page load for flash messages in URL query or server variables
+                window.addEventListener('DOMContentLoaded', () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const msgQuery = urlParams.get('msg');
+                    const errQuery = urlParams.get('err');
+                    const alertSuccess = document.querySelector('.alert-success');
+                    const alertDanger = document.querySelector('.alert-danger');
+
+                    const msg = msgQuery ? decodeURIComponent(msgQuery) : (alertSuccess ? alertSuccess.textContent.trim() : '');
+                    const err = errQuery ? decodeURIComponent(errQuery) : (alertDanger ? alertDanger.textContent.trim() : '');
+
+                    if (msg && (msg.includes('dipulihkan') || msg.includes('Master Baku') || msg.includes('Database') || msgQuery)) {
+                        showRestoreStatusSuccess(msg);
+                        if (window.history && window.history.replaceState && (msgQuery || errQuery)) {
+                            window.history.replaceState(null, '', window.location.pathname);
+                        }
+                    } else if (err && (err.includes('cadangan') || err.includes('memulihkan') || err.includes('JSON') || errQuery)) {
+                        showRestoreStatusError(err);
+                        if (window.history && window.history.replaceState && (msgQuery || errQuery)) {
+                            window.history.replaceState(null, '', window.location.pathname);
+                        }
+                    }
+                });
+
+                // Logo Upload Handler
                 async function handleSettingLogoUpload(event) {
                     const file = event.target.files[0];
                     if (!file) return;

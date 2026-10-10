@@ -20,85 +20,48 @@
             flex-wrap: wrap;
         }
 
-        .btn-tambah-manual {
-            background-color: #1e5631 !important;
-            color: #ffffff !important;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .btn-tambah-manual:hover {
-            background-color: #143d22 !important;
-            color: #ffffff !important;
-            transform: translateY(-1px);
-        }
-
         .btn-kisi-ai {
-            background-color: #0284c7 !important;
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
             color: #ffffff !important;
             border: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-weight: 500;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+            font-size: 0.9rem;
         }
 
         .btn-kisi-ai:hover {
-            background-color: #0369a1 !important;
+            background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
             transform: translateY(-1px);
-        }
-
-        .btn-soal-ai {
-            background-color: #f59e0b !important;
-            color: #ffffff !important;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .btn-soal-ai:hover {
-            background-color: #d97706 !important;
-            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.35);
         }
 
         .btn-cetak {
-            background-color: #64748b !important;
-            color: #ffffff !important;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            font-weight: 500;
+            background-color: #ffffff !important;
+            color: #334155 !important;
+            border: 1px solid #cbd5e1 !important;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
         }
 
         .btn-cetak:hover {
-            background-color: #475569 !important;
+            background-color: #f8fafc !important;
+            border-color: #94a3b8 !important;
+            color: #0f172a !important;
             transform: translateY(-1px);
         }
 
@@ -403,39 +366,48 @@
         <%- include('../partials/admin_sidebar', { currentPath: '/admin/kisi_kisi', adminRole: adminRole }) %>
 
         <main class="admin-main">
-            <nav class="breadcrumb">
+            <nav class="breadcrumb" style="margin-bottom: 12px;">
                 <a href="/admin/dashboard">Beranda</a> &raquo;
+                <a href="/admin/ujian">Penilaian</a> &raquo;
                 <span>Kisi-Kisi</span>
             </nav>
 
-            <!-- Top Row matching Image 1 -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 14px;">
+            <!-- TAB NAVIGASI ELEGAN: PENILAIAN, BANK SOAL, KISI-KISI -->
+            <div class="nav-tabs-wrapper">
+                <a href="/admin/ujian" class="nav-tab-pill">
+                    <i class="fas fa-file-lines"></i>
+                    <span>Daftar Penilaian</span>
+                </a>
+                <a href="/admin/soal?ujian_id=<%= selectedUjianId %>" class="nav-tab-pill">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Bank Soal</span>
+                </a>
+                <a href="/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>" class="nav-tab-pill active">
+                    <i class="fas fa-table-cells"></i>
+                    <span>Matriks Kisi-Kisi</span>
+                </a>
+            </div>
+
+            <!-- Top Row: Judul Halaman & Action Buttons -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; flex-wrap: wrap; gap: 14px;">
                 <div>
                     <h2 style="margin: 0; display: flex; align-items: center; gap: 10px; color: #1e293b;">
-                        <i class="fas fa-table" style="color: #1e5631;"></i> Kisi-Kisi Soal
+                        <i class="fas fa-table-cells" style="color: #1e5631;"></i> Matriks Kisi-Kisi Soal
                     </h2>
                     <p style="color: #64748b; margin: 4px 0 0 0; font-size: 0.95rem;">
-                        Buat atau tampilkan kisi-kisi berdasarkan ujian
+                        Pemetaan Capaian Pembelajaran (CPMK), indikator butir soal, level kognitif Bloom, dan distribusi evaluasi.
                     </p>
                 </div>
 
-                <!-- 3 Action Buttons in RED BOX of Image 1: 1. + Tambah Soal Manual, 2. Generate Soal dari Kisi-Kisi / Generate Kisi-Kisi, 3. Cetak / Export -->
+                <!-- Action Buttons: 1. Generate Kisi-Kisi & Soal AI (Terpadu), 2. Cetak / Export -->
                 <div class="kisi-header-actions">
-                    <a href="/admin/soal?ujian_id=<%= selectedUjianId %>" class="btn-tambah-manual" title="Tambah Soal Manual ke Bank Soal">
-                        <i class="fas fa-plus"></i> Tambah Soal Manual
-                    </a>
-
-                    <button type="button" class="btn-soal-ai" onclick="openGenSoalModal()">
-                        <i class="fas fa-bolt"></i> Generate Soal dari Kisi-Kisi
-                    </button>
-
-                    <button type="button" class="btn-kisi-ai" onclick="openGenKisiModal()">
-                        <i class="fas fa-wand-magic-sparkles"></i> Generate Kisi-Kisi AI
+                    <button type="button" class="btn-kisi-ai" onclick="openGenKisiModal()" title="Generate matriks kisi-kisi dan naskah butir soal lengkap menggunakan AI">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Kisi-Kisi &amp; Soal AI
                     </button>
 
                     <div class="dropdown-cetak">
                         <button type="button" class="btn-cetak" onclick="toggleCetakMenu(event)">
-                            <i class="fas fa-print"></i> Cetak / Export <i class="fas fa-caret-down"></i>
+                            <i class="fas fa-print" style="color: #1b4d3e;"></i> Cetak / Export <i class="fas fa-caret-down"></i>
                         </button>
                         <div class="dropdown-menu-cetak" id="cetakDropdown">
                             <a href="/admin/kisi_kisi/export_pdf?ujian_id=<%= selectedUjianId %>" target="_blank" class="dropdown-item-cetak">
@@ -710,18 +682,22 @@
                     <textarea id="kisi_cpmk" class="form-control" rows="2" placeholder="Contoh: Menguasai prinsip multimedia, analisis taksonomi media, dan evaluasi kelayakan bahan ajar digital.">Menganalisis prinsip desain instruksional multimedia, klasifikasi media pembelajaran, dan evaluasi efektivitas media.</textarea>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 14px; margin-bottom: 14px;">
                     <div class="form-group">
-                        <label style="font-weight: 600; font-size: 0.9rem;">Jumlah Indikator / Butir Soal</label>
+                        <label style="font-weight: 600; font-size: 0.9rem;">Jumlah Butir Soal</label>
                         <input type="number" id="kisi_jumlah" class="form-control" value="10" min="1" max="40">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.9rem;">Poin / Butir Soal</label>
+                        <input type="number" id="kisi_poin" class="form-control" value="4" min="1" max="50">
                     </div>
                     <div class="form-group">
                         <label style="font-weight: 600; font-size: 0.9rem;">Komposisi Kesulitan</label>
                         <select id="kisi_kesulitan" class="form-select">
-                            <option value="proporsional" selected>Proporsional (30% Mudah, 50% Sedang, 20% Sulit)</option>
+                            <option value="proporsional" selected>Proporsional (Mudah, Sedang, Sulit)</option>
                             <option value="sedang">Dominan Sedang (Aplikasi C3)</option>
-                            <option value="hots">Dominan HOTS (Analisis C4 - Evaluasi C5)</option>
-                            <option value="mudah">Dominan Pemahaman Dasar (C1 - C2)</option>
+                            <option value="hots">Dominan HOTS (C4 - C5)</option>
+                            <option value="mudah">Dominan Pemahaman (C1 - C2)</option>
                         </select>
                     </div>
                 </div>
@@ -827,159 +803,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: GENERATE SOAL DARI KISI-KISI (SIAP DIUJIKAN LANGSUNG) -->
-    <div class="modal-overlay" id="modalGenSoal">
-        <div class="modal-content" style="max-width: 750px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; color: #d97706;">
-                    <i class="fas fa-bolt"></i> Generate Butir Soal Siap Uji dari Matriks Kisi-Kisi
-                </h3>
-                <button type="button" onclick="closeModal('modalGenSoal')" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #94a3b8;">&times;</button>
-            </div>
 
-            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 0.88rem; color: #92400e; display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-check-double" style="font-size: 1.1rem;"></i>
-                <span>Naskah soal tersusun lengkap dengan 5 pilihan jawaban (A, B, C, D, E), 1 kunci valid, dan pembahasan mendalam yang langsung siap dikerjakan oleh mahasiswa.</span>
-            </div>
-
-            <form id="formGenSoal" onsubmit="handleGenerateSoal(event)">
-                <input type="hidden" name="ujian_id" value="<%= selectedUjianId %>">
-
-                <div class="form-group" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.9rem;">Ujian Target</label>
-                    <input type="text" class="form-control" value="<%= currentUjian ? (currentUjian.judul_ujian + (currentUjian.nama_mk ? ' (' + currentUjian.nama_mk + ')' : '')) : '' %>" readonly style="background: #f8fafc;">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.9rem; display: flex; justify-content: space-between;">
-                        <span>Fokus Penekanan Materi / Kasus Kontekstual</span>
-                        <span style="font-size: 0.8rem; color: #d97706; font-weight: 500;"><i class="fas fa-graduation-cap"></i> Standar Soal SN-Dikti</span>
-                    </label>
-                    <textarea id="soal_fokus" class="form-control" rows="2" placeholder="Contoh: Berikan studi kasus nyata berbasis industri terapan, analisis permasalahan riil, hindari opsi 'semua benar'"></textarea>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                    <div class="form-group">
-                        <label style="font-weight: 600; font-size: 0.9rem;">Jumlah Butir Soal Baru</label>
-                        <input type="number" id="soal_jumlah" class="form-control" value="5" min="1" max="25">
-                    </div>
-                    <div class="form-group">
-                        <label style="font-weight: 600; font-size: 0.9rem;">Poin per Butir Soal</label>
-                        <input type="number" id="soal_poin" class="form-control" value="4" min="1" max="50">
-                    </div>
-                    <div class="form-group">
-                        <label style="font-weight: 600; font-size: 0.9rem;">Komposisi Kesulitan</label>
-                        <select id="soal_kesulitan" class="form-select">
-                            <option value="proporsional" selected>Proporsional</option>
-                            <option value="sedang">Sedang (C3)</option>
-                            <option value="sulit">HOTS (C4-C5)</option>
-                            <option value="mudah">Mudah (C1-C2)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- PILIHAN BENTUK / JENIS SOAL (MULTI-SELECT) -->
-                <div class="form-group" style="margin-bottom: 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                        <label style="font-weight: 600; font-size: 0.9rem; margin: 0; color: #92400e;">
-                            <i class="fas fa-layer-group" style="color: #d97706;"></i> Pilihan Jenis Soal <span style="font-size: 0.8rem; font-weight: normal; color: #78350f;">(Bisa pilih lebih dari satu)</span>
-                        </label>
-                        <div style="display: flex; gap: 6px;">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;" onclick="setAllCheckboxes('soal_jenis_cb', true)">Pilih Semua</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;" onclick="setOnlyOneCheckbox('soal_jenis_cb', 'pg')">PG Saja</button>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_jenis" class="soal_jenis_cb" value="pg" checked>
-                            <span><strong>Pilihan Ganda (PG)</strong></span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_jenis" class="soal_jenis_cb" value="pg_kompleks">
-                            <span><strong>PG Kompleks</strong></span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_jenis" class="soal_jenis_cb" value="tf">
-                            <span><strong>Benar / Salah (TF)</strong></span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_jenis" class="soal_jenis_cb" value="menjodohkan">
-                            <span><strong>Menjodohkan</strong></span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_jenis" class="soal_jenis_cb" value="short">
-                            <span><strong>Isian Singkat</strong></span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_jenis" class="soal_jenis_cb" value="esai">
-                            <span><strong>Uraian / Esai</strong></span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- LEVEL KOGNITIF BLOOM (MULTI-SELECT) -->
-                <div class="form-group" style="margin-bottom: 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                        <label style="font-weight: 600; font-size: 0.9rem; margin: 0; color: #92400e;">
-                            <i class="fas fa-brain" style="color: #d97706;"></i> Domain Kognitif Bloom <span style="font-size: 0.8rem; font-weight: normal; color: #78350f;">(Bisa pilih lebih dari satu)</span>
-                        </label>
-                        <div style="display: flex; gap: 6px;">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;" onclick="setAllCheckboxes('soal_bloom_cb', true)">Semua C1-C6</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;" onclick="setPresetCheckboxes('soal_bloom_cb', ['C2','C3','C4'])">Terapan C2-C4</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary" style="padding: 2px 8px; font-size: 0.75rem; border-radius: 4px;" onclick="setPresetCheckboxes('soal_bloom_cb', ['C4','C5','C6'])">HOTS C4-C6</button>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px;">
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_bloom" class="soal_bloom_cb" value="C1">
-                            <span><strong>C1</strong> Mengingat</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_bloom" class="soal_bloom_cb" value="C2" checked>
-                            <span><strong>C2</strong> Memahami</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_bloom" class="soal_bloom_cb" value="C3" checked>
-                            <span><strong>C3</strong> Menerapkan</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_bloom" class="soal_bloom_cb" value="C4" checked>
-                            <span><strong>C4</strong> Menganalisis</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_bloom" class="soal_bloom_cb" value="C5">
-                            <span><strong>C5</strong> Mengevaluasi</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.85rem; margin: 0; padding: 6px 8px; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px;">
-                            <input type="checkbox" name="soal_bloom" class="soal_bloom_cb" value="C6">
-                            <span><strong>C6</strong> Mencipta</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 18px;">
-                    <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-size: 0.88rem; color: #334155; margin: 0;">
-                        <input type="checkbox" id="soal_auto_save" checked style="margin-top: 3px; transform: scale(1.15);">
-                        <span><strong>Langsung Simpan Permanen ke Bank Soal:</strong> Butir soal otomatis ditambahkan ke ujian ini tanpa risiko kehilangan data saat navigasi/refresh halaman.</span>
-                    </label>
-                </div>
-
-                <div id="soalAiLoading" style="display: none; padding: 14px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; margin-bottom: 16px; text-align: center; color: #b45309;">
-                    <div class="loading-spinner" style="border-top-color: #b45309; border-color: rgba(180,83,9,0.2); vertical-align: middle; margin-right: 8px;"></div>
-                    <span>AI sedang menyusun naskah soal, opsi A-E, dan kunci jawaban... Mohon tunggu.</span>
-                </div>
-
-                <div id="previewGeneratedSoal" style="display: none; max-height: 250px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;"></div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('modalGenSoal')">Batal</button>
-                    <button type="submit" id="btnSubmitSoal" class="btn btn-soal-ai">
-                        <i class="fas fa-sparkles"></i> Generate & Tambahkan ke Ujian
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- MODAL 3: VIEW DETAIL SOAL -->
     <div class="modal-overlay" id="modalViewSoal">
@@ -1180,10 +1004,6 @@
             document.getElementById('modalGenKisi').style.display = 'flex';
         }
 
-        function openGenSoalModal() {
-            document.getElementById('modalGenSoal').style.display = 'flex';
-        }
-
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
         }
@@ -1285,6 +1105,7 @@
                 sub_topik: document.getElementById('kisi_subtopik') ? document.getElementById('kisi_subtopik').value : '',
                 cpmk: document.getElementById('kisi_cpmk').value,
                 jumlah: parseInt(document.getElementById('kisi_jumlah').value, 10) || 10,
+                poin: parseInt(document.getElementById('kisi_poin') ? document.getElementById('kisi_poin').value : 4, 10) || 4,
                 kesulitan: document.getElementById('kisi_kesulitan').value,
                 jenis_soal_list: selectedTypes,
                 kognitif_list: selectedBlooms,
@@ -1299,7 +1120,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    window.location.href = '/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>&msg=' + encodeURIComponent('Berhasil menyusun ' + (data.count || payload.jumlah) + ' butir kisi-kisi dan naskah soal siap uji yang tersimpan permanen!');
+                    window.location.href = '/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>&msg=' + encodeURIComponent('Berhasil menyusun ' + (data.count || payload.jumlah) + ' butir matriks kisi-kisi dan naskah soal siap uji yang tersimpan permanen!');
                 } else {
                     alert('Gagal menyusun kisi-kisi AI: ' + (data.message || 'Terjadi kendala pada respon sistem.'));
                     btn.disabled = false;
@@ -1308,51 +1129,6 @@
             } catch (err) {
                 console.error(err);
                 alert('Gagal menghubungi generator AI: ' + err.message);
-                btn.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-
-        // Handle AI generation for questions from Kisi-Kisi (Siap Uji & Auto-Save)
-        async function handleGenerateSoal(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitSoal');
-            const loading = document.getElementById('soalAiLoading');
-            btn.disabled = true;
-            loading.style.display = 'block';
-
-            const autoSave = document.getElementById('soal_auto_save') ? document.getElementById('soal_auto_save').checked : true;
-            const selectedTypes = getCheckedValues('soal_jenis_cb', ['pg']);
-            const selectedBlooms = getCheckedValues('soal_bloom_cb', ['C2', 'C3', 'C4']);
-
-            const payload = {
-                ujian_id: <%= selectedUjianId %>,
-                jumlah: parseInt(document.getElementById('soal_jumlah').value, 10) || 5,
-                poin: parseInt(document.getElementById('soal_poin').value, 10) || 4,
-                fokus_materi: document.getElementById('soal_fokus') ? document.getElementById('soal_fokus').value : '',
-                kesulitan: document.getElementById('soal_kesulitan').value,
-                jenis_soal_list: selectedTypes,
-                kognitif_list: selectedBlooms,
-                apply: autoSave
-            };
-
-            try {
-                const res = await fetch('/admin/api/generate_soal_kisi_kisi', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.success) {
-                    window.location.href = '/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>&msg=' + encodeURIComponent('Berhasil menghasilkan ' + (data.count || payload.jumlah) + ' butir naskah soal siap uji dan tersimpan permanen!');
-                } else {
-                    alert('Gagal menyusun butir soal: ' + (data.message || 'Terjadi kendala pada sistem.'));
-                    btn.disabled = false;
-                    loading.style.display = 'none';
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Gagal menghubungi generator soal: ' + err.message);
                 btn.disabled = false;
                 loading.style.display = 'none';
             }

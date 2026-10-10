@@ -19,6 +19,9 @@ class DataStore {
     this.firebaseConnected = false;
     this.reset();
     this.load();
+    if (!fs.existsSync(this.masterPath)) {
+      this.saveAsDefaultMaster();
+    }
     this.initFirebase();
   }
 
@@ -229,34 +232,226 @@ class DataStore {
 
   applyData(data) {
     if (!data || typeof data !== 'object') return false;
-    if (Array.isArray(data.users)) {
-      this.users = data.users.map(u => ({
+
+    // Unwrap nested objects if exported with wrapper keys
+    for (let depth = 0; depth < 4; depth++) {
+      if (data.payload) {
+        if (typeof data.payload === 'string') {
+          try { data = JSON.parse(data.payload); } catch (e) {}
+        } else if (typeof data.payload === 'object' && !Array.isArray(data.payload)) {
+          data = data.payload;
+        }
+      } else if (data.data && typeof data.data === 'object' && !Array.isArray(data.data)) {
+        data = data.data;
+      } else if (data.backup && typeof data.backup === 'object' && !Array.isArray(data.backup)) {
+        data = data.backup;
+      } else if (data.snapshot && typeof data.snapshot === 'object' && !Array.isArray(data.snapshot)) {
+        data = data.snapshot;
+      } else if (data.sipena && typeof data.sipena === 'object' && !Array.isArray(data.sipena)) {
+        data = data.sipena;
+      } else if (data.database && typeof data.database === 'object' && !Array.isArray(data.database)) {
+        data = data.database;
+      } else if (data.state && typeof data.state === 'object' && !Array.isArray(data.state)) {
+        data = data.state;
+      } else {
+        break;
+      }
+    }
+
+    let restoredCount = 0;
+    const summary = {};
+
+    // Users
+    const rawUsers = data.users || data.user || data.pengguna || data.akun;
+    if (Array.isArray(rawUsers)) {
+      this.users = rawUsers.map(u => ({
         ...u,
+        id: Number(u.id) || u.id,
         nidn: u.nidn || (u.username === 'samsullutfi' || (u.nama_lengkap && u.nama_lengkap.includes('Samsul')) ? '0821098902' : '')
       }));
+      summary.users = this.users.length;
+      restoredCount += this.users.length;
     }
-    if (Array.isArray(data.mahasiswa)) this.mahasiswa = data.mahasiswa;
-    if (Array.isArray(data.fakultas)) this.fakultas = data.fakultas;
-    if (Array.isArray(data.program_studi)) this.program_studi = data.program_studi;
-    if (Array.isArray(data.kelas)) this.kelas = data.kelas;
-    if (Array.isArray(data.mata_kuliah)) this.mata_kuliah = data.mata_kuliah;
-    if (Array.isArray(data.mata_kuliah_kelas)) this.mata_kuliah_kelas = data.mata_kuliah_kelas;
-    if (Array.isArray(data.ujian)) {
-      this.ujian = data.ujian.map(u => ({
+
+    // Mahasiswa
+    const rawMhs = data.mahasiswa || data.siswa || data.students;
+    if (Array.isArray(rawMhs)) {
+      this.mahasiswa = rawMhs.map(m => ({
+        ...m,
+        id: Number(m.id) || m.id,
+        id_kelas: m.id_kelas !== undefined ? Number(m.id_kelas) : null,
+        id_user: m.id_user !== undefined && m.id_user !== null ? Number(m.id_user) : null
+      }));
+      summary.mahasiswa = this.mahasiswa.length;
+      restoredCount += this.mahasiswa.length;
+    }
+
+    // Fakultas
+    const rawFakultas = data.fakultas || data.faculties;
+    if (Array.isArray(rawFakultas)) {
+      this.fakultas = rawFakultas.map(f => ({
+        ...f,
+        id: Number(f.id) || f.id
+      }));
+      summary.fakultas = this.fakultas.length;
+      restoredCount += this.fakultas.length;
+    }
+
+    // Program Studi
+    const rawProdi = data.program_studi || data.programStudi || data.prodi;
+    if (Array.isArray(rawProdi)) {
+      this.program_studi = rawProdi.map(p => ({
+        ...p,
+        id: Number(p.id) || p.id,
+        id_fakultas: p.id_fakultas !== undefined ? Number(p.id_fakultas) : null
+      }));
+      summary.program_studi = this.program_studi.length;
+      restoredCount += this.program_studi.length;
+    }
+
+    // Kelas
+    const rawKelas = data.kelas || data.classes;
+    if (Array.isArray(rawKelas)) {
+      this.kelas = rawKelas.map(k => ({
+        ...k,
+        id: Number(k.id) || k.id,
+        id_prodi: k.id_prodi !== undefined ? Number(k.id_prodi) : null
+      }));
+      summary.kelas = this.kelas.length;
+      restoredCount += this.kelas.length;
+    }
+
+    // Mata Kuliah
+    const rawMK = data.mata_kuliah || data.mataKuliah || data.matakuliah || data.courses;
+    if (Array.isArray(rawMK)) {
+      this.mata_kuliah = rawMK.map(mk => ({
+        ...mk,
+        id: Number(mk.id) || mk.id,
+        id_prodi: mk.id_prodi !== undefined ? Number(mk.id_prodi) : null
+      }));
+      summary.mata_kuliah = this.mata_kuliah.length;
+      restoredCount += this.mata_kuliah.length;
+    }
+
+    // Mata Kuliah Kelas
+    const rawMKK = data.mata_kuliah_kelas || data.mataKuliahKelas;
+    if (Array.isArray(rawMKK)) {
+      this.mata_kuliah_kelas = rawMKK;
+    }
+
+    // Ujian / Penilaian
+    const rawUjian = data.ujian || data.exams || data.penilaian;
+    if (Array.isArray(rawUjian)) {
+      this.ujian = rawUjian.map(u => ({
         ...u,
+        id: Number(u.id) || u.id,
+        id_mata_kuliah: u.id_mata_kuliah !== undefined ? Number(u.id_mata_kuliah) : null,
         nidn_dosen: (!u.nidn_dosen || u.nidn_dosen === 'samsullutfi' || !/^\d+$/.test(u.nidn_dosen)) ? '0821098902' : u.nidn_dosen,
         nip_pengawas: (u.nip_pengawas === 'samsullutfi' || (!u.nip_pengawas && u.nama_pengawas && u.nama_pengawas.includes('Samsul'))) ? '0821098902' : (u.nip_pengawas || ''),
         nidn_kaprodi: (!u.nidn_kaprodi || !/^\d+$/.test(u.nidn_kaprodi)) ? '0812048501' : u.nidn_kaprodi
       }));
+      summary.ujian = this.ujian.length;
+      restoredCount += this.ujian.length;
     }
-    if (Array.isArray(data.ujian_kelas)) this.ujian_kelas = data.ujian_kelas;
-    if (Array.isArray(data.soal)) this.soal = data.soal;
-    if (Array.isArray(data.opsi_jawaban)) this.opsi_jawaban = data.opsi_jawaban;
-    if (Array.isArray(data.sesi_ujian)) this.sesi_ujian = data.sesi_ujian;
-    if (Array.isArray(data.jawaban_peserta)) this.jawaban_peserta = data.jawaban_peserta;
-    if (Array.isArray(data.riwayat_sesi_ujian)) this.riwayat_sesi_ujian = data.riwayat_sesi_ujian;
-    if (data.pengaturan) this.pengaturan = { ...this.pengaturan, ...data.pengaturan };
-    return true;
+
+    // Ujian Kelas
+    const rawUK = data.ujian_kelas || data.ujianKelas;
+    if (Array.isArray(rawUK)) {
+      this.ujian_kelas = rawUK;
+    }
+
+    // Soal
+    const rawSoal = data.soal || data.questions || data.bank_soal || data.butir_soal;
+    if (Array.isArray(rawSoal)) {
+      this.soal = rawSoal.map(s => ({
+        ...s,
+        id: Number(s.id) || s.id,
+        id_ujian: Number(s.id_ujian) || s.id_ujian
+      }));
+      summary.soal = this.soal.length;
+      restoredCount += this.soal.length;
+    }
+
+    // Opsi Jawaban
+    const rawOpsi = data.opsi_jawaban || data.opsiJawaban || data.options;
+    if (Array.isArray(rawOpsi)) {
+      this.opsi_jawaban = rawOpsi.map(o => ({
+        ...o,
+        id: Number(o.id) || o.id,
+        id_soal: Number(o.id_soal) || o.id_soal
+      }));
+      summary.opsi_jawaban = this.opsi_jawaban.length;
+      restoredCount += this.opsi_jawaban.length;
+    }
+
+    // Sesi Ujian
+    const rawSesi = data.sesi_ujian || data.sesiUjian || data.sessions;
+    if (Array.isArray(rawSesi)) {
+      this.sesi_ujian = rawSesi;
+      summary.sesi_ujian = this.sesi_ujian.length;
+    }
+
+    // Jawaban Peserta
+    const rawJwb = data.jawaban_peserta || data.jawabanPeserta || data.answers;
+    if (Array.isArray(rawJwb)) {
+      this.jawaban_peserta = rawJwb;
+      summary.jawaban_peserta = this.jawaban_peserta.length;
+    }
+
+    // Riwayat Sesi Ujian
+    const rawRiw = data.riwayat_sesi_ujian || data.riwayatSesiUjian || data.history;
+    if (Array.isArray(rawRiw)) {
+      this.riwayat_sesi_ujian = rawRiw;
+      summary.riwayat_sesi_ujian = this.riwayat_sesi_ujian.length;
+    }
+
+    // Pengaturan
+    const rawPengaturan = data.pengaturan || data.settings || data.config;
+    if (rawPengaturan && typeof rawPengaturan === 'object') {
+      this.pengaturan = { ...this.pengaturan, ...rawPengaturan };
+      summary.pengaturan = true;
+    }
+
+    // Must have at least some valid core structures restored
+    if (restoredCount === 0 && !summary.pengaturan) {
+      return false;
+    }
+
+    return {
+      success: true,
+      restoredCount,
+      summary
+    };
+  }
+
+  restoreFromMaster() {
+    if (fs.existsSync(this.masterPath)) {
+      try {
+        const raw = fs.readFileSync(this.masterPath, 'utf-8');
+        const data = JSON.parse(raw);
+        const res = this.applyData(data);
+        if (res) {
+          this.save();
+          return res;
+        }
+      } catch (err) {
+        console.warn('[SIPENA] restoreFromMaster file read note:', err.message);
+      }
+    }
+    // Fallback: reset to seed defaults
+    this.reset();
+    this.save();
+    return {
+      success: true,
+      restoredCount: this.ujian.length + this.soal.length + this.users.length + this.mahasiswa.length,
+      summary: {
+        ujian: this.ujian.length,
+        soal: this.soal.length,
+        users: this.users.length,
+        mahasiswa: this.mahasiswa.length,
+        kelas: this.kelas.length
+      }
+    };
   }
 
   saveAsDefaultMaster() {

@@ -308,11 +308,27 @@
         <%- include('../partials/admin_sidebar', { currentPath: '/admin/soal', adminRole: adminRole }) %>
 
         <main class="admin-main">
-            <nav class="breadcrumb" style="margin-bottom: 14px;">
+            <nav class="breadcrumb" style="margin-bottom: 12px;">
                 <a href="/admin/dashboard">Beranda</a> &raquo;
                 <a href="/admin/ujian">Penilaian</a> &raquo;
                 <span>Bank Soal</span>
             </nav>
+
+            <!-- TAB NAVIGASI ELEGAN: PENILAIAN, BANK SOAL, KISI-KISI -->
+            <div class="nav-tabs-wrapper">
+                <a href="/admin/ujian" class="nav-tab-pill">
+                    <i class="fas fa-file-lines"></i>
+                    <span>Daftar Penilaian</span>
+                </a>
+                <a href="/admin/soal?ujian_id=<%= selectedUjianId %>" class="nav-tab-pill active">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Bank Soal</span>
+                </a>
+                <a href="/admin/kisi_kisi?ujian_id=<%= selectedUjianId %>" class="nav-tab-pill">
+                    <i class="fas fa-table-cells"></i>
+                    <span>Matriks Kisi-Kisi</span>
+                </a>
+            </div>
 
             <div class="page-header-row">
                 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">

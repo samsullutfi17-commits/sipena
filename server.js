@@ -980,15 +980,23 @@ app.post(['/admin/ujian', '/admin/ujian.php'], requireAdmin, (req, res) => {
 // Admin Bank Soal Management
 app.get(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
   const currentUser = getCurrentUser(req);
-  const userExams = (currentUser && currentUser.role === 'dosen')
+  const rawExams = (currentUser && currentUser.role === 'dosen')
     ? db.ujian.filter(u => isExamOwner(u, currentUser))
     : db.ujian;
+  const userExams = rawExams.map(u => {
+    const mk = db.mata_kuliah.find(m => m.id === u.id_mata_kuliah);
+    return {
+      ...u,
+      nama_mk: mk ? mk.nama_mk : '-',
+      kode_mk: mk ? mk.kode_mk : ''
+    };
+  });
 
   let ujianId = parseInt(req.query.ujian_id, 10);
   if (!ujianId || !userExams.some(u => u.id === ujianId)) {
     ujianId = userExams[0] ? userExams[0].id : 0;
   }
-  const currentUjian = db.ujian.find(u => u.id === ujianId);
+  const currentUjian = userExams.find(u => u.id === ujianId);
   const soalList = db.getSoalByUjian(ujianId);
 
   res.render('admin/soal', {
@@ -1453,16 +1461,23 @@ app.get(['/admin/detail_hasil', '/admin/detail_hasil.php'], requireAdmin, (req, 
 // Admin Kisi-Kisi
 app.get(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) => {
   const currentUser = getCurrentUser(req);
-  const userExams = (currentUser && currentUser.role === 'dosen')
+  const rawExams = (currentUser && currentUser.role === 'dosen')
     ? db.ujian.filter(u => isExamOwner(u, currentUser))
     : db.ujian;
+  const userExams = rawExams.map(u => {
+    const mk = db.mata_kuliah.find(m => m.id === u.id_mata_kuliah);
+    return {
+      ...u,
+      nama_mk: mk ? mk.nama_mk : '-',
+      kode_mk: mk ? mk.kode_mk : ''
+    };
+  });
 
   let ujianId = parseInt(req.query.ujian_id, 10);
   if (!ujianId || !userExams.some(u => u.id === ujianId)) {
     ujianId = userExams[0] ? userExams[0].id : 0;
   }
-  const currentUjian = db.ujian.find(u => u.id === ujianId) || userExams[0];
-  const matkul = currentUjian ? db.mata_kuliah.find(m => m.id === currentUjian.id_mata_kuliah) : null;
+  const currentUjian = userExams.find(u => u.id === ujianId) || userExams[0];
   const soalList = db.getSoalByUjian(currentUjian ? currentUjian.id : 0);
 
   res.render('admin/kisi_kisi', {
@@ -1470,7 +1485,7 @@ app.get(['/admin/kisi_kisi', '/admin/kisi_kisi.php'], requireAdmin, (req, res) =
     adminRole: req.session.admin_role,
     ujianList: userExams,
     selectedUjianId: currentUjian ? currentUjian.id : 0,
-    currentUjian: currentUjian ? { ...currentUjian, nama_mk: matkul ? matkul.nama_mk : '-' } : null,
+    currentUjian: currentUjian || null,
     soalList,
     settings: db.pengaturan,
     message: req.query.msg || '',
@@ -3894,22 +3909,131 @@ app.get(['/admin/pengaturan/backup', '/admin/pengaturan/backup.php'], requireAdm
   res.send(JSON.stringify(snapshot, null, 2));
 });
 
-// Restore Database JSON Upload
-app.post(['/admin/pengaturan/restore', '/admin/pengaturan/restore.php'], requireAdmin, upload.single('backup_file'), (req, res) => {
-  if (!req.file) {
-    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Mohon pilih berkas cadangan (.json) untuk dipulihkan!'));
+// Restore Database JSON Upload (supports multipart form submit, AJAX, and direct JSON)
+app.post(['/admin/pengaturan/restore', '/admin/pengaturan/restore.php', '/admin/api/restore'], requireAdmin, (req, res, next) => {
+  const contentType = req.headers['content-type'] || '';
+  if (contentType.includes('multipart/form-data')) {
+    upload.single('backup_file')(req, res, (err) => {
+      if (err) {
+        const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json')) || req.path.startsWith('/admin/api/') || req.body?.is_ajax === '1';
+        const errMsg = 'Gagal mengunggah berkas cadangan: ' + err.message;
+        if (isAjax) return res.status(400).json({ success: false, message: errMsg });
+        return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
+      }
+      next();
+    });
+  } else {
+    next();
   }
+}, (req, res) => {
+  const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json')) || req.path.startsWith('/admin/api/') || req.body?.is_ajax === '1' || req.query?.ajax === '1';
+
+  let rawData = null;
+  if (req.file && req.file.buffer) {
+    rawData = req.file.buffer.toString('utf-8');
+  } else if (req.body && req.body.backup_json) {
+    rawData = req.body.backup_json;
+  } else if (req.body && (req.body.users || req.body.ujian || req.body.soal || req.body.data || req.body.payload || req.body.backup)) {
+    rawData = req.body;
+  }
+
+  if (!rawData) {
+    const errMsg = 'Mohon pilih atau unggah berkas cadangan (.json) untuk dipulihkan!';
+    if (isAjax) return res.status(400).json({ success: false, message: errMsg });
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
+  }
+
   try {
-    const raw = req.file.buffer.toString('utf-8');
-    const data = JSON.parse(raw);
-    const success = db.applyData(data);
-    if (!success) {
-      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Format berkas cadangan JSON tidak valid atau struktur tidak cocok!'));
+    let data;
+    if (typeof rawData === 'string') {
+      try {
+        data = JSON.parse(rawData);
+      } catch (parseErr) {
+        const errMsg = 'Berkas yang diunggah bukan format JSON yang valid: ' + parseErr.message;
+        if (isAjax) return res.status(400).json({ success: false, message: errMsg });
+        return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
+      }
+    } else {
+      data = rawData;
     }
+
+    const result = db.applyData(data);
+    if (!result) {
+      const errMsg = 'Format data cadangan JSON tidak valid atau tidak memiliki struktur data SIPENA (ujian, soal, pengguna, dsb).';
+      if (isAjax) return res.status(400).json({ success: false, message: errMsg });
+      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
+    }
+
+    // Save synchronously to local JSON storage
     db.save();
-    return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Database berhasil dipulihkan secara penuh dari cadangan berkas JSON!'));
+
+    const restoredCount = result.restoredCount || 0;
+    const summary = result.summary || {};
+    const detailParts = [];
+    if (summary.ujian) detailParts.push(`${summary.ujian} Penilaian/Ujian`);
+    if (summary.soal) detailParts.push(`${summary.soal} Butir Soal`);
+    if (summary.users) detailParts.push(`${summary.users} Akun Pengguna`);
+    if (summary.mahasiswa) detailParts.push(`${summary.mahasiswa} Mahasiswa`);
+    if (summary.kelas) detailParts.push(`${summary.kelas} Kelas`);
+    if (summary.program_studi) detailParts.push(`${summary.program_studi} Prodi`);
+
+    const detailText = detailParts.length > 0 ? ` (${detailParts.join(', ')})` : '';
+    const successMsg = `Database berhasil dipulihkan secara penuh! Total ${restoredCount} entitas data berhasil dimuat${detailText}.`;
+
+    if (isAjax) {
+      return res.json({
+        success: true,
+        message: successMsg,
+        restoredCount,
+        summary
+      });
+    }
+
+    return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent(successMsg));
   } catch (err) {
-    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Gagal memulihkan database: ' + err.message));
+    const errMsg = 'Gagal memulihkan database: ' + err.message;
+    if (isAjax) return res.status(500).json({ success: false, message: errMsg });
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
+  }
+});
+
+// Restore Database from Available Master / Default System Backup
+app.post(['/admin/pengaturan/restore_master', '/admin/api/restore_master'], requireAdmin, (req, res) => {
+  const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json')) || req.path.startsWith('/admin/api/') || req.body?.is_ajax === '1' || req.query?.ajax === '1';
+  try {
+    const result = db.restoreFromMaster();
+    if (!result) {
+      const errMsg = 'Gagal memulihkan dari cadangan master bawaan sistem.';
+      if (isAjax) return res.status(400).json({ success: false, message: errMsg });
+      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
+    }
+
+    const restoredCount = result.restoredCount || 0;
+    const summary = result.summary || {};
+    const detailParts = [];
+    if (summary.ujian) detailParts.push(`${summary.ujian} Penilaian/Ujian`);
+    if (summary.soal) detailParts.push(`${summary.soal} Butir Soal`);
+    if (summary.users) detailParts.push(`${summary.users} Akun Pengguna`);
+    if (summary.mahasiswa) detailParts.push(`${summary.mahasiswa} Mahasiswa`);
+    if (summary.kelas) detailParts.push(`${summary.kelas} Kelas`);
+
+    const detailText = detailParts.length > 0 ? ` (${detailParts.join(', ')})` : '';
+    const successMsg = `Database berhasil dipulihkan dari Cadangan Master Baku Sistem! Total ${restoredCount} entitas data berhasil dimuat${detailText}.`;
+
+    if (isAjax) {
+      return res.json({
+        success: true,
+        message: successMsg,
+        restoredCount,
+        summary
+      });
+    }
+
+    return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent(successMsg));
+  } catch (err) {
+    const errMsg = 'Gagal memulihkan data cadangan master: ' + err.message;
+    if (isAjax) return res.status(500).json({ success: false, message: errMsg });
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
   }
 });
 
