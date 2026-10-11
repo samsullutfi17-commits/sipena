@@ -465,34 +465,45 @@
                 </div>
             </div>
 
-            <!-- Exam Selector with Searchable Custom Select -->
+            <!-- Exam Selector with Searchable Custom Select for Judul Penilaian -->
             <div class="kisi-selector-box">
                 <label class="kisi-selector-label">
-                    <i class="fas fa-file-alt" style="color: #1e5631;"></i> Pilih Jenis Penilaian:
+                    <i class="fas fa-file-alt" style="color: #1e5631;"></i> Pilih Judul Penilaian:
                 </label>
                 <div class="searchable-select-wrap" id="wrapPilihPenilaianKisi">
                     <% 
                         const activeUjianKisi = ujianList.find(u => u.id === selectedUjianId);
-                        const activeTitleKisi = activeUjianKisi ? activeUjianKisi.judul_ujian : 'Pilih Jenis Penilaian...';
+                        const activeTitleKisi = activeUjianKisi ? activeUjianKisi.judul_ujian : 'Pilih Judul Penilaian...';
+                        const activeMkKisi = activeUjianKisi && activeUjianKisi.nama_mk && activeUjianKisi.nama_mk !== '-' ? activeUjianKisi.nama_mk : '';
                     %>
-                    <div class="searchable-trigger" id="triggerPilihPenilaianKisi" onclick="toggleSearchablePenilaianKisi(event)">
+                    <div class="searchable-trigger" id="triggerPilihPenilaianKisi" onclick="toggleSearchablePenilaianKisi(event)" title="Pilih Judul Penilaian">
                         <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             <i class="fas fa-file-signature" style="color: #1e5631; font-size: 0.95rem;"></i>
-                            <span id="labelPilihPenilaianKisi" style="overflow: hidden; text-overflow: ellipsis;"><%= activeTitleKisi %></span>
+                            <span id="labelPilihPenilaianKisi" style="overflow: hidden; text-overflow: ellipsis;">
+                                <strong><%= activeTitleKisi %></strong>
+                                <% if (activeMkKisi) { %>
+                                    <span style="color: #64748b; font-weight: normal; font-size: 0.82rem; margin-left: 4px;">(<%= activeMkKisi %>)</span>
+                                <% } %>
+                            </span>
                         </div>
                         <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: #64748b; transition: transform 0.2s;" id="chevronPenilaianKisi"></i>
                     </div>
                     <div class="searchable-dropdown" id="dropdownPilihPenilaianKisi">
                         <div class="searchable-search-box">
                             <i class="fas fa-search searchable-search-icon"></i>
-                            <input type="text" class="searchable-search-input" id="searchPenilaianKisiInput" placeholder="Cari jenis penilaian / ujian..." oninput="filterOptionsPenilaianKisi(this.value)" autocomplete="off">
+                            <input type="text" class="searchable-search-input" id="searchPenilaianKisiInput" placeholder="Cari nama / judul penilaian atau mata kuliah..." oninput="filterOptionsPenilaianKisi(this.value)" autocomplete="off">
                         </div>
                         <ul class="searchable-options-list" id="listPenilaianKisi">
                             <% ujianList.forEach(function(u) { %>
-                                <li class="searchable-option-item <%= u.id === selectedUjianId ? 'selected' : '' %>" data-title="<%= (u.judul_ujian || '').toLowerCase() %>" onclick="selectPenilaianKisi(<%= u.id %>)">
+                                <li class="searchable-option-item <%= u.id === selectedUjianId ? 'selected' : '' %>" data-title="<%= ((u.judul_ujian || '') + ' ' + (u.nama_mk || '')).toLowerCase() %>" onclick="selectPenilaianKisi(<%= u.id %>)">
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <i class="fas <%= u.id === selectedUjianId ? 'fa-check-circle text-success' : 'fa-circle-dot text-muted' %>" style="font-size: 0.85rem;"></i>
-                                        <span><%= u.judul_ujian %></span>
+                                        <div>
+                                            <div style="font-weight: 600; color: #0f172a;"><%= u.judul_ujian %></div>
+                                            <% if (u.nama_mk && u.nama_mk !== '-') { %>
+                                                <div style="font-size: 0.76rem; color: #64748b;"><%= u.nama_mk %> &bull; <span class="kode-badge" style="font-size: 0.68rem; padding: 1px 5px;"><%= u.jenis_ujian %></span></div>
+                                            <% } %>
+                                        </div>
                                     </div>
                                     <% if (u.id === selectedUjianId) { %>
                                         <span style="font-size: 0.72rem; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Aktif</span>
@@ -501,7 +512,7 @@
                             <% }); %>
                         </ul>
                         <div class="searchable-empty-hint" id="emptyPenilaianKisiHint">
-                            <i class="fas fa-search" style="margin-right: 4px;"></i> Jenis penilaian tidak ditemukan
+                            <i class="fas fa-search" style="margin-right: 4px;"></i> Judul penilaian tidak ditemukan
                         </div>
                     </div>
                 </div>

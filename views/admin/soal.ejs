@@ -337,30 +337,41 @@
                         <p class="page-subtitle">Kelola butir soal evaluasi, kunci jawaban, bobot poin, dan indikator kisi-kisi.</p>
                     </div>
 
-                    <!-- Pilihan Jenis Penilaian Rapi dengan Pencarian -->
+                    <!-- Pilihan Judul Penilaian Rapi dengan Pencarian -->
                     <div class="searchable-select-wrap" id="wrapPilihPenilaianSoal">
                         <% 
                             const activeUjian = ujianList.find(u => u.id === selectedUjianId);
-                            const activeTitle = activeUjian ? activeUjian.judul_ujian : 'Pilih Jenis Penilaian...';
+                            const activeTitle = activeUjian ? activeUjian.judul_ujian : 'Pilih Judul Penilaian...';
+                            const activeMk = activeUjian && activeUjian.nama_mk && activeUjian.nama_mk !== '-' ? activeUjian.nama_mk : '';
                         %>
-                        <div class="searchable-trigger" id="triggerPilihPenilaianSoal" onclick="toggleSearchablePenilaianSoal(event)">
+                        <div class="searchable-trigger" id="triggerPilihPenilaianSoal" onclick="toggleSearchablePenilaianSoal(event)" title="Pilih Judul Penilaian">
                             <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 <i class="fas fa-file-signature" style="color: #1b4d3e; font-size: 0.95rem;"></i>
-                                <span id="labelPilihPenilaianSoal" style="overflow: hidden; text-overflow: ellipsis;"><%= activeTitle %></span>
+                                <span id="labelPilihPenilaianSoal" style="overflow: hidden; text-overflow: ellipsis;">
+                                    <strong><%= activeTitle %></strong>
+                                    <% if (activeMk) { %>
+                                        <span style="color: #64748b; font-weight: normal; font-size: 0.82rem; margin-left: 4px;">(<%= activeMk %>)</span>
+                                    <% } %>
+                                </span>
                             </div>
                             <i class="fas fa-chevron-down" style="font-size: 0.8rem; color: #64748b; transition: transform 0.2s;" id="chevronPenilaianSoal"></i>
                         </div>
                         <div class="searchable-dropdown" id="dropdownPilihPenilaianSoal">
                             <div class="searchable-search-box">
                                 <i class="fas fa-search searchable-search-icon"></i>
-                                <input type="text" class="searchable-search-input" id="searchPenilaianSoalInput" placeholder="Cari nama ujian / jenis penilaian..." oninput="filterOptionsPenilaianSoal(this.value)" autocomplete="off">
+                                <input type="text" class="searchable-search-input" id="searchPenilaianSoalInput" placeholder="Cari nama / judul penilaian atau mata kuliah..." oninput="filterOptionsPenilaianSoal(this.value)" autocomplete="off">
                             </div>
                             <ul class="searchable-options-list" id="listPenilaianSoal">
                                 <% ujianList.forEach(function(u) { %>
-                                    <li class="searchable-option-item <%= u.id === selectedUjianId ? 'selected' : '' %>" data-title="<%= (u.judul_ujian || '').toLowerCase() %>" onclick="selectPenilaianSoal(<%= u.id %>)">
+                                    <li class="searchable-option-item <%= u.id === selectedUjianId ? 'selected' : '' %>" data-title="<%= ((u.judul_ujian || '') + ' ' + (u.nama_mk || '')).toLowerCase() %>" onclick="selectPenilaianSoal(<%= u.id %>)">
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <i class="fas <%= u.id === selectedUjianId ? 'fa-check-circle text-success' : 'fa-circle-dot text-muted' %>" style="font-size: 0.85rem;"></i>
-                                            <span><%= u.judul_ujian %></span>
+                                            <div>
+                                                <div style="font-weight: 600; color: #0f172a;"><%= u.judul_ujian %></div>
+                                                <% if (u.nama_mk && u.nama_mk !== '-') { %>
+                                                    <div style="font-size: 0.76rem; color: #64748b;"><%= u.nama_mk %> &bull; <span class="kode-badge" style="font-size: 0.68rem; padding: 1px 5px;"><%= u.jenis_ujian %></span></div>
+                                                <% } %>
+                                            </div>
                                         </div>
                                         <% if (u.id === selectedUjianId) { %>
                                             <span style="font-size: 0.72rem; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Aktif</span>
@@ -369,7 +380,7 @@
                                 <% }); %>
                             </ul>
                             <div class="searchable-empty-hint" id="emptyPenilaianSoalHint">
-                                <i class="fas fa-search" style="margin-right: 4px;"></i> Jenis penilaian tidak ditemukan
+                                <i class="fas fa-search" style="margin-right: 4px;"></i> Judul penilaian tidak ditemukan
                             </div>
                         </div>
                     </div>
@@ -504,11 +515,37 @@
                                 </div>
                             </div>
 
-                            <div style="font-size: 1.02rem; margin-bottom: 14px; color: #0f172a; line-height: 1.6;">
+                            <div style="font-size: 1.02rem; margin-bottom: 14px; color: #0f172a; line-height: 1.6; white-space: pre-line;">
                                 <%- s.pertanyaan %>
                             </div>
 
-                            <% if (s.opsi && s.opsi.length > 0) { %>
+                            <% if (s.jenis_soal === 'menjodohkan' || s.jenis_soal === 'matching') { 
+                                const pairs = (s.data_tambahan && s.data_tambahan.pairs && Object.keys(s.data_tambahan.pairs).length > 0)
+                                    ? s.data_tambahan.pairs
+                                    : (s.matching_pairs || {});
+                            %>
+                                <div style="margin-left: 6px; margin-bottom: 14px; background: #faf5ff; border: 1.5px solid #e9d5ff; border-radius: 8px; padding: 12px 16px;">
+                                    <div style="font-weight: 700; color: #7e22ce; font-size: 0.88rem; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-link"></i> Pasangan Kunci Menjodohkan:
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <% Object.entries(pairs).forEach(function([k, v], pIdx) { %>
+                                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #ffffff; border: 1px solid #d8b4fe; border-radius: 6px; padding: 8px 14px; font-size: 0.9rem;">
+                                                <div style="font-weight: 600; color: #581c87; flex: 1.2;">
+                                                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #9333ea; color: #fff; font-size: 0.75rem; margin-right: 6px;"><%= pIdx + 1 %></span>
+                                                    <%= k %>
+                                                </div>
+                                                <div style="color: #a855f7; font-size: 0.9rem;">
+                                                    <i class="fas fa-arrow-right"></i>
+                                                </div>
+                                                <div style="color: #1e293b; flex: 1.8; font-weight: 500; background: #fdf4ff; padding: 6px 10px; border-radius: 4px; border: 1px dashed #c084fc;">
+                                                    <%= v %>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% } else if (s.opsi && s.opsi.length > 0) { %>
                                 <div style="margin-left: 10px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px;">
                                     <% s.opsi.forEach(function(o, oIdx) { %>
                                         <div style="padding: 6px 12px; border-radius: 6px; background: <%= o.benar ? '#f0fdf4' : '#f8fafc' %>; border: 1px solid <%= o.benar ? '#bbf7d0' : '#e2e8f0' %>; color: <%= o.benar ? '#15803d' : '#334155' %>; font-weight: <%= o.benar ? '600' : 'normal' %>; font-size: 0.92rem;">
@@ -551,6 +588,7 @@
                         <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Jenis Soal</label>
                         <select name="jenis_soal" id="jenis_soal_select" class="form-select" onchange="switchSoalType(this.value, 'create')" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                             <option value="pg">Pilihan Ganda (PG)</option>
+                            <option value="menjodohkan">Menjodohkan (Matching)</option>
                             <option value="tf">Benar / Salah (TF)</option>
                             <option value="short">Jawaban Singkat</option>
                             <option value="esai">Esai Uraian</option>
@@ -600,6 +638,29 @@
                             <input type="text" name="opsi_teks[]" placeholder="Teks opsi <%= letter %>" class="form-control" style="flex: 1; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         </div>
                     <% }); %>
+                </div>
+
+                <!-- Type: Menjodohkan -->
+                <div id="create_type_menjodohkan_container" style="display: none; margin-bottom: 14px; background: #faf5ff; border: 1.5px solid #e9d5ff; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #7e22ce; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-link"></i> Pasangan Soal Menjodohkan (Premis <=> Pasangan Jawaban):
+                    </label>
+                    <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 10px;">
+                        Tuliskan item pernyataan/premis di kolom kiri dan pasangan kunci jawabannya di kolom kanan.
+                    </p>
+                    <div id="create_matching_rows_wrap" style="display: flex; flex-direction: column; gap: 8px;">
+                        <% for (let i = 1; i <= 3; i++) { %>
+                            <div class="matching-pair-row" style="display: flex; gap: 8px; align-items: center;">
+                                <span style="font-weight: 700; color: #9333ea; width: 20px;"><%= i %>.</span>
+                                <input type="text" name="matching_keys[]" placeholder="Premis <%= i %> (Kolom Kiri)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                                <span style="color: #a855f7;"><i class="fas fa-arrow-right"></i></span>
+                                <input type="text" name="matching_values[]" placeholder="Kunci Pasangan <%= i %> (Kolom Kanan)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                            </div>
+                        <% } %>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addMatchingRow('create_matching_rows_wrap')" style="margin-top: 10px; font-size: 0.82rem;">
+                        <i class="fas fa-plus"></i> Tambah Baris Pasangan
+                    </button>
                 </div>
 
                 <!-- Type: TF -->
@@ -683,6 +744,19 @@
                             <input type="text" name="opsi_teks[]" id="edit_opsi_teks_<%= idx %>" placeholder="Teks opsi <%= letter %>" class="form-control" style="flex: 1; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         </div>
                     <% }); %>
+                </div>
+
+                <!-- Type: Menjodohkan Edit -->
+                <div id="edit_type_menjodohkan_container" style="display: none; margin-bottom: 14px; background: #faf5ff; border: 1.5px solid #e9d5ff; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #7e22ce; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-link"></i> Pasangan Kunci Menjodohkan (Premis <=> Pasangan Jawaban):
+                    </label>
+                    <div id="edit_matching_rows_wrap" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- populated via javascript -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addMatchingRow('edit_matching_rows_wrap')" style="margin-top: 10px; font-size: 0.82rem;">
+                        <i class="fas fa-plus"></i> Tambah Baris Pasangan
+                    </button>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
@@ -915,8 +989,26 @@
         function switchSoalType(type, prefix) {
             const pgContainer = document.getElementById(prefix + '_type_pg_container');
             const tfContainer = document.getElementById(prefix + '_type_tf_container');
-            if (pgContainer) pgContainer.style.display = (type === 'pg') ? 'block' : 'none';
+            const matchContainer = document.getElementById(prefix + '_type_menjodohkan_container');
+            if (pgContainer) pgContainer.style.display = (type === 'pg' || type === 'pg_kompleks') ? 'block' : 'none';
             if (tfContainer) tfContainer.style.display = (type === 'tf') ? 'block' : 'none';
+            if (matchContainer) matchContainer.style.display = (type === 'menjodohkan' || type === 'matching') ? 'block' : 'none';
+        }
+
+        function addMatchingRow(wrapId) {
+            const wrap = document.getElementById(wrapId);
+            if (!wrap) return;
+            const count = wrap.querySelectorAll('.matching-pair-row').length + 1;
+            const row = document.createElement('div');
+            row.className = 'matching-pair-row';
+            row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+            row.innerHTML = `
+                <span style="font-weight: 700; color: #9333ea; width: 20px;">${count}.</span>
+                <input type="text" name="matching_keys[]" placeholder="Premis ${count} (Kolom Kiri)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                <span style="color: #a855f7;"><i class="fas fa-arrow-right"></i></span>
+                <input type="text" name="matching_values[]" placeholder="Kunci Pasangan ${count} (Kolom Kanan)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+            `;
+            wrap.appendChild(row);
         }
 
         function openEditSoalModal(soal) {
@@ -927,17 +1019,47 @@
             document.getElementById('edit_soal_pertanyaan').value = (soal.pertanyaan || '').replace(/<[^>]*>?/gm, '');
             document.getElementById('edit_soal_pembahasan').value = soal.pembahasan || '';
 
-            // Populate options if PG
-            if (soal.opsi && Array.isArray(soal.opsi)) {
-                document.getElementById('edit_type_pg_container').style.display = 'block';
-                soal.opsi.forEach((o, idx) => {
-                    const textInput = document.getElementById('edit_opsi_teks_' + idx);
-                    const radioInput = document.getElementById('edit_opsi_benar_' + idx);
-                    if (textInput) textInput.value = o.teks_opsi || '';
-                    if (radioInput && o.benar) radioInput.checked = true;
-                });
+            const jType = (soal.jenis_soal || 'pg').toLowerCase();
+            const pgContainer = document.getElementById('edit_type_pg_container');
+            const matchContainer = document.getElementById('edit_type_menjodohkan_container');
+
+            if (jType === 'menjodohkan' || jType === 'matching') {
+                if (pgContainer) pgContainer.style.display = 'none';
+                if (matchContainer) {
+                    matchContainer.style.display = 'block';
+                    const wrap = document.getElementById('edit_matching_rows_wrap');
+                    wrap.innerHTML = '';
+                    const pairs = (soal.data_tambahan && soal.data_tambahan.pairs) || soal.matching_pairs || {};
+                    let entries = Object.entries(pairs);
+                    if (entries.length === 0) {
+                        entries = [['', ''], ['', ''], ['', '']];
+                    }
+                    entries.forEach(([k, v], idx) => {
+                        const row = document.createElement('div');
+                        row.className = 'matching-pair-row';
+                        row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+                        row.innerHTML = `
+                            <span style="font-weight: 700; color: #9333ea; width: 20px;">${idx + 1}.</span>
+                            <input type="text" name="matching_keys[]" value="${k.replace(/"/g, '&quot;')}" placeholder="Premis (Kiri)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                            <span style="color: #a855f7;"><i class="fas fa-arrow-right"></i></span>
+                            <input type="text" name="matching_values[]" value="${v.replace(/"/g, '&quot;')}" placeholder="Kunci Pasangan (Kanan)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        `;
+                        wrap.appendChild(row);
+                    });
+                }
             } else {
-                document.getElementById('edit_type_pg_container').style.display = 'none';
+                if (matchContainer) matchContainer.style.display = 'none';
+                if (soal.opsi && Array.isArray(soal.opsi)) {
+                    if (pgContainer) pgContainer.style.display = 'block';
+                    soal.opsi.forEach((o, idx) => {
+                        const textInput = document.getElementById('edit_opsi_teks_' + idx);
+                        const radioInput = document.getElementById('edit_opsi_benar_' + idx);
+                        if (textInput) textInput.value = o.teks_opsi || o.teks || '';
+                        if (radioInput && o.benar) radioInput.checked = true;
+                    });
+                } else {
+                    if (pgContainer) pgContainer.style.display = 'none';
+                }
             }
 
             openModal('edit-soal-modal');

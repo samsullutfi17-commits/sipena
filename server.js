@@ -1041,12 +1041,16 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
       } else if (jenis === 'ordering') {
         const items = (req.body.ordering_items || '').split('\n').map(s => s.trim()).filter(Boolean);
         dataTambahan = { correct_order: items };
-      } else if (jenis === 'matching') {
-        const keys = (req.body.matching_keys || '').split('\n').map(s => s.trim()).filter(Boolean);
-        const vals = (req.body.matching_values || '').split('\n').map(s => s.trim()).filter(Boolean);
+      } else if (jenis === 'matching' || jenis === 'menjodohkan') {
+        const keys = Array.isArray(req.body.matching_keys)
+          ? req.body.matching_keys
+          : (req.body.matching_keys || '').split('\n').map(s => s.trim()).filter(Boolean);
+        const vals = Array.isArray(req.body.matching_values)
+          ? req.body.matching_values
+          : (req.body.matching_values || '').split('\n').map(s => s.trim()).filter(Boolean);
         const pairs = {};
         keys.forEach((k, idx) => {
-          if (vals[idx]) pairs[k] = vals[idx];
+          if (k && vals[idx]) pairs[k.trim()] = vals[idx].trim();
         });
         dataTambahan = { pairs };
       }
@@ -1065,7 +1069,7 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
         cpmk
       });
 
-      if (['pg', 'multiple'].includes(jenis)) {
+      if (['pg', 'multiple', 'pg_kompleks'].includes(jenis)) {
         const teksOpsi = req.body.opsi_teks || [];
         const benarOpsi = req.body.opsi_benar;
 
@@ -1083,6 +1087,17 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
             });
           }
         });
+      } else if (['matching', 'menjodohkan'].includes(jenis) && dataTambahan && dataTambahan.pairs) {
+        let pIdx = 1;
+        for (const [k, v] of Object.entries(dataTambahan.pairs)) {
+          db.opsi_jawaban.push({
+            id: db.opsi_jawaban.length + 1,
+            id_soal: newSoalId,
+            teks_opsi: `${k} <=> ${v}`,
+            benar: true,
+            urutan: pIdx++
+          });
+        }
       }
       db.save();
 
@@ -1098,7 +1113,7 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
       s.tingkat_kesulitan = req.body.tingkat_kesulitan || s.tingkat_kesulitan;
       s.level_kognitif = req.body.level_kognitif || s.level_kognitif;
 
-      if (['pg', 'multiple'].includes(s.jenis_soal) && req.body.opsi_teks) {
+      if (['pg', 'multiple', 'pg_kompleks'].includes(s.jenis_soal) && req.body.opsi_teks) {
         db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
         const teksOpsi = req.body.opsi_teks || [];
         const benarOpsi = req.body.opsi_benar;
@@ -1117,6 +1132,32 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
             });
           }
         });
+      } else if (['matching', 'menjodohkan'].includes(s.jenis_soal)) {
+        const keys = Array.isArray(req.body.matching_keys)
+          ? req.body.matching_keys
+          : (req.body.matching_keys || '').split('\n').map(x => x.trim()).filter(Boolean);
+        const vals = Array.isArray(req.body.matching_values)
+          ? req.body.matching_values
+          : (req.body.matching_values || '').split('\n').map(x => x.trim()).filter(Boolean);
+        if (keys.length > 0) {
+          const pairs = {};
+          keys.forEach((k, idx) => {
+            if (k && vals[idx]) pairs[k.trim()] = vals[idx].trim();
+          });
+          s.data_tambahan = { ...(s.data_tambahan || {}), pairs };
+
+          db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
+          let pIdx = 1;
+          for (const [k, v] of Object.entries(pairs)) {
+            db.opsi_jawaban.push({
+              id: db.opsi_jawaban.length + 1,
+              id_soal: soalId,
+              teks_opsi: `${k} <=> ${v}`,
+              benar: true,
+              urutan: pIdx++
+            });
+          }
+        }
       }
       db.save();
       return res.redirect(`/admin/soal?ujian_id=${targetUjianId}&msg=` + encodeURIComponent('Butir soal berhasil diperbarui!'));
@@ -2492,7 +2533,9 @@ Format respon HANYA berupa JSON valid:
           pembahasan: k.pembahasan || 'Pembahasan kunci jawaban.',
           poin: k.bobot || 4,
           urutan: db.soal.filter(s => s.id_ujian === targetUjian.id).length + 1,
-          data_tambahan: null,
+          data_tambahan: ['menjodohkan', 'matching'].includes((k.bentuk_soal || '').toLowerCase())
+            ? { pairs: db.resolveMatchingPairs(k) }
+            : (k.data_tambahan || null),
           tingkat_kesulitan: k.tingkat_kesulitan || 'sedang',
           level_kognitif: k.level_kognitif || 'C3',
           cpmk: k.cpmk || 'Capaian Pembelajaran MK',
@@ -2714,7 +2757,9 @@ Format respon HANYA berupa JSON valid:
         pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
         poin: q.poin || eachPoin,
         urutan: currentCount + idx + 1,
-        data_tambahan: null,
+        data_tambahan: ['menjodohkan', 'matching'].includes((q.jenis_soal || '').toLowerCase())
+          ? { pairs: db.resolveMatchingPairs(q) }
+          : (q.data_tambahan || null),
         tingkat_kesulitan: q.tingkat_kesulitan || 'sedang',
         level_kognitif: q.level_kognitif || 'C3',
         cpmk: q.cpmk || 'Capaian Pembelajaran MK',
@@ -2765,7 +2810,9 @@ app.post(['/admin/api/save_soal_kisi_kisi'], requireAdmin, (req, res) => {
       pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
       poin: q.poin || eachPoin,
       urutan: currentCount + idx + 1,
-      data_tambahan: null,
+      data_tambahan: ['menjodohkan', 'matching'].includes((q.jenis_soal || '').toLowerCase())
+        ? { pairs: db.resolveMatchingPairs(q) }
+        : (q.data_tambahan || null),
       tingkat_kesulitan: q.tingkat_kesulitan || 'sedang',
       level_kognitif: q.level_kognitif || 'C3',
       cpmk: q.cpmk || 'Capaian Pembelajaran MK',
@@ -4226,7 +4273,9 @@ Format respon HANYA berupa JSON object:
           pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
           poin: q.poin || poin,
           urutan: currentCount + idx + 1,
-          data_tambahan: null,
+          data_tambahan: ['menjodohkan', 'matching'].includes((q.jenis_soal || '').toLowerCase())
+            ? { pairs: db.resolveMatchingPairs(q) }
+            : (q.data_tambahan || null),
           tingkat_kesulitan: q.tingkat_kesulitan || kesulitan,
           level_kognitif: q.level_kognitif || selectedCognitives[0] || 'C3',
           cpmk: q.cpmk || 'Capaian Pembelajaran MK',

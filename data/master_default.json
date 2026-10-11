@@ -5390,7 +5390,14 @@
       "pembahasan": "Realia adalah benda-benda nyata yang dipelajari secara autentik.",
       "poin": 4,
       "urutan": 7,
-      "data_tambahan": null,
+      "data_tambahan": {
+        "pairs": {
+          "Domain Name System (DNS)": "Sistem yang menerjemahkan nama domain menjadi alamat IP",
+          "IP Address": "Identifikasi unik numerik untuk perangkat di jaringan",
+          "Web Server": "Komputer yang menyimpan dan menyajikan halaman web",
+          "Router": "Perangkat yang mengarahkan paket data antar jaringan"
+        }
+      },
       "tingkat_kesulitan": "mudah",
       "level_kognitif": "C1",
       "cpmk": "Mengklasifikasikan media 3 dimensi",
@@ -5405,7 +5412,13 @@
       "pembahasan": "Evaluasi formatif bertujuan mengidentifikasi kelemahan media selama masa pengembangan agar disempurnakan.",
       "poin": 4,
       "urutan": 8,
-      "data_tambahan": null,
+      "data_tambahan": {
+        "pairs": {
+          "Crawling": "Mengunjungi halaman web dan menyimpan salinan data",
+          "Indexing": "Menyusun data yang dikumpulkan ke dalam struktur database yang dapat dicari",
+          "Ranking": "Mengurutkan hasil pencarian berdasarkan relevansi dan faktor SEO"
+        }
+      },
       "tingkat_kesulitan": "mudah",
       "level_kognitif": "C2",
       "cpmk": "Mengevaluasi media pembelajaran",
@@ -5809,7 +5822,14 @@
       "pembahasan": "Kunci jawaban yang tepat didasarkan pada kesesuaian prinsip metodologis dan kaidah standar pada materi KUIS – Pemrograman Terstruktur.",
       "poin": 25,
       "urutan": 11,
-      "data_tambahan": null,
+      "data_tambahan": {
+        "pairs": {
+          "Operator AND (&&)": "Menghasilkan nilai true jika kedua kondisi bernilai benar",
+          "Operator OR (||)": "Menghasilkan nilai true jika salah satu atau kedua kondisi bernilai benar",
+          "Operator NOT (!)": "Membalikkan nilai kebenaran suatu kondisi dari true menjadi false atau sebaliknya",
+          "Operator XOR (^)": "Menghasilkan nilai true jika salah satu operand bernilai benar dan lainnya salah"
+        }
+      },
       "tingkat_kesulitan": "sedang",
       "level_kognitif": "C3",
       "cpmk": "Mampu membedakan karakteristik evaluasi operator logika AND, OR, dan NOT.",

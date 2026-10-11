@@ -131,11 +131,11 @@
                     <i class="fas fa-file-lines"></i>
                     <span>Daftar Penilaian</span>
                 </a>
-                <a href="/admin/soal" class="nav-tab-pill">
+                <a href="/admin/soal<%= (exams && exams.length > 0) ? '?ujian_id=' + exams[0].id : '' %>" class="nav-tab-pill">
                     <i class="fas fa-question-circle"></i>
                     <span>Bank Soal</span>
                 </a>
-                <a href="/admin/kisi_kisi" class="nav-tab-pill">
+                <a href="/admin/kisi_kisi<%= (exams && exams.length > 0) ? '?ujian_id=' + exams[0].id : '' %>" class="nav-tab-pill">
                     <i class="fas fa-table-cells"></i>
                     <span>Matriks Kisi-Kisi</span>
                 </a>
@@ -162,8 +162,19 @@
             <% } %>
 
             <div class="modern-table-card">
+                <!-- KOTAK PENCARIAN JUDUL PENILAIAN / MATA KULIAH -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9;">
+                    <div style="position: relative; flex: 1; min-width: 270px; max-width: 460px;">
+                        <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                        <input type="text" id="searchTableUjianInput" placeholder="Cari nama / judul penilaian atau mata kuliah..." oninput="filterTableUjian(this.value)" autocomplete="off" style="width: 100%; padding: 10px 14px 10px 38px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; outline: none; background: #fff; transition: all 0.15s;" onfocus="this.style.borderColor='#1b4d3e'; this.style.boxShadow='0 0 0 3px rgba(27,77,62,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';">
+                    </div>
+                    <div style="font-size: 0.85rem; color: #64748b; font-weight: 500;">
+                        Menampilkan <strong style="color: #0f172a;" id="countUjianRows"><%= exams.length %></strong> data penilaian
+                    </div>
+                </div>
+
                 <div style="overflow-x: auto;">
-                    <table class="modern-table">
+                    <table class="modern-table" id="tableUjianList">
                         <thead>
                             <tr>
                                 <th style="width: 50px; text-align: center;">No</th>
@@ -186,7 +197,7 @@
                                 </tr>
                             <% } else { %>
                                 <% exams.forEach(function(exam, idx) { %>
-                                    <tr>
+                                    <tr class="ujian-row" data-search="<%= ((exam.judul_ujian || '') + ' ' + (exam.nama_mk || '') + ' ' + (exam.jenis_ujian || '') + ' ' + (exam.pengampu || '')).toLowerCase() %>">
                                         <td style="text-align: center; color: #64748b; font-weight: 600;"><%= idx + 1 %></td>
                                         <td>
                                             <strong style="color: #0f172a; font-size: 0.95rem;"><%= exam.judul_ujian %></strong>
@@ -256,6 +267,12 @@
                                     </tr>
                                 <% }); %>
                             <% } %>
+                            <tr id="emptyUjianTableHint" style="display: none;">
+                                <td colspan="9" style="text-align: center; padding: 36px; color: #64748b;">
+                                    <i class="fas fa-search" style="font-size: 1.5rem; color: #cbd5e1; display: block; margin-bottom: 8px;"></i>
+                                    Judul penilaian atau mata kuliah yang dicari tidak ditemukan.
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -686,6 +703,26 @@
             if (opt && opt.dataset.nip) {
                 document.getElementById('edit_nip_pengawas').value = opt.dataset.nip;
             }
+        }
+
+        // Live filter table data ujian by Judul Penilaian atau Mata Kuliah
+        function filterTableUjian(query) {
+            const q = (query || '').toLowerCase().trim();
+            const rows = document.querySelectorAll('tbody tr.ujian-row');
+            let visibleCount = 0;
+            rows.forEach(r => {
+                const text = (r.getAttribute('data-search') || '').toLowerCase();
+                if (!q || text.includes(q)) {
+                    r.style.display = '';
+                    visibleCount++;
+                } else {
+                    r.style.display = 'none';
+                }
+            });
+            const counter = document.getElementById('countUjianRows');
+            if (counter) counter.innerText = visibleCount;
+            const emptyHint = document.getElementById('emptyUjianTableHint');
+            if (emptyHint) emptyHint.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
         }
 
         window.addEventListener('click', function(e) {

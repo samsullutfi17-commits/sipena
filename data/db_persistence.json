@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "exported_at": "2026-10-10T12:54:06.695Z",
+  "exported_at": "2026-10-11T08:15:24.355Z",
   "users": [
     {
       "id": 5,
@@ -42,7 +42,7 @@
           "Dilarang bekerja sama!"
         ]
       },
-      "nidn": ""
+      "nidn": "0810079102"
     },
     {
       "id": 6,
@@ -52,7 +52,61 @@
       "role": "admin",
       "nim": null,
       "created_at": "2026-01-15T07:00:00.000Z",
-      "nidn": "0821098902"
+      "nidn": "0810079102",
+      "default_format_cetak": {
+        "tampilkan_kop": true,
+        "tampilkan_logo": true,
+        "logo_path": "/assets/img/logo_hamzanwadi.png",
+        "nama_institusi": "UNIVERSITAS HAMZANWADI",
+        "sub_institusi": "PROGRAM STUDI PENDIDIKAN INFORMATIKA",
+        "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
+        "kontak_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
+        "tampilkan_garis": true,
+        "judul_utama": "UJIAN TENGAH SEMESTER GANJIL UNIVERSITAS HAMZANWADI",
+        "sub_judul": "TAHUN AKADEMIK 2022/2023",
+        "identitas_rows": [
+          {
+            "kiri_label": "Hari/Tanggal",
+            "kiri_val": "Rabu, 16 November 2022",
+            "kanan_label": "Fakultas/Prodi",
+            "kanan_val": "FMIPA / S1 Pendidikan Informatika"
+          },
+          {
+            "kiri_label": "Waktu",
+            "kiri_val": "10:00 - 11:30",
+            "kanan_label": "Mata Kuliah",
+            "kanan_val": "Etika Profesi"
+          },
+          {
+            "kiri_label": "Dosen Pengampu",
+            "kiri_val": "Samsul Lutfi, S.Pd., M.Pd.",
+            "kanan_label": "Smt/SKS",
+            "kanan_val": "I / 2 sks"
+          }
+        ],
+        "tampilkan_petunjuk": true,
+        "judul_petunjuk": "PETUNJUK:",
+        "petunjuk_items": [
+          "Berdo'a sebelum mengerjakan soal !",
+          "Isi identitas Anda terlebih dahulu !",
+          "Soal Ujian ini kerjakan di rumah (Take Home).",
+          "Terakhir, semoga Anda selamat & Sukses dari ujian ini."
+        ],
+        "judul_matriks": "KISI-KISI PENULISAN BUTIR SOAL UJIAN",
+        "tampilkan_ttd": true,
+        "kota_ttd": "Selong",
+        "tanggal_ttd": "10 Oktober 2026",
+        "jabatan_kiri": "Ketua Program Studi",
+        "nama_pejabat_kiri": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
+        "nip_kiri": "0812048501",
+        "tampilkan_pengawas": true,
+        "jabatan_pengawas": "Pengawas Ujian",
+        "nama_pengawas": "Samsul Lutfi, S.Pd., M.Pd.",
+        "nip_pengawas": "0821098902",
+        "jabatan_kanan": "Dosen Pengampu Mata Kuliah",
+        "nama_pejabat_kanan": "Samsul Lutfi, S.Pd., M.Pd.",
+        "nip_kanan": "0810079102"
+      }
     },
     {
       "id": 7,
@@ -2428,7 +2482,9 @@
       "id_kelas": 11,
       "created_by_dosen": 5,
       "created_at": "2026-10-09T00:27:36.171Z",
-      "nidn": ""
+      "nidn": "",
+      "is_logged_in": true,
+      "last_login": "2026-10-10T14:07:53.620Z"
     },
     {
       "id": 205,
@@ -4969,7 +5025,7 @@
       "kode_prodi": "SI",
       "nama_prodi": "S1 Sistem Informasi",
       "id_fakultas": 1,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -4977,7 +5033,7 @@
       "kode_prodi": "TI",
       "nama_prodi": "S1 Teknik Informatika",
       "id_fakultas": 1,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -4985,7 +5041,7 @@
       "kode_prodi": "TK",
       "nama_prodi": "S1 Teknik Komputer",
       "id_fakultas": 1,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -4993,7 +5049,7 @@
       "kode_prodi": "TL",
       "nama_prodi": "S1 Teknik Lingkungan",
       "id_fakultas": 1,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5001,7 +5057,7 @@
       "kode_prodi": "BK",
       "nama_prodi": "S1 Bimbingan dan Konseling",
       "id_fakultas": 2,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5009,7 +5065,7 @@
       "kode_prodi": "PGSD",
       "nama_prodi": "S1 Pendidikan Guru Sekolah Dasar",
       "id_fakultas": 2,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5017,7 +5073,7 @@
       "kode_prodi": "PBINDO",
       "nama_prodi": "S1 Pendidikan Bahasa Indonesia",
       "id_fakultas": 3,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5025,7 +5081,7 @@
       "kode_prodi": "PEKO",
       "nama_prodi": "S1 Pendidikan Ekonomi",
       "id_fakultas": 4,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5033,7 +5089,7 @@
       "kode_prodi": "PMAT",
       "nama_prodi": "S1 Pendidikan Matematika",
       "id_fakultas": 5,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. Sri Supiyati, M.Pd., M.Si.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5041,7 +5097,7 @@
       "kode_prodi": "FARM",
       "nama_prodi": "S1 Farmasi",
       "id_fakultas": 6,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5049,7 +5105,7 @@
       "kode_prodi": "PI",
       "nama_prodi": "S1 Pendidikan Informatika",
       "id_fakultas": 5,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
       "nidn_kaprodi": "0812048501"
     },
     {
@@ -5057,195 +5113,137 @@
       "kode_prodi": "BIO",
       "nama_prodi": "S1 Pendidikan Biologi",
       "id_fakultas": 5,
-      "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+      "nama_kaprodi": "Wawan Muliawan, M.Pd.",
       "nidn_kaprodi": "0812048501"
     }
   ],
   "kelas": [
     {
-      "id": 1,
-      "nama_kelas": "V (A)",
-      "angkatan": 2024,
-      "semester": 5,
-      "id_program_studi": 12,
-      "id_dosen": 6,
-      "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
-    },
-    {
-      "id": 2,
-      "nama_kelas": "PI-A",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 11,
-      "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
-    },
-    {
-      "id": 3,
-      "nama_kelas": "TI-B",
-      "angkatan": 2023,
-      "semester": 3,
-      "id_program_studi": 2,
-      "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
-    },
-    {
-      "id": 4,
-      "nama_kelas": "PGSD",
+      "id": 5,
+      "nama_kelas": "PGSD (5L)",
       "angkatan": 2024,
       "semester": 5,
       "id_program_studi": 6,
-      "id_dosen": null,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
-    },
-    {
-      "id": 5,
-      "nama_kelas": "PGSD (5L)",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 6,
       "nama_kelas": "PGSD (5M)",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
+      "angkatan": 2024,
+      "semester": 5,
+      "id_program_studi": 6,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 7,
       "nama_kelas": "PGSD (5N)",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
+      "angkatan": 2024,
+      "semester": 5,
+      "id_program_studi": 6,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 8,
       "nama_kelas": "PGSD (5K)",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
+      "angkatan": 2024,
+      "semester": 5,
+      "id_program_studi": 6,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 9,
       "nama_kelas": "PGSD (5J)",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
+      "angkatan": 2024,
+      "semester": 5,
+      "id_program_studi": 6,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 10,
       "nama_kelas": "PI-7A",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
+      "angkatan": 2023,
+      "semester": 7,
+      "id_program_studi": 11,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 11,
       "nama_kelas": "PI-IA",
       "angkatan": 2026,
       "semester": 1,
-      "id_program_studi": 1,
+      "id_program_studi": 11,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 12,
       "nama_kelas": "BIO-5A",
-      "angkatan": 2026,
-      "semester": 1,
-      "id_program_studi": 1,
+      "angkatan": 2024,
+      "semester": 5,
+      "id_program_studi": 6,
       "id_dosen": 5,
       "created_by": "admin",
-      "id_prodi": null
+      "id_prodi": 0
     }
   ],
   "mata_kuliah": [
     {
       "id": 1,
-      "kode_mk": "EP101",
+      "kode_mk": "PIN6102",
       "nama_mk": "Etika Profesi",
       "sks": 2,
       "id_dosen": 7,
       "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 2,
-      "kode_mk": "PBO101",
-      "nama_mk": "Pemrograman Berorientasi Objek",
-      "sks": 3,
+      "kode_mk": "PIN6747",
+      "nama_mk": "Manajemen Pendidikan",
+      "sks": 2,
       "id_dosen": 6,
       "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
-    },
-    {
-      "id": 3,
-      "kode_mk": "BD101",
-      "nama_mk": "Basis Data",
-      "sks": 3,
-      "id_dosen": 7,
-      "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 4,
-      "kode_mk": "JK101",
-      "nama_mk": "Jaringan Komputer",
-      "sks": 3,
+      "kode_mk": "PSD6545",
+      "nama_mk": "Pengenalan Lapangan Prasekolah I (PLP)",
+      "sks": 1,
       "id_dosen": 7,
       "created_by": "Dr. Budi Santoso, M.Kom",
-      "id_prodi": null
-    },
-    {
-      "id": 5,
-      "kode_mk": "SI101",
-      "nama_mk": "Sistem Informasi",
-      "sks": 3,
-      "id_dosen": 1,
-      "created_by": "Pengajar",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 6,
-      "kode_mk": "PMP101",
+      "kode_mk": "PIN6744",
       "nama_mk": "Pengembangan Media Pembelajaran",
-      "sks": 3,
+      "sks": 2,
       "id_dosen": 6,
       "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
+      "id_prodi": 0
     },
     {
       "id": 7,
-      "kode_mk": "PT101",
-      "nama_mk": "Pemrograman Terstruktur",
-      "sks": 3,
+      "kode_mk": "FMA 6501",
+      "nama_mk": "Aplikasi Komputer",
+      "sks": 2,
       "id_dosen": 6,
       "created_by": "Samsul Lutfi, S.Pd., M.Pd",
-      "id_prodi": null
+      "id_prodi": 0
     }
   ],
   "mata_kuliah_kelas": [
@@ -5267,1584 +5265,459 @@
   ],
   "ujian": [
     {
-      "id": 1,
-      "judul_ujian": "KUIS – Pengembangan Media Pembelajaran (Tested)",
-      "id_mata_kuliah": 6,
-      "jenis_ujian": "Kuis",
-      "durasi_menit": 100,
-      "total_nilai": 105,
-      "nilai_lulus": 65,
-      "aktif": true,
-      "hari_tanggal": "Senin, 15 Juli 2024",
-      "waktu": "08:00 - 10:00 / Lab 02",
-      "pengampu": "Samsul Lutfi, S.Pd., M.Pd",
-      "smt_sks": "V (A,B) / 3 sks",
-      "fakultas_prodi": "MIPA / Pend. Informatika",
-      "tahun_akademik": "2024/2025",
-      "petunjuk": "a. Berdo'a sebelum mengerjakan soal !\nb. Isi identitas Anda terlebih dahulu !\nc. Soal Ujian ini kerjakan dengan teliti dan jujur.\nd. Terakhir, semoga Anda selamat & Sukses dari ujian ini.",
-      "created_at": "2026-10-01T11:43:23.054Z",
-      "format_cetak": {
-        "tampilkan_kop": true,
-        "tampilkan_logo": true,
-        "logo_path": "/admin/uploads/logo_1791274397912_Logo_UH__2_.png",
-        "nama_institusi": "UNIVERSITAS HAMZANWADI",
-        "sub_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
-        "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
-        "kontak_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
-        "tampilkan_garis": true,
-        "judul_utama": "UJIAN AKHIR SEMESTER (UAS)",
-        "sub_judul": "TAHUN AKADEMIK 2024/2025",
-        "identitas_rows": [
-          {
-            "kiri_label": "Mata Kuliah",
-            "kiri_val": "Pemrograman Web Lanjut",
-            "kanan_label": "Dosen Pengampu",
-            "kanan_val": "Samsul Lutfi, S.Pd., M.Pd"
-          },
-          {
-            "kiri_label": "Hari/Tanggal",
-            "kiri_val": "Senin, 15 Juli 2024",
-            "kanan_label": "Waktu / Ruang",
-            "kanan_val": "08:00 - 10:00 / Lab 02"
-          }
-        ],
-        "tampilkan_petunjuk": true,
-        "judul_petunjuk": "PETUNJUK:",
-        "petunjuk_items": [
-          "Berdoalah sebelum mengerjakan!",
-          "Dilarang bekerja sama!"
-        ]
-      },
-      "dosen_pembuat": "Administrator Utama",
-      "id_dosen": 6,
-      "nidn_dosen": "0821098902",
-      "nip_pengawas": "",
-      "nidn_kaprodi": "0812048501"
-    },
-    {
-      "id": 2,
-      "judul_ujian": "KUIS – Pemrograman Terstruktur",
-      "id_mata_kuliah": 7,
-      "jenis_ujian": "Kuis",
-      "durasi_menit": 150,
-      "total_nilai": 100,
-      "nilai_lulus": 60,
-      "aktif": false,
-      "hari_tanggal": "Sabtu, 21 Januari 2023",
-      "waktu": "09:15-11:45",
-      "pengampu": "Samsul Lutfi, S.Pd., M.Pd",
-      "smt_sks": "V (A,B) / 3 sks",
-      "fakultas_prodi": "MIPA / Pend. Informatika",
-      "tahun_akademik": "2022/2023",
-      "petunjuk": "a. Berdo'a sebelum mengerjakan soal !\nb. Isi identitas Anda terlebih dahulu !\nc. Soal Ujian ini kerjakan di rumah (Take Home).\nd. Terakhir, semoga Anda selamat & Sukses dari ujian ini.",
-      "created_at": "2026-10-01T11:43:23.054Z",
-      "id_dosen": 6,
-      "dosen_pembuat": "Samsul Lutfi, S.Pd., M.Pd",
-      "nidn_dosen": "0821098902",
-      "nip_pengawas": "",
-      "nidn_kaprodi": "0812048501"
-    },
-    {
       "id": 3,
       "judul_ujian": "KUIS – Etika Profesi",
       "id_mata_kuliah": 1,
       "jenis_ujian": "Kuis",
       "durasi_menit": 90,
       "total_nilai": 100,
-      "nilai_lulus": 60,
+      "nilai_lulus": 64,
       "aktif": true,
       "hari_tanggal": "Rabu, 16 November 2022",
       "waktu": "10:00 - 11:30",
-      "pengampu": "Dr. Budi Santoso, M.Kom",
-      "smt_sks": "III / 2 sks",
-      "fakultas_prodi": "Teknik / S1 Teknik Informatika",
+      "pengampu": "Samsul Lutfi, S.Pd., M.Pd.",
+      "smt_sks": "I / 2 sks",
+      "fakultas_prodi": "FMIPA / S1 Pendidikan Informatika",
       "tahun_akademik": "2022/2023",
       "petunjuk": "a. Berdo'a sebelum mengerjakan soal !\nb. Kerjakan secara mandiri dan jujur.",
       "created_at": "2026-10-01T11:43:23.054Z",
       "id_dosen": 7,
       "dosen_pembuat": "Dr. Budi Santoso, M.Kom",
-      "nidn_dosen": "0821098902",
-      "nip_pengawas": "",
-      "nidn_kaprodi": "0812048501"
+      "nidn_dosen": "0810079102",
+      "nip_pengawas": "0821098902",
+      "nidn_kaprodi": "0812048501",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
+      "nama_pengawas": "Samsul Lutfi, S.Pd., M.Pd.",
+      "format_cetak": {
+        "tampilkan_kop": true,
+        "tampilkan_logo": true,
+        "logo_path": "/assets/img/logo_hamzanwadi.png",
+        "nama_institusi": "UNIVERSITAS HAMZANWADI",
+        "sub_institusi": "PROGRAM STUDI PENDIDIKAN INFORMATIKA",
+        "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
+        "kontak_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
+        "tampilkan_garis": true,
+        "judul_utama": "UJIAN TENGAH SEMESTER GANJIL UNIVERSITAS HAMZANWADI",
+        "sub_judul": "TAHUN AKADEMIK 2022/2023",
+        "identitas_rows": [
+          {
+            "kiri_label": "Hari/Tanggal",
+            "kiri_val": "Rabu, 16 November 2022",
+            "kanan_label": "Fakultas/Prodi",
+            "kanan_val": "FMIPA / S1 Pendidikan Informatika"
+          },
+          {
+            "kiri_label": "Waktu",
+            "kiri_val": "10:00 - 11:30",
+            "kanan_label": "Mata Kuliah",
+            "kanan_val": "Etika Profesi"
+          },
+          {
+            "kiri_label": "Dosen Pengampu",
+            "kiri_val": "Samsul Lutfi, S.Pd., M.Pd.",
+            "kanan_label": "Smt/SKS",
+            "kanan_val": "I / 2 sks"
+          }
+        ],
+        "tampilkan_petunjuk": true,
+        "judul_petunjuk": "PETUNJUK:",
+        "petunjuk_items": [
+          "Berdo'a sebelum mengerjakan soal !",
+          "Isi identitas Anda terlebih dahulu !",
+          "Soal Ujian ini kerjakan di rumah (Take Home).",
+          "Terakhir, semoga Anda selamat & Sukses dari ujian ini."
+        ],
+        "judul_matriks": "KISI-KISI PENULISAN BUTIR SOAL UJIAN",
+        "tampilkan_ttd": true,
+        "kota_ttd": "Selong",
+        "tanggal_ttd": "10 Oktober 2026",
+        "jabatan_kiri": "Ketua Program Studi",
+        "nama_pejabat_kiri": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
+        "nip_kiri": "0812048501",
+        "tampilkan_pengawas": true,
+        "jabatan_pengawas": "Pengawas Ujian",
+        "nama_pengawas": "Samsul Lutfi, S.Pd., M.Pd.",
+        "nip_pengawas": "0821098902",
+        "jabatan_kanan": "Dosen Pengampu Mata Kuliah",
+        "nama_pejabat_kanan": "Samsul Lutfi, S.Pd., M.Pd.",
+        "nip_kanan": "0810079102"
+      }
+    },
+    {
+      "id": 4,
+      "judul_ujian": "KUIS – Pengembangan Media Pembelajaran",
+      "id_mata_kuliah": 6,
+      "jenis_ujian": "Kuis",
+      "durasi_menit": 90,
+      "total_nilai": 100,
+      "nilai_lulus": 67,
+      "aktif": true,
+      "pengampu": "Samsul Lutfi, S.Pd., M.Pd.",
+      "dosen_pembuat": "Administrator Utama",
+      "nidn_dosen": "0810079102",
+      "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
+      "nidn_kaprodi": "0812048501",
+      "nama_pengawas": "Samsul Lutfi, S.Pd., M.Pd.",
+      "nip_pengawas": "0810079102",
+      "id_dosen": 5,
+      "created_at": "2026-10-11T07:38:49.161Z"
     }
   ],
   "ujian_kelas": [
     {
-      "id": 3,
-      "id_ujian": 1,
-      "id_kelas": 1
-    },
-    {
-      "id": 3,
+      "id": 1,
       "id_ujian": 3,
-      "id_kelas": 2
+      "id_kelas": 11
     },
     {
-      "id": 3,
-      "id_ujian": 2,
-      "id_kelas": 1
+      "id": 2,
+      "id_ujian": 4,
+      "id_kelas": 10
     }
   ],
   "soal": [
     {
-      "id": 6,
-      "id_ujian": 1,
+      "id": 1,
+      "id_ujian": 3,
       "jenis_soal": "pg",
-      "pertanyaan": "Pada model desain instruksional ASSURE, huruf \"A\" pertama merupakan akronim dari langkah...",
-      "pembahasan": "Langkah pertama ASSURE adalah Analyze Learners (Analisis Karakteristik Peserta Didik).",
+      "pertanyaan": "Dalam arsitektur internet, protokol apa yang bertanggung jawab untuk memecah data menjadi paket-paket kecil dan memastikan paket tersebut tiba di tujuan dengan urutan yang benar?",
+      "pembahasan": "TCP/IP (Transmission Control Protocol/Internet Protocol) adalah protokol inti yang mengatur pengiriman data di internet. TCP memecah data menjadi paket dan memastikan integritas serta urutan pengiriman, sedangkan IP menangani alamat dan routing paket.",
+      "poin": 4,
+      "urutan": 1,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "mudah",
+      "level_kognitif": "C2",
+      "cpmk": "Menjelaskan konsep dasar internet dan protokol komunikasi data",
+      "materi_pokok": "Konsep Internet",
+      "indikator": "Mampu mengidentifikasi fungsi protokol TCP/IP dalam pengiriman data di internet"
+    },
+    {
+      "id": 2,
+      "id_ujian": 3,
+      "jenis_soal": "pg",
+      "pertanyaan": "Ketika pengguna memasukkan kata kunci ke dalam search engine, komponen mana yang secara aktif mengunjungi halaman web untuk mengumpulkan data baru dan memperbarui indeks?",
+      "pembahasan": "Crawler atau spider adalah program yang secara otomatis menjelajahi web, mengikuti tautan, dan mengumpulkan konten halaman. Data yang dikumpulkan kemudian diproses oleh indexer untuk disimpan di database agar dapat dicari.",
+      "poin": 4,
+      "urutan": 2,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Menganalisis mekanisme kerja search engine",
+      "materi_pokok": "Search Engine",
+      "indikator": "Mampu membedakan antara crawler, indexer, dan database dalam proses pencarian informasi"
+    },
+    {
+      "id": 3,
+      "id_ujian": 3,
+      "jenis_soal": "pg",
+      "pertanyaan": "Seorang dosen mengirim dokumen sensitif berisi data mahasiswa melalui email tanpa enkripsi ke alamat email pribadi mahasiswa. Dari perspektif etika profesi dan keamanan siber, pelanggaran utama yang terjadi adalah...",
+      "pembahasan": "Pengiriman data sensitif tanpa enkripsi melanggar prinsip kerahasiaan (confidentiality) dalam keamanan informasi. Hal ini berisiko tinggi terhadap kebocoran data pribadi (PII) dan melanggar etika profesi serta regulasi perlindungan data.",
+      "poin": 4,
+      "urutan": 3,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sulit",
+      "level_kognitif": "C4",
+      "cpmk": "Mengevaluasi etika penggunaan email dalam konteks profesional",
+      "materi_pokok": "Email",
+      "indikator": "Mampu menilai kepatuhan terhadap protokol keamanan dan privasi dalam pengiriman email"
+    },
+    {
+      "id": 4,
+      "id_ujian": 3,
+      "jenis_soal": "tf",
+      "pertanyaan": "Browser web berfungsi sebagai klien yang menerjemahkan kode HTML, CSS, dan JavaScript menjadi tampilan visual yang dapat dibaca oleh pengguna di perangkatnya.",
+      "pembahasan": "Pernyataan benar. Browser adalah perangkat lunak klien yang bertindak sebagai perantara antara pengguna dan server web, dengan tugas utama merender (rendering) konten web menjadi antarmuka grafis.",
+      "poin": 4,
+      "urutan": 4,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "mudah",
+      "level_kognitif": "C2",
+      "cpmk": "Menjelaskan fungsi dan karakteristik browsing web",
+      "materi_pokok": "Browsing",
+      "indikator": "Mampu menentukan kebenaran pernyataan mengenai fungsi browser web"
+    },
+    {
+      "id": 5,
+      "id_ujian": 3,
+      "jenis_soal": "tf",
+      "pertanyaan": "Penggunaan search engine yang sama secara berulang dengan preferensi yang sama akan menghasilkan variasi sumber informasi yang semakin luas dan objektif bagi pengguna.",
+      "pembahasan": "Pernyataan salah. Fenomena ini dikenal sebagai 'filter bubble' atau 'echo chamber', di mana algoritma personalisasi cenderung menyajikan konten yang sesuai dengan preferensi pengguna sebelumnya, sehingga mempersempit paparan terhadap perspektif yang berbeda.",
+      "poin": 4,
+      "urutan": 5,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": "Menganalisis dampak algoritma search engine terhadap akses informasi",
+      "materi_pokok": "Search Engine",
+      "indikator": "Mampu mengidentifikasi potensi bias atau filter bubble dalam hasil pencarian"
+    },
+    {
+      "id": 6,
+      "id_ujian": 3,
+      "jenis_soal": "tf",
+      "pertanyaan": "Protokol SMTPS (SMTP over SSL/TLS) menjamin bahwa isi email tidak dapat dibaca oleh pihak ketiga selama dalam transit jaringan, berbeda dengan SMTP standar.",
+      "pembahasan": "Pernyataan benar. SMTP standar mengirim data dalam teks polos (plaintext) yang rentan terhadap penyadapan. SMTPS menggunakan enkripsi SSL/TLS untuk melindungi integritas dan kerahasiaan data selama transmisi.",
       "poin": 4,
       "urutan": 6,
       "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": "Menerapkan model desain instruksional",
-      "materi_pokok": "Model Desain ASSURE",
-      "indikator": "Mengidentifikasi tahapan awal model ASSURE"
+      "tingkat_kesulitan": "sulit",
+      "level_kognitif": "C4",
+      "cpmk": "Mengevaluasi keamanan protokol email",
+      "materi_pokok": "Email",
+      "indikator": "Mampu membedakan protokol pengiriman dan protokol keamanan email"
     },
     {
       "id": 7,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Objek atau benda nyata yang dihadirkan langsung ke dalam ruang kelas sebagai sumber belajar disebut sebagai media...",
-      "pembahasan": "Realia adalah benda-benda nyata yang dipelajari secara autentik.",
+      "id_ujian": 3,
+      "jenis_soal": "menjodohkan",
+      "pertanyaan": "Jodohkan istilah berikut dengan definisi yang tepat:\n1. Domain Name System (DNS)\n2. IP Address\n3. Web Server\n4. Router",
+      "pembahasan": "DNS menerjemahkan nama mudah diingat (domain) menjadi IP. IP adalah alamat unik perangkat. Web server menyimpan konten. Router mengarahkan lalu lintas data antar jaringan.",
       "poin": 4,
       "urutan": 7,
       "data_tambahan": null,
       "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": "Mengklasifikasikan media 3 dimensi",
-      "materi_pokok": "Media Realia",
-      "indikator": "Menyebutkan istilah media benda asli"
+      "level_kognitif": "C2",
+      "cpmk": "Menjelaskan komponen dasar infrastruktur internet",
+      "materi_pokok": "Konsep Internet",
+      "indikator": "Mampu menjodohkan istilah teknis dengan definisi atau fungsinya yang tepat"
     },
     {
       "id": 8,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Tujuan utama melakukan evaluasi formatif terhadap prototipe media pembelajaran adalah...",
-      "pembahasan": "Evaluasi formatif bertujuan mengidentifikasi kelemahan media selama masa pengembangan agar disempurnakan.",
-      "poin": 4,
-      "urutan": 8,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C2",
-      "cpmk": "Mengevaluasi media pembelajaran",
-      "materi_pokok": "Evaluasi Media",
-      "indikator": "Menjelaskan tujuan evaluasi formatif"
-    },
-    {
-      "id": 9,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Pada \"Kerucut Pengalaman\" (Cone of Experience) Edgar Dale, pengalaman belajar yang paling konkret diperoleh melalui...",
-      "pembahasan": "Dasar kerucut Dale adalah pengalaman langsung bertujuan (direct purposeful experience).",
-      "poin": 4,
-      "urutan": 9,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C2",
-      "cpmk": "Menganalisis teori belajar berbasis media",
-      "materi_pokok": "Kerucut Pengalaman Edgar Dale",
-      "indikator": "Menganalisis tingkat keabstrakan pengalaman belajar"
-    },
-    {
-      "id": 10,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Menurut Teori Kognitif Multimedia Richard E. Mayer, \"Prinsip Modalitas\" (Modality Principle) menganjurkan agar...",
-      "pembahasan": "Prinsip modalitas menyarankan animasi/grafik disajikan dengan narasi suara daripada teks tertulis di layar.",
-      "poin": 4,
-      "urutan": 10,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menerapkan prinsip multimedia Mayer",
-      "materi_pokok": "Prinsip Multimedia Mayer",
-      "indikator": "Menerapkan prinsip modalitas"
-    },
-    {
-      "id": 11,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Prinsip \"Keterpaduan Spasial\" (Spatial Contiguity Principle) dalam tata letak media presentasi mengamanatkan...",
-      "pembahasan": "Teks dan gambar yang saling berhubungan diletakkan berdekatan satu sama lain di layar.",
-      "poin": 4,
-      "urutan": 11,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menerapkan prinsip multimedia Mayer",
-      "materi_pokok": "Prinsip Keterpaduan Spasial",
-      "indikator": "Menerapkan prinsip keterpaduan spasial"
-    },
-    {
-      "id": 12,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Pendidik ingin mengajarkan konsep pemompaan darah oleh bilik dan serambi jantung yang bergerak dinamis. Media yang paling tepat adalah...",
-      "pembahasan": "Video animasi 3 dimensi memperlihatkan dinamika pergerakan organ internal secara jelas.",
-      "poin": 4,
-      "urutan": 12,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Memilih media sesuai materi",
-      "materi_pokok": "Pemilihan Media Instruksional",
-      "indikator": "Menentukan media untuk konsep dinamis"
-    },
-    {
-      "id": 13,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Perbedaan mendasar antara media tiruan \"Model Padat\" dengan \"Mock-Up\" dalam pembelajaran teknologi adalah...",
-      "pembahasan": "Mock-up memperlihatkan aspek fungsional cara kerja komponen, bukan sekadar bentuk luar.",
-      "poin": 4,
-      "urutan": 13,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C2",
-      "cpmk": "Membedakan jenis media tiga dimensi",
-      "materi_pokok": "Media Tiruan Tiga Dimensi",
-      "indikator": "Membedakan karakteristik mock-up dan model padat"
-    },
-    {
-      "id": 14,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Dalam menyusun naskah \"Storyboard\" video pembelajaran, komponen utama yang harus tercantum pada setiap panel adalah...",
-      "pembahasan": "Storyboard memuat visual sketsa adegan, audio narasi, dan perkiraan durasi.",
-      "poin": 4,
-      "urutan": 14,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Merancang naskah produksi media",
-      "materi_pokok": "Produksi Media Video",
-      "indikator": "Menyusun elemen naskah storyboard"
-    },
-    {
-      "id": 15,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Penerapan konsep \"Gamifikasi\" (Gamification) dalam platform media pembelajaran digital bertujuan utama untuk...",
-      "pembahasan": "Gamifikasi memotivasi partisipasi aktif siswa melalui elemen permainan edukatif.",
-      "poin": 4,
-      "urutan": 15,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menganalisis inovasi media pembelajaran",
-      "materi_pokok": "Gamifikasi dalam Pembelajaran",
-      "indikator": "Menganalisis tujuan penerapan gamifikasi"
-    },
-    {
-      "id": 16,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Format file audio terkompresi universal yang paling banyak didukung platform e-learning daring adalah...",
-      "pembahasan": "Format MP3 (.mp3) memiliki kompatibilitas luas di seluruh web browser dan perangkat seluler.",
-      "poin": 4,
-      "urutan": 16,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C2",
-      "cpmk": "Memahami format teknis media digital",
-      "materi_pokok": "Format Digital Audio",
-      "indikator": "Mengidentifikasi format audio standar e-learning"
-    },
-    {
-      "id": 17,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Kriteria \"Kesesuaian dengan Karakteristik Sasaran\" dalam pemilihan media pembelajaran menuntut agar...",
-      "pembahasan": "Media harus selaras dengan usia, perkembangan kognitif, bahasa, dan gaya belajar siswa.",
-      "poin": 4,
-      "urutan": 17,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menerapkan kriteria pemilihan media",
-      "materi_pokok": "Kriteria Pemilihan Media",
-      "indikator": "Menganalisis kecocokan media dengan profil sasaran"
-    },
-    {
-      "id": 18,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Pada perangkat lunak Canva for Education, fitur yang memfasilitasi interaksi dua arah saat presentasi berlangsung adalah...",
-      "pembahasan": "Fitur Live Interactive Presentation dan polling memungkinkan siswa merespon secara langsung.",
-      "poin": 4,
-      "urutan": 18,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Mengoperasikan software pengembangan media",
-      "materi_pokok": "Aplikasi Desain Interaktif",
-      "indikator": "Mengidentifikasi fitur presentasi interaktif Canva"
-    },
-    {
-      "id": 19,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Kelebihan utama pemanfaatan Augmented Reality (AR) dalam pembelajaran sains dibanding buku teks bergambar adalah...",
-      "pembahasan": "AR menghadirkan model 3D interaktif yang dapat dimanipulasi di ruang nyata.",
-      "poin": 4,
-      "urutan": 19,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menganalisis teknologi imersif pembelajaran",
-      "materi_pokok": "Augmented Reality dalam Pembelajaran",
-      "indikator": "Menjelaskan keunggulan Augmented Reality"
-    },
-    {
-      "id": 20,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Uji ahli materi (Subject Matter Expert Review) dalam siklus validasi media pembelajaran berfokus pada penilaian aspek...",
-      "pembahasan": "Ahli materi menilai kebenaran ilmiah, kedalaman, dan kemutakhiran konten pelajaran.",
-      "poin": 4,
-      "urutan": 20,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Mengevaluasi validitas media pembelajaran",
-      "materi_pokok": "Validasi Ahli Materi",
-      "indikator": "Menjelaskan fokus penilaian uji ahli materi"
-    },
-    {
-      "id": 21,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Dalam model pengembangan ADDIE, aktivitas utama yang dilaksanakan pada tahap \"Development\" adalah...",
-      "pembahasan": "Tahap Development merupakan tahap produksi nyata pembuatan media fisik/digital.",
-      "poin": 4,
-      "urutan": 21,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menerapkan model pengembangan ADDIE",
-      "materi_pokok": "Fase Development ADDIE",
-      "indikator": "Menjelaskan kegiatan tahap pengembangan ADDIE"
-    },
-    {
-      "id": 22,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Teknik \"Scaffolding\" dalam media pembelajaran adaptif berbasis komputer diwujudkan melalui pemberian...",
-      "pembahasan": "Sistem memberikan petunjuk bertahap (clue/hints) sesuai kebutuhan belajar siswa.",
-      "poin": 4,
-      "urutan": 22,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C4",
-      "cpmk": "Menganalisis sistem adaptif multimedia",
-      "materi_pokok": "Media Pembelajaran Adaptif",
-      "indikator": "Menganalisis implementasi teknik scaffolding"
-    },
-    {
-      "id": 23,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Seorang pendidik merancang multimedia pembelajaran untuk topik Algoritma. Siswa mengeluhkan kelelahan kognitif dan kesulitan memahami materi inti. Setelah dianalisis, slide dipenuhi musik latar keras, teks panjang yang dibacakan kata demi kata oleh narator, serta animasi dekoratif yang bergerak terus. Menurut Cognitive Load Theory, fenomena ini terjadi akibat tingginya...",
-      "pembahasan": "Distraksi dekoratif dan redundansi teks-audio membebani memori kerja (Extraneous Cognitive Load).",
-      "poin": 4,
-      "urutan": 23,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sulit",
-      "level_kognitif": "C4",
-      "cpmk": "Menganalisis beban kognitif dalam desain multimedia",
-      "materi_pokok": "Cognitive Load Theory",
-      "indikator": "Mendiagnosis beban kognitif extraneous pada media"
-    },
-    {
-      "id": 24,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Dalam merancang media simulasi laboratorium virtual praktikum jaringan komputer, indikator keberhasilan media dalam memenuhi prinsip \"Fidelity\" (Derajat Kesetiaan Realistis) tingkat tinggi adalah...",
-      "pembahasan": "High-fidelity simulation menuntut kesamaan perilakuan (behavioral) dan respon fungsional sistem virtual dengan perangkat keras nyata.",
-      "poin": 4,
-      "urutan": 24,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sulit",
-      "level_kognitif": "C5",
-      "cpmk": "Mengevaluasi desain simulasi pembelajaran",
-      "materi_pokok": "Simulasi dan Virtual Laboratory",
-      "indikator": "Mengevaluasi parameter fidelity simulasi interaktif"
-    },
-    {
-      "id": 25,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Ketika mengevaluasi efektivitas media pembelajaran daring berbasis Artificial Intelligence (AI) menggunakan kerangka kerja TPACK (Technological Pedagogical Content Knowledge), integrasi yang berhasil ditandai oleh...",
-      "pembahasan": "Integrasi TPACK yang berhasil memadukan teknologi AI untuk memfasilitasi pedagogi konstruktivistik dalam mendalami konten materi.",
-      "poin": 4,
-      "urutan": 25,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sulit",
-      "level_kognitif": "C5",
-      "cpmk": "Mengevaluasi integrasi teknologi berdasarkan model TPACK",
-      "materi_pokok": "Kerangka Kerja TPACK dalam Media Pembelajaran",
-      "indikator": "Mengevaluasi integrasi harmonis TPACK pada implementasi media AI"
-    },
-    {
-      "id": 26,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Perhatikan gambar berikut! Berdasarkan struktur kode program pada NetBeans IDE tersebut, pernyataan yang benar mengenai deklarasi package dan class utama adalah...",
-      "gambar_soal": "/assets/img/netbeans_ide.svg",
-      "pembahasan": "Kode berada dalam package hello_world dan mendefinisikan class publik bernama Main dengan metode main sebagai titik masuk eksekusi program.",
-      "poin": 10,
-      "urutan": 1,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C2",
-      "cpmk": "Menganalisis struktur dasar kode pemrograman terstruktur",
-      "materi_pokok": "Struktur Program & IDE NetBeans",
-      "indikator": "Mengidentifikasi struktur package dan class utama pada IDE NetBeans"
-    },
-    {
-      "id": 32,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Pertanyaan Test Hapus",
-      "pembahasan": "",
-      "poin": 5,
-      "urutan": 26,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "mudah",
-      "level_kognitif": "C1",
-      "cpmk": ""
-    },
-    {
-      "id": 33,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Seorang pengembang media pembelajaran berbasis web sedang mengimplementasikan fitur pencarian materi ajar. Kode PHP awal yang digunakan adalah: $query = \"SELECT * FROM materi WHERE judul LIKE '%\" . $_GET['q'] . \"%'\"; kemudian dieksekusi menggunakan mysqli_query(). Seorang auditor keamanan menemukan bahwa input 'q' = \"' OR '1'='1\" dapat menyebabkan seluruh tabel materi terbaca tanpa autentikasi. Untuk mencegah serangan SQL Injection tersebut secara fundamental dan paling efektif, langkah teknis apa yang harus diterapkan oleh pengembang pada proses penanganan input tersebut?",
-      "pembahasan": "Kunci jawaban yang benar adalah opsi B. Prepared statements (prepared statements) adalah metode pencegahan SQL Injection yang paling direkomendasikan dan fundamental karena memisahkan logika SQL (struktur query) dari data (input pengguna). Dengan menggunakan mysqli_prepare() dan mysqli_stmt_bind_param(), database engine akan mengompilasi struktur query terlebih dahulu, dan data input hanya diperlakukan sebagai nilai literal, bukan sebagai bagian dari sintaks SQL. Hal ini membuat serangan seperti ' OR '1'='1 tidak dapat mengubah alur eksekusi query.\n\nOpsi A salah karena htmlspecialchars() digunakan untuk mencegah Cross-Site Scripting (XSS) dengan mengubah karakter menjadi entitas HTML, bukan untuk sanitasi SQL. Opsi C salah karena meskipun validasi regex dan addslashes() dapat membantu, addslashes() tidak selalu aman terhadap semua jenis serangan SQL Injection (terutama jika karakter set database tidak sesuai) dan bukan solusi paling fundamental dibandingkan prepared statements. Opsi D salah karena mengubah operator LIKE menjadi = tidak menyelesaikan masalah injeksi, dan trim() hanya menghapus spasi, bukan karakter berbahaya. Opsi E salah karena mysql_real_escape_string() (atau mysqli_real_escape_string()) adalah metode lama yang rentan terhadap error jika karakter set tidak disetel dengan benar, dan penggunaan fungsi mysql_* (tanpa i) sudah deprecated. Prepared statements lebih aman dan modern.",
-      "poin": 4,
-      "urutan": 26,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Mahasiswa mampu menganalisis kerentanan keamanan pada sistem berbasis web dan merancang strategi mitigasi SQL Injection menggunakan teknik sanitasi input dan prepared statements.",
-      "materi_pokok": "Keamanan Database SQL Injection dan Pencegahan Sanitasi Input",
-      "indikator": "Mampu mengidentifikasi teknik pencegahan SQL Injection yang paling tepat melalui penggunaan prepared statements dan parameterisasi query."
-    },
-    {
-      "id": 34,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Dalam pengembangan modul e-learning, sebuah form login menggunakan query: $sql = \"SELECT * FROM users WHERE username = '\" . $_POST['username'] . \"' AND password = '\" . $_POST['password'] . \"'\"; Seorang pengujian keamanan menemukan bahwa dengan memasukkan username: admin' -- dan password kosong, sistem dapat login sebagai admin tanpa verifikasi password. Jika pengembang ingin mempertahankan penggunaan string concatenation (tanpa beralih ke prepared statements) karena keterbatasan framework, teknik sanitasi input mana yang paling tepat dan minimal untuk memitigasi serangan SQL Injection pada kolom username tersebut?",
-      "pembahasan": "Kunci jawaban yang benar adalah opsi B. mysqli_real_escape_string() adalah fungsi yang dirancang khusus untuk meng-escape karakter khusus dalam string yang akan digunakan dalam query MySQL. Fungsi ini menambahkan backslash (\\) di depan karakter seperti kutip tunggal ('), kutip ganda (\"), backslash (\\), NULL byte, dan karakter lain yang dapat mengubah sintaks SQL. Dengan demikian, input admin' -- akan menjadi admin\\' --, yang akan dianggap sebagai bagian dari string literal, bukan sebagai penutup string dan komentar SQL. Ini adalah teknik sanitasi yang tepat jika prepared statements tidak dapat digunakan.\n\nOpsi A salah karena FILTER_SANITIZE_STRING (atau FILTER_SANITIZE_STRIPPED) terutama digunakan untuk membersihkan input dari tag HTML, bukan untuk meng-escape karakter SQL. Opsi C salah karena str_replace() untuk menghapus kutip tunggal dapat menyebabkan error pada data yang legitimately mengandung kutip (misalnya nama 'O'Brien') dan tidak menangani karakter berbahaya lainnya seperti backslash. Opsi D salah karena base64_encode() hanya mengubah format data, bukan meng-escape karakter SQL; jika input di-decode di sisi server, serangan tetap dapat terjadi, dan jika tidak di-decode, query tidak akan berfungsi. Opsi E salah karena md5() menghasilkan hash, yang akan mengubah nilai username secara permanen dan tidak cocok untuk pencarian langsung pada kolom username yang menyimpan teks asli, kecuali jika database juga menyimpan hash, yang bukan kasus di sini.",
-      "poin": 4,
-      "urutan": 27,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Mahasiswa mampu mengevaluasi efektivitas berbagai teknik sanitasi input dalam konteks mitigasi SQL Injection pada sistem manajemen basis data.",
-      "materi_pokok": "Keamanan Database SQL Injection dan Pencegahan Sanitasi Input",
-      "indikator": "Mampu memilih teknik escaping karakter khusus yang tepat untuk mencegah manipulasi sintaks SQL pada input string."
-    },
-    {
-      "id": 35,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Tim pengembangan aplikasi mobile XYZ menggunakan Scrum. Pada pertemuan Sprint Planning, mereka harus menentukan Sprint Goal dan memilih item backlog yang akan dikerjakan. Manakah pernyataan berikut yang paling tepat menggambarkan praktik yang benar dalam menetapkan Sprint Goal dan Sprint Backlog?",
-      "pembahasan": "Dalam Scrum, Sprint Goal harus didefinisikan terlebih dahulu pada awal Sprint Planning karena menjadi panduan utama bagi tim selama sprint. Setelah tujuan jelas, tim kemudian memilih item Product Backlog yang dapat membantu mencapai tujuan tersebut, membentuk Sprint Backlog. Opsi A salah karena urutan terbalik; Opsi B salah karena semua item Sprint Backlog harus berasal dari Product Backlog yang telah diprioritaskan; Opsi D melanggar prinsip stabilitas sprint, yang menyatakan bahwa perubahan pada Sprint Backlog hanya dapat dilakukan dengan kesepakatan tim; Opsi E salah karena Sprint Goal bersifat tetap selama sprint untuk menjaga fokus. Oleh karena itu, opsi C adalah jawaban yang benar.",
-      "poin": 4,
-      "urutan": 28,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menganalisis penerapan Scrum dalam proyek pengembangan perangkat lunak",
-      "materi_pokok": "Rekayasa Perangkat Lunak - Penerapan Metodologi Scrum dan Manajemen Sprint",
-      "indikator": "Mahasiswa dapat menjelaskan urutan dan tujuan penetapan Sprint Goal serta pemilihan item Sprint Backlog secara tepat"
-    },
-    {
-      "id": 36,
-      "id_ujian": 1,
-      "jenis_soal": "pg",
-      "pertanyaan": "Pada minggu kedua sprint dua tim pengembangan sistem informasi ABC, muncul bug kritis yang memengaruhi fungsi utama sistem. Menurut panduan Scrum, apa langkah yang tepat untuk menangani bug tersebut terkait Sprint Backlog?",
-      "pembahasan": "Scrum memperbolehkan penyesuaian Sprint Backlog hanya bila seluruh tim setuju dan dengan persetujuan Product Owner, terutama bila muncul pekerjaan yang bernilai tinggi seperti bug kritis. Oleh karena itu, tim harus berdiskusi dengan Product Owner; jika bug dianggap penting, satu atau lebih item dalam Sprint Backlog dapat diganti dengan bug tersebut, menjaga total ruang lingkup tetap realistis. Opsi A menambah ruang lingkup tanpa kontrol, melanggar prinsip stabilitas sprint. Opsi B mengasumsikan penggantian otomatis tanpa mempertimbangkan nilai bisnis. Opsi D mengabaikan urgensi bug kritis. Opsi E tidak sesuai karena menghentikan sprint bertentangan dengan aturan Scrum yang menekankan kontinuitas sprint. Jadi, opsi C adalah jawaban yang tepat.",
-      "poin": 4,
-      "urutan": 29,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "sedang",
-      "level_kognitif": "C3",
-      "cpmk": "Menganalisis penerapan Scrum dalam proyek pengembangan perangkat lunak",
-      "materi_pokok": "Rekayasa Perangkat Lunak - Penerapan Metodologi Scrum dan Manajemen Sprint",
-      "indikator": "Mahasiswa dapat menentukan prosedur penanganan perubahan pada Sprint Backlog sesuai peran Product Owner dan tim Scrum"
-    },
-    {
-      "id": 38,
-      "id_ujian": 2,
-      "jenis_soal": "tf",
-      "pertanyaan": "Diberikan pernyataan logika berikut: \"Jika suhu ruangan di atas 30 derajat Celcius ATAU kelembapan di atas 80%, maka sistem pendingin akan menyala.\" Jika suhu ruangan adalah 25 derajat Celcius dan kelembapan adalah 85%, maka pernyataan tersebut bernilai:",
-      "pembahasan": "Operator OR (ATAU) menghasilkan nilai Benar jika minimal salah satu operand bernilai Benar. Suhu 25 > 30 adalah Salah (False). Kelembapan 85 > 80 adalah Benar (True). Karena salah satu kondisi terpenuhi (True OR False = True), maka pernyataan keseluruhan bernilai Benar.",
-      "poin": 20,
-      "urutan": 8,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "proporsional",
-      "level_kognitif": "C2",
-      "cpmk": "Mampu menerapkan operator logika OR dalam konteks pengambilan keputusan sistem.",
-      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
-      "indikator": "Menentukan nilai kebenaran pernyataan majemuk yang menggunakan operator OR."
-    },
-    {
-      "id": 39,
-      "id_ujian": 2,
-      "jenis_soal": "pg",
-      "pertanyaan": "Perhatikan tabel kebenaran berikut untuk dua variabel boolean X dan Y:\n\n| X | Y | Hasil |\n|---|---|-------|\n| 0 | 0 | 1     |\n| 0 | 1 | 0     |\n| 1 | 0 | 0     |\n| 1 | 1 | 1     |\n\nOperator logika apa yang direpresentasikan oleh tabel kebenaran di atas?",
-      "pembahasan": "Tabel kebenaran menunjukkan output 1 hanya ketika input berbeda (0,1 atau 1,0) dan output 0 ketika input sama (0,0 atau 1,1). Ini adalah karakteristik unik dari operator Exclusive OR (XOR). AND menghasilkan 1 hanya jika keduanya 1. OR menghasilkan 1 jika minimal satu 1. NAND adalah negasi AND. NOR adalah negasi OR.",
-      "poin": 20,
-      "urutan": 9,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "proporsional",
-      "level_kognitif": "C3",
-      "cpmk": "Mampu mengidentifikasi jenis operator logika berdasarkan tabel kebenaran.",
-      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
-      "indikator": "Mengidentifikasi operator XOR dari pola output tabel kebenaran."
-    },
-    {
-      "id": 40,
-      "id_ujian": 2,
-      "jenis_soal": "pg_kompleks",
-      "pertanyaan": "Sebuah algoritma validasi data menggunakan logika berikut: Data dianggap VALID jika (Nilai >= 70) DAN (Kehadiran >= 80%). Jika data dianggap VALID, maka status mahasiswa adalah LULUS. Jika data TIDAK VALID, maka status mahasiswa adalah TIDAK LULUS.\r\n\r\nDiketahui:\r\n1. Mahasiswa A: Nilai 80, Kehadiran 75%\r\n2. Mahasiswa B: Nilai 65, Kehadiran 90%\r\n3. Mahasiswa C: Nilai 75, Kehadiran 85%\r\n4. Mahasiswa D: Nilai 90, Kehadiran 95%\r\n\r\nBerdasarkan logika di atas, manakah pasangan mahasiswa dan status yang BENAR?",
-      "pembahasan": "Kondisi VALID: (Nilai >= 70) AND (Kehadiran >= 80%).\r\n1. Mahasiswa A: Nilai 80 (True) AND Kehadiran 75 (False) -> False (TIDAK LULUS). Benar.\r\n2. Mahasiswa B: Nilai 65 (False) AND Kehadiran 90 (True) -> False (TIDAK LULUS). Opsi mengatakan LULUS, jadi Salah.\r\n3. Mahasiswa C: Nilai 75 (True) AND Kehadiran 85 (True) -> True (LULUS). Benar.\r\n4. Mahasiswa D: Nilai 90 (True) AND Kehadiran 95 (True) -> True (LULUS). Opsi mengatakan TIDAK LULUS, jadi Salah.\r\nJadi, jawaban yang benar adalah Mahasiswa A (TIDAK LULUS) dan Mahasiswa C (LULUS).",
-      "poin": 25,
-      "urutan": 10,
-      "data_tambahan": null,
-      "tingkat_kesulitan": "proporsional",
-      "level_kognitif": "C4",
-      "cpmk": "Mampu mengevaluasi kompleksitas logika multi-kondisi untuk menentukan status akhir sistem.",
-      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
-      "indikator": "Menganalisis kebenaran status mahasiswa berdasarkan kombinasi kondisi logika AND."
-    },
-    {
-      "id": 41,
-      "id_ujian": 2,
+      "id_ujian": 3,
       "jenis_soal": "menjodohkan",
-      "pertanyaan": "Jodohkan operator logika di bawah ini dengan deskripsi perilaku evaluasinya yang tepat dalam pemrograman terstruktur.",
-      "pembahasan": "Kunci jawaban yang tepat didasarkan pada kesesuaian prinsip metodologis dan kaidah standar pada materi KUIS – Pemrograman Terstruktur.",
-      "poin": 25,
-      "urutan": 11,
+      "pertanyaan": "Jodohkan tahapan proses kerja search engine dengan deskripsi aktivitasnya:\n1. Crawling\n2. Indexing\n3. Ranking",
+      "pembahasan": "Kunci jawaban yang tepat didasarkan pada kesesuaian prinsip metodologis dan kaidah standar pada materi Search Engine.",
+      "poin": 4,
+      "urutan": 8,
       "data_tambahan": null,
       "tingkat_kesulitan": "sedang",
       "level_kognitif": "C3",
-      "cpmk": "Mampu membedakan karakteristik evaluasi operator logika AND, OR, dan NOT.",
-      "materi_pokok": "KUIS – Pemrograman Terstruktur - Logika",
-      "indikator": "Mengasosiasikan operator logika dengan aturan evaluasi short-circuit dan nilai kebenaran."
+      "cpmk": "Menganalisis proses indexing pada search engine",
+      "materi_pokok": "Search Engine",
+      "indikator": "Mampu menjodohkan tahapan proses pencarian dengan aktivitas spesifiknya"
     }
   ],
   "opsi_jawaban": [
     {
-      "id": 26,
-      "id_soal": 6,
-      "teks_opsi": "Assess Performance",
+      "id": 1,
+      "id_soal": 1,
+      "teks_opsi": "HTTP",
       "benar": false,
       "urutan": 1
     },
     {
-      "id": 27,
-      "id_soal": 6,
-      "teks_opsi": "Analyze Learners",
+      "id": 2,
+      "id_soal": 1,
+      "teks_opsi": "TCP/IP",
       "benar": true,
       "urutan": 2
     },
     {
-      "id": 28,
-      "id_soal": 6,
-      "teks_opsi": "Acquire Materials",
+      "id": 3,
+      "id_soal": 1,
+      "teks_opsi": "FTP",
       "benar": false,
       "urutan": 3
     },
     {
-      "id": 29,
-      "id_soal": 6,
-      "teks_opsi": "Adjust Curriculum",
+      "id": 4,
+      "id_soal": 1,
+      "teks_opsi": "SMTP",
       "benar": false,
       "urutan": 4
     },
     {
-      "id": 30,
-      "id_soal": 6,
-      "teks_opsi": "Arrange Environment",
+      "id": 5,
+      "id_soal": 1,
+      "teks_opsi": "DNS",
       "benar": false,
       "urutan": 5
     },
     {
-      "id": 31,
-      "id_soal": 7,
-      "teks_opsi": "Mock-up",
+      "id": 6,
+      "id_soal": 2,
+      "teks_opsi": "Indexer",
       "benar": false,
       "urutan": 1
     },
     {
-      "id": 32,
-      "id_soal": 7,
-      "teks_opsi": "Realia",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 33,
-      "id_soal": 7,
-      "teks_opsi": "Model Padat",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 34,
-      "id_soal": 7,
-      "teks_opsi": "Diorama",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 35,
-      "id_soal": 7,
-      "teks_opsi": "Simulasi",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 36,
-      "id_soal": 8,
-      "teks_opsi": "Menentukan nilai kelulusan siswa",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 37,
-      "id_soal": 8,
-      "teks_opsi": "Menemukan kelemahan media untuk dilakukan revisi dan penyempurnaan",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 38,
-      "id_soal": 8,
-      "teks_opsi": "Menghitung biaya pemasaran",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 39,
-      "id_soal": 8,
-      "teks_opsi": "Membandingkan gaji antar guru",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 40,
-      "id_soal": 8,
-      "teks_opsi": "Membatalkan seluruh kurikulum",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 41,
-      "id_soal": 9,
-      "teks_opsi": "Membaca lambang kata tertulis",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 42,
-      "id_soal": 9,
-      "teks_opsi": "Mendengarkan siaran radio",
+      "id": 7,
+      "id_soal": 2,
+      "teks_opsi": "Database",
       "benar": false,
       "urutan": 2
     },
     {
-      "id": 43,
-      "id_soal": 9,
-      "teks_opsi": "Melakukan pengalaman langsung yang bertujuan (Direct Experience)",
+      "id": 8,
+      "id_soal": 2,
+      "teks_opsi": "Crawler (Spider)",
       "benar": true,
       "urutan": 3
     },
     {
-      "id": 44,
-      "id_soal": 9,
-      "teks_opsi": "Mengamati grafik visual",
+      "id": 9,
+      "id_soal": 2,
+      "teks_opsi": "Ranking Algorithm",
       "benar": false,
       "urutan": 4
     },
     {
-      "id": 45,
-      "id_soal": 9,
-      "teks_opsi": "Menyaksikan pameran museum tanpa praktik",
+      "id": 10,
+      "id_soal": 2,
+      "teks_opsi": "User Interface",
       "benar": false,
       "urutan": 5
     },
     {
-      "id": 46,
-      "id_soal": 10,
-      "teks_opsi": "Animasi disajikan dengan narasi suara daripada teks tertulis di layar",
-      "benar": true,
+      "id": 11,
+      "id_soal": 3,
+      "teks_opsi": "Penggunaan protokol SMTP yang salah",
+      "benar": false,
       "urutan": 1
     },
     {
-      "id": 47,
-      "id_soal": 10,
-      "teks_opsi": "Semua materi disajikan hanya dalam bentuk teks satu warna",
-      "benar": false,
+      "id": 12,
+      "id_soal": 3,
+      "teks_opsi": "Kehilangan integritas data akibat transmisi tidak terenkripsi",
+      "benar": true,
       "urutan": 2
     },
     {
-      "id": 48,
-      "id_soal": 10,
-      "teks_opsi": "Musik latar diputar sangat keras selama video",
+      "id": 13,
+      "id_soal": 3,
+      "teks_opsi": "Pelanggaran terhadap hak cipta materi ajar",
       "benar": false,
       "urutan": 3
     },
     {
-      "id": 49,
-      "id_soal": 10,
-      "teks_opsi": "Gambar tidak diberikan keterangan sama sekali",
+      "id": 14,
+      "id_soal": 3,
+      "teks_opsi": "Kesalahan dalam penulisan subjek email",
       "benar": false,
       "urutan": 4
     },
     {
-      "id": 50,
-      "id_soal": 10,
-      "teks_opsi": "Siswa membaca modul teks tebal tanpa gambar",
+      "id": 15,
+      "id_soal": 3,
+      "teks_opsi": "Gangguan pada server mail institusi",
       "benar": false,
       "urutan": 5
     },
     {
-      "id": 51,
-      "id_soal": 11,
-      "teks_opsi": "Teks dan gambar yang relevan diletakkan berdekatan secara spasial",
-      "benar": true,
-      "urutan": 1
-    },
-    {
-      "id": 52,
-      "id_soal": 11,
-      "teks_opsi": "Teks diletakkan di halaman pertama dan gambar di halaman terakhir",
-      "benar": false,
-      "urutan": 2
-    },
-    {
-      "id": 53,
-      "id_soal": 11,
-      "teks_opsi": "Gambar diletakkan acak tanpa keterkaitan topik",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 54,
-      "id_soal": 11,
-      "teks_opsi": "Teks diperbanyak hingga memenuhi seluruh slide",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 55,
-      "id_soal": 11,
-      "teks_opsi": "Ukuran font dibuat bervariasi lebih dari 10 jenis",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 56,
-      "id_soal": 12,
-      "teks_opsi": "Gambar foto diam di buku",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 57,
-      "id_soal": 12,
-      "teks_opsi": "Video animasi digital 3 dimensi dengan narasi penjelas",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 58,
-      "id_soal": 12,
-      "teks_opsi": "Rekaman audio suara denyut jantung saja",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 59,
-      "id_soal": 12,
-      "teks_opsi": "Diagram garis hitam putih statis",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 60,
-      "id_soal": 12,
-      "teks_opsi": "Tabel perbandingan teks",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 61,
-      "id_soal": 13,
-      "teks_opsi": "Model padat bisa dibongkar pasang, mock-up tidak bisa",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 62,
-      "id_soal": 13,
-      "teks_opsi": "Mock-up menonjolkan fungsi operasional komponen, model padat hanya rupa luar",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 63,
-      "id_soal": 13,
-      "teks_opsi": "Mock-up selalu berukuran raksasa",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 64,
-      "id_soal": 13,
-      "teks_opsi": "Model padat terbuat dari kertas koran",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 65,
-      "id_soal": 13,
-      "teks_opsi": "Mock-up tidak pernah digunakan dalam pembelajaran teknik",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 66,
-      "id_soal": 14,
-      "teks_opsi": "Daftar penonton dan harga tiket",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 67,
-      "id_soal": 14,
-      "teks_opsi": "Visual sketsa adegan, narasi audio, dan perkiraan durasi",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 68,
-      "id_soal": 14,
-      "teks_opsi": "Tanda tangan kepala sekolah dan bendahara",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 69,
-      "id_soal": 14,
-      "teks_opsi": "Daftar pustaka lengkap setebal 20 halaman",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 70,
-      "id_soal": 14,
-      "teks_opsi": "Hanya teks dialog tanpa sketsa visual",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 71,
-      "id_soal": 15,
-      "teks_opsi": "Mengalihkan fokus siswa dari materi pelajaran ke kompetisi",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 72,
-      "id_soal": 15,
-      "teks_opsi": "Meningkatkan motivasi intrinsik dan engagement peserta didik",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 73,
-      "id_soal": 15,
-      "teks_opsi": "Menghabiskan kuota internet peserta didik secepat mungkin",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 74,
-      "id_soal": 15,
-      "teks_opsi": "Menghilangkan peran evaluasi guru secara permanen",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 75,
-      "id_soal": 15,
-      "teks_opsi": "Menggantikan ujian semester menjadi game komersial",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 76,
-      "id_soal": 16,
-      "teks_opsi": "WAV tanpa kompresi 96kHz",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 77,
-      "id_soal": 16,
-      "teks_opsi": "MP3 (.mp3)",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 78,
-      "id_soal": 16,
-      "teks_opsi": "MIDI tanpa instrumen audio",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 79,
-      "id_soal": 16,
-      "teks_opsi": "FLAC ukuran 500 MB per file",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 80,
-      "id_soal": 16,
-      "teks_opsi": "AIFF format lokal khusus Apple kuno",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 81,
-      "id_soal": 17,
-      "teks_opsi": "Media yang dipilih harus selalu yang paling canggih dan mahal",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 82,
-      "id_soal": 17,
-      "teks_opsi": "Media disesuaikan dengan taraf kognitif, usia, dan latar belakang siswa",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 83,
-      "id_soal": 17,
-      "teks_opsi": "Media hanya digunakan siswa yang memiliki laptop pribadi",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 84,
-      "id_soal": 17,
-      "teks_opsi": "Media dipilih sesuai kesukaan pribadi guru semata",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 85,
-      "id_soal": 17,
-      "teks_opsi": "Media dibuat serumit mungkin agar siswa tertantang",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 86,
-      "id_soal": 18,
-      "teks_opsi": "Export PDF Print Only",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 87,
-      "id_soal": 18,
-      "teks_opsi": "Fitur Live Presentation & Polling interaktif",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 88,
-      "id_soal": 18,
-      "teks_opsi": "Format Dokumen Notepad biasa",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 89,
-      "id_soal": 18,
-      "teks_opsi": "Pencetakan Kartu Nama",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 90,
-      "id_soal": 18,
-      "teks_opsi": "Mode Offline tanpa interaksi",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 91,
-      "id_soal": 19,
-      "teks_opsi": "AR tidak memerlukan perangkat smartphone atau kamera",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 92,
-      "id_soal": 19,
-      "teks_opsi": "AR memvisualisasikan objek 3D interaktif yang dapat diamati dari sudut nyata",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 93,
-      "id_soal": 19,
-      "teks_opsi": "AR membuat seluruh isi buku hilang permanen",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 94,
-      "id_soal": 19,
-      "teks_opsi": "AR hanya bisa dijalankan di superkomputer militer",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 95,
-      "id_soal": 19,
-      "teks_opsi": "AR mempercepat kelulusan siswa tanpa perlu belajar",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 96,
-      "id_soal": 20,
-      "teks_opsi": "Resolusi piksel dan harmonisasi palet warna",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 97,
-      "id_soal": 20,
-      "teks_opsi": "Kebenaran ilmiah, kedalaman materi, dan ketercapaian tujuan instruksional",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 98,
-      "id_soal": 20,
-      "teks_opsi": "Spesifikasi kartu grafis server komputer",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 99,
-      "id_soal": 20,
-      "teks_opsi": "Harga kuota internet yang dikeluarkan siswa",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 100,
-      "id_soal": 20,
-      "teks_opsi": "Kekuatan fisik casing komputer sekolah",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 101,
-      "id_soal": 21,
-      "teks_opsi": "Melakukan wawancara awal kebutuhan siswa",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 102,
-      "id_soal": 21,
-      "teks_opsi": "Memproduksi aset fisik atau digital media berdasarkan blueprint/storyboard",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 103,
-      "id_soal": 21,
-      "teks_opsi": "Menyusun silabus kurikulum nasional",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 104,
-      "id_soal": 21,
-      "teks_opsi": "Melakukan sertifikasi profesi guru pengembang",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 105,
-      "id_soal": 21,
-      "teks_opsi": "Menjual aplikasi ke toko daring untuk laba",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 106,
-      "id_soal": 22,
-      "teks_opsi": "Hukuman pengurangan nilai langsung tanpa panduan",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 107,
-      "id_soal": 22,
-      "teks_opsi": "Bantuan petunjuk bertahap (hints) yang disesuaikan dengan respon siswa",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 108,
-      "id_soal": 22,
-      "teks_opsi": "Kunci jawaban instan di awal soal",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 109,
-      "id_soal": 22,
-      "teks_opsi": "Materi acak yang tidak saling berkaitan",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 110,
-      "id_soal": 22,
-      "teks_opsi": "Tampilan layar hitam putih statis",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 111,
-      "id_soal": 23,
-      "teks_opsi": "Intrinsic Cognitive Load karena materi terlalu mendasar",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 112,
-      "id_soal": 23,
-      "teks_opsi": "Extraneous Cognitive Load akibat elemen distraksi dan redundansi yang tidak relevan",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 113,
-      "id_soal": 23,
-      "teks_opsi": "Germane Cognitive Load yang memaksimalkan skema mental",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 114,
-      "id_soal": 23,
-      "teks_opsi": "Kekurangan bandwidth jaringan lokal kampus",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 115,
-      "id_soal": 23,
-      "teks_opsi": "Ketidaksesuaian sistem operasi komputer peserta didik",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 116,
-      "id_soal": 24,
-      "teks_opsi": "Tampilan tombol menggunakan efek gradasi mengkilap",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 117,
-      "id_soal": 24,
-      "teks_opsi": "Respon dan perilaku sistem virtual secara presisi merefleksikan konfigurasi perangkat jaringan nyata",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 118,
-      "id_soal": 24,
-      "teks_opsi": "Ukuran file aplikasi di bawah 1 Megabyte",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 119,
-      "id_soal": 24,
-      "teks_opsi": "Simulasi hanya dapat dimainkan satu kali per pengguna",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 120,
-      "id_soal": 24,
-      "teks_opsi": "Warna kabel jaringan dapat diubah menjadi pelangi transparan",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 121,
-      "id_soal": 25,
-      "teks_opsi": "Penggunaan AI paling canggih meskipun materi konten tidak tersampaikan secara benar",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 122,
-      "id_soal": 25,
-      "teks_opsi": "Teknologi AI memfasilitasi pedagogi konstruktivistik untuk mendalami materi pembelajaran secara kontekstual",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 123,
-      "id_soal": 25,
-      "teks_opsi": "Penghapusan seluruh materi teori agar siswa hanya mengobrol dengan AI",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 124,
-      "id_soal": 25,
-      "teks_opsi": "Guru menyerahkan 100% penilaian sepenuhnya pada mesin tanpa validasi manusia",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 125,
-      "id_soal": 25,
-      "teks_opsi": "Aplikasi AI dijadikan pengganti kurikulum secara sepihak",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 126,
-      "id_soal": 26,
-      "teks_opsi": "Program tidak memiliki titik masuk eksekusi (entry point)",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 127,
-      "id_soal": 26,
-      "teks_opsi": "Class Main dideklarasikan dalam package hello_world dan memuat metode publik static main",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 128,
-      "id_soal": 26,
-      "teks_opsi": "Nama file tidak perlu sama dengan nama class public",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 129,
-      "id_soal": 26,
-      "teks_opsi": "Output teks dicetak menggunakan perintah cin >> \"Selamat Datang\"",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 130,
-      "id_soal": 26,
-      "teks_opsi": "Tipe data kembalian method main adalah integer bukan void",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 156,
-      "id_soal": 32,
-      "teks_opsi": "Opsi A",
-      "benar": true,
-      "urutan": 1
-    },
-    {
-      "id": 157,
-      "id_soal": 32,
-      "teks_opsi": "Opsi B",
-      "benar": false,
-      "urutan": 2
-    },
-    {
-      "id": 168,
-      "id_soal": 33,
-      "teks_opsi": "Menggunakan fungsi htmlspecialchars() pada input $_GET['q'] sebelum dimasukkan ke dalam string query untuk mengubah karakter khusus menjadi entitas HTML.",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 169,
-      "id_soal": 33,
-      "teks_opsi": "Menerapkan prepared statements dengan parameterisasi query menggunakan mysqli_prepare() dan mysqli_stmt_bind_param() untuk memisahkan logika SQL dari data input.",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 170,
-      "id_soal": 33,
-      "teks_opsi": "Menambahkan validasi regex yang ketat untuk memastikan input hanya mengandung huruf dan angka, lalu menggunakan fungsi addslashes() untuk menambahkan backslash pada karakter kutip.",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 171,
-      "id_soal": 33,
-      "teks_opsi": "Mengubah struktur query menjadi SELECT * FROM materi WHERE judul = ? dan menggunakan fungsi trim() untuk menghapus spasi di awal dan akhir input pengguna.",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 172,
-      "id_soal": 33,
-      "teks_opsi": "Mengaktifkan mode strict pada konfigurasi MySQL server dan menggunakan fungsi mysql_real_escape_string() untuk meng-escape karakter khusus dalam input.",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 173,
-      "id_soal": 34,
-      "teks_opsi": "Menggunakan fungsi filter_var() dengan flag FILTER_SANITIZE_STRING untuk membersihkan input dari tag HTML dan karakter berbahaya.",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 174,
-      "id_soal": 34,
-      "teks_opsi": "Menerapkan fungsi mysqli_real_escape_string() pada input username untuk meng-escape karakter khusus seperti kutip tunggal, kutip ganda, dan backslash.",
-      "benar": true,
-      "urutan": 2
-    },
-    {
-      "id": 175,
-      "id_soal": 34,
-      "teks_opsi": "Menggunakan fungsi str_replace() untuk mengganti semua karakter kutip tunggal (') dengan karakter kosong sehingga input tidak mengandung simbol SQL.",
-      "benar": false,
-      "urutan": 3
-    },
-    {
-      "id": 176,
-      "id_soal": 34,
-      "teks_opsi": "Menggunakan fungsi base64_encode() pada input username sebelum dimasukkan ke query untuk mengenkripsi data menjadi string aman.",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 177,
-      "id_soal": 34,
-      "teks_opsi": "Menggunakan fungsi md5() pada input username untuk menghasilkan hash tetap yang tidak dapat dimanipulasi oleh karakter SQL.",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 178,
-      "id_soal": 35,
-      "teks_opsi": "Sprint Goal ditetapkan setelah tim memilih item Sprint Backlog, sehingga dapat menyesuaikan tujuan dengan item yang tersedia.",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 179,
-      "id_soal": 35,
-      "teks_opsi": "Sprint Backlog dapat berisi item yang belum pernah masuk ke Product Backlog, asalkan tim setuju.",
-      "benar": false,
-      "urutan": 2
-    },
-    {
-      "id": 180,
-      "id_soal": 35,
-      "teks_opsi": "Sprint Goal merupakan satu tujuan utama yang memandu seluruh sprint dan ditetapkan sebelum tim memilih item Sprint Backlog.",
-      "benar": true,
-      "urutan": 3
-    },
-    {
-      "id": 181,
-      "id_soal": 35,
-      "teks_opsi": "Selama sprint, tim dapat menambah atau mengurangi item Sprint Backlog tanpa persetujuan seluruh tim.",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 182,
-      "id_soal": 35,
-      "teks_opsi": "Sprint Goal dapat diubah di tengah sprint bila ada permintaan baru dari stakeholder.",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 183,
-      "id_soal": 36,
-      "teks_opsi": "Langsung menambahkan bug ke Sprint Backlog sehingga meningkatkan ruang lingkup sprint.",
-      "benar": false,
-      "urutan": 1
-    },
-    {
-      "id": 184,
-      "id_soal": 36,
-      "teks_opsi": "Menghapus item backlog dengan prioritas terendah untuk menjaga ruang lingkup sprint tetap sama.",
-      "benar": false,
-      "urutan": 2
-    },
-    {
-      "id": 185,
-      "id_soal": 36,
-      "teks_opsi": "Membahas bug dengan Product Owner; jika dianggap bernilai, mengganti salah satu item Sprint Backlog setelah tim sepakat.",
-      "benar": true,
-      "urutan": 3
-    },
-    {
-      "id": 186,
-      "id_soal": 36,
-      "teks_opsi": "Menunda penanganan bug hingga sprint berikutnya, terlepas dari dampaknya.",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 187,
-      "id_soal": 36,
-      "teks_opsi": "Menghentikan sprint yang sedang berjalan dan memulai sprint baru khusus untuk memperbaiki bug.",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 200,
-      "id_soal": 38,
+      "id": 16,
+      "id_soal": 4,
       "teks_opsi": "Benar",
       "benar": true,
       "urutan": 1
     },
     {
-      "id": 201,
-      "id_soal": 38,
+      "id": 17,
+      "id_soal": 4,
       "teks_opsi": "Salah",
       "benar": false,
       "urutan": 2
     },
     {
-      "id": 202,
-      "id_soal": 39,
-      "teks_opsi": "AND",
+      "id": 18,
+      "id_soal": 5,
+      "teks_opsi": "Benar",
       "benar": false,
       "urutan": 1
     },
     {
-      "id": 203,
-      "id_soal": 39,
-      "teks_opsi": "OR",
-      "benar": false,
+      "id": 19,
+      "id_soal": 5,
+      "teks_opsi": "Salah",
+      "benar": true,
       "urutan": 2
     },
     {
-      "id": 204,
-      "id_soal": 39,
-      "teks_opsi": "XOR",
-      "benar": true,
-      "urutan": 3
-    },
-    {
-      "id": 205,
-      "id_soal": 39,
-      "teks_opsi": "NAND",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 206,
-      "id_soal": 39,
-      "teks_opsi": "NOR",
-      "benar": false,
-      "urutan": 5
-    },
-    {
-      "id": 207,
-      "id_soal": 40,
-      "teks_opsi": "Mahasiswa A: TIDAK LULUS",
+      "id": 20,
+      "id_soal": 6,
+      "teks_opsi": "Benar",
       "benar": true,
       "urutan": 1
     },
     {
-      "id": 208,
-      "id_soal": 40,
-      "teks_opsi": "Mahasiswa B: LULUS",
+      "id": 21,
+      "id_soal": 6,
+      "teks_opsi": "Salah",
       "benar": false,
       "urutan": 2
     },
     {
-      "id": 209,
-      "id_soal": 40,
-      "teks_opsi": "Mahasiswa C: LULUS",
-      "benar": true,
-      "urutan": 3
-    },
-    {
-      "id": 210,
-      "id_soal": 40,
-      "teks_opsi": "Mahasiswa D: TIDAK LULUS",
-      "benar": false,
-      "urutan": 4
-    },
-    {
-      "id": 211,
-      "id_soal": 41,
-      "teks_opsi": "Operator AND (&&)",
+      "id": 22,
+      "id_soal": 7,
+      "teks_opsi": "1 - Sistem yang menerjemahkan nama domain menjadi alamat IP",
       "benar": true,
       "urutan": 1
     },
     {
-      "id": 212,
-      "id_soal": 41,
-      "teks_opsi": "Operator OR (||)",
+      "id": 23,
+      "id_soal": 7,
+      "teks_opsi": "2 - Identifikasi unik numerik untuk perangkat di jaringan",
       "benar": true,
       "urutan": 2
     },
     {
-      "id": 213,
-      "id_soal": 41,
-      "teks_opsi": "Operator NOT (!)",
+      "id": 24,
+      "id_soal": 7,
+      "teks_opsi": "3 - Komputer yang menyimpan dan menyajikan halaman web",
       "benar": true,
       "urutan": 3
     },
     {
-      "id": 214,
-      "id_soal": 41,
-      "teks_opsi": "Operator XOR (^)",
+      "id": 25,
+      "id_soal": 7,
+      "teks_opsi": "4 - Perangkat yang mengarahkan paket data antar jaringan",
       "benar": true,
       "urutan": 4
+    },
+    {
+      "id": 26,
+      "id_soal": 8,
+      "teks_opsi": "1 - Mengunjungi halaman web dan menyimpan salinan data",
+      "benar": true,
+      "urutan": 1
+    },
+    {
+      "id": 27,
+      "id_soal": 8,
+      "teks_opsi": "2 - Menyusun data yang dikumpulkan ke dalam struktur database yang dapat dicari",
+      "benar": true,
+      "urutan": 2
+    },
+    {
+      "id": 28,
+      "id_soal": 8,
+      "teks_opsi": "3 - Mengurutkan hasil pencarian berdasarkan relevansi dan faktor SEO",
+      "benar": true,
+      "urutan": 3
     }
   ],
   "sesi_ujian": [],
   "jawaban_peserta": [],
-  "riwayat_sesi_ujian": [],
+  "riwayat_sesi_ujian": [
+    {
+      "id_sesi": 1,
+      "id_ujian": 3,
+      "id_mahasiswa": 198,
+      "nilai_total": 0,
+      "waktu_selesai": null,
+      "alasan_reset": "Reset Manual Individual",
+      "direset_oleh": "Samsul Lutfi, S.Pd., M.Pd."
+    }
+  ],
   "pengaturan": {
     "nama_institusi": "UNIVERSITAS HAMZANWADI",
-    "fakultas_institusi": "FAKULTAS MIPA • PRODI PENDIDIKAN INFORMATIKA",
+    "fakultas_institusi": "PROGRAM STUDI PENDIDIKAN INFORMATIKA",
     "alamat_institusi": "Jln. TGKH. Muhammad Zainuddin Abdul Madjid No. 132 Pancor",
     "telepon_institusi": "Telp. (0376) 22954, Website: hamzanwadi.ac.id",
     "website_institusi": "https://hamzanwadi.ac.id",
     "logo_path": "/assets/img/logo_hamzanwadi.png",
-    "nama_kaprodi": "Dr. H. M. Zain, M.Pd.",
+    "nama_kaprodi": "Dr. (C) Rasyid Hardi Wirasasmita, ST., M.Pd.",
     "nidn_kaprodi": "0812048501",
     "nama_dosen": "Samsul Lutfi, S.Pd., M.Pd.",
-    "nidn_dosen": "0821098902"
+    "nidn_dosen": "0810079102"
   }
 }

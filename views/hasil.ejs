@@ -103,9 +103,43 @@
                     </span>
                 </div>
 
-                <div style="margin-bottom: 12px; color: var(--text-dark);">
+                <div style="margin-bottom: 12px; color: var(--text-dark); white-space: pre-line;">
                     <%- s.pertanyaan %>
                 </div>
+
+                <% if (s.jenis_soal === 'menjodohkan' || s.jenis_soal === 'matching') { 
+                    const correctPairs = (s.data_tambahan && s.data_tambahan.pairs) || s.matching_pairs || {};
+                    let studentMatches = {};
+                    try {
+                        studentMatches = typeof jawabanPeserta === 'object' ? jawabanPeserta : JSON.parse(jawabanPeserta || '{}');
+                    } catch(e) {
+                        studentMatches = {};
+                    }
+                %>
+                    <div style="margin-bottom: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px;">
+                        <strong style="display: block; margin-bottom: 8px; font-size: 0.88rem; color: #334155;">
+                            <i class="fas fa-link"></i> Evaluasi Pasangan Menjodohkan:
+                        </strong>
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <% Object.entries(correctPairs).forEach(function([k, correctV], pIdx) { 
+                                const userV = studentMatches[k] || '(Tidak dipilih)';
+                                const isPairCorrect = studentMatches[k] && studentMatches[k].trim() === correctV.trim();
+                            %>
+                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; background: <%= isPairCorrect ? '#f0fdf4' : '#fef2f2' %>; border: 1px solid <%= isPairCorrect ? '#bbf7d0' : '#fecaca' %>; border-radius: 6px; font-size: 0.85rem;">
+                                    <div style="font-weight: 600; color: #1e293b;">
+                                        <%= pIdx + 1 %>. <%= k %>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <span style="color: <%= isPairCorrect ? '#16a34a' : '#dc2626' %>; font-weight: 600;">
+                                            <%= userV %>
+                                        </span>
+                                        <i class="fas <%= isPairCorrect ? 'fa-check' : 'fa-times' %>" style="color: <%= isPairCorrect ? '#16a34a' : '#dc2626' %>;"></i>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
 
                 <% if (s.pembahasan) { %>
                     <div style="padding: 10px 14px; background: #f8fafc; border-left: 3px solid var(--primary); font-size: 0.9rem; color: #334155; border-radius: 4px;">

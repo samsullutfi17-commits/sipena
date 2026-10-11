@@ -1326,6 +1326,81 @@ class DataStore {
       });
   }
 
+  resolveMatchingPairs(soal) {
+    if (!soal) return {};
+    // 1. Direct pairs in data_tambahan
+    if (soal.data_tambahan && soal.data_tambahan.pairs && typeof soal.data_tambahan.pairs === 'object' && Object.keys(soal.data_tambahan.pairs).length > 0) {
+      return { ...soal.data_tambahan.pairs };
+    }
+
+    const opsiList = Array.isArray(soal.opsi) && soal.opsi.length > 0 
+      ? soal.opsi 
+      : (this.opsi_jawaban || []).filter(o => o.id_soal === soal.id).sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
+
+    // 2. Options containing <=> or <-> or ==> or ->
+    const arrowPairs = {};
+    let foundArrow = false;
+    opsiList.forEach(o => {
+      const txt = (o.teks || o.teks_opsi || '').trim();
+      ['<=>', '<->', '==>', '->'].forEach(sep => {
+        if (!foundArrow && txt.includes(sep)) {
+          const parts = txt.split(sep);
+          if (parts[0] && parts[1]) {
+            arrowPairs[parts[0].trim()] = parts[1].trim();
+            foundArrow = true;
+          }
+        }
+      });
+    });
+    if (foundArrow && Object.keys(arrowPairs).length > 0) {
+      return arrowPairs;
+    }
+
+    // 3. Numbered premises in pertanyaan (e.g. "1. DNS \n 2. IP ...") and numbered options (e.g. "1 - Sistem ...")
+    const text = soal.pertanyaan || '';
+    const lines = text.split('\n');
+    const premisesMap = {};
+    lines.forEach(l => {
+      const m = l.trim().match(/^(\d+)[\.\)]\s*(.+)$/);
+      if (m && m[1] && m[2]) {
+        premisesMap[m[1]] = m[2].trim();
+      }
+    });
+
+    if (Object.keys(premisesMap).length > 0) {
+      const numPairs = {};
+      opsiList.forEach((o, idx) => {
+        const txt = (o.teks || o.teks_opsi || '').trim();
+        const m = txt.match(/^(\d+)\s*[-:]\s*(.+)$/);
+        if (m && premisesMap[m[1]]) {
+          numPairs[premisesMap[m[1]]] = m[2].trim();
+        } else if (premisesMap[String(idx + 1)]) {
+          numPairs[premisesMap[String(idx + 1)]] = txt.replace(/^(\d+)\s*[-:]\s*/, '').trim();
+        }
+      });
+      if (Object.keys(numPairs).length > 0) {
+        return numPairs;
+      }
+    }
+
+    // 4. Fallback if opsiList has items
+    if (opsiList.length > 0) {
+      const fallbackPairs = {};
+      opsiList.forEach((o, idx) => {
+        const txt = (o.teks || o.teks_opsi || '').trim();
+        const parts = txt.split(/[-:]/);
+        if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
+          fallbackPairs[parts[0].trim()] = parts.slice(1).join('-').trim();
+        } else {
+          fallbackPairs[`Pernyataan ${idx + 1}`] = txt;
+        }
+      });
+      return fallbackPairs;
+    }
+
+    return {};
+  }
+
   getSoalByUjian(ujianId) {
     const soalList = this.soal
       .filter(s => s.id_ujian === Number(ujianId))
@@ -1333,10 +1408,18 @@ class DataStore {
 
     return soalList.map(s => {
       const copy = { ...s };
-      if (['pg', 'multiple'].includes(copy.jenis_soal)) {
-        copy.opsi = this.opsi_jawaban
-          .filter(o => o.id_soal === copy.id)
-          .sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
+      // Always attach options from opsi_jawaban
+      copy.opsi = this.opsi_jawaban
+        .filter(o => o.id_soal === copy.id)
+        .sort((a, b) => (a.urutan || 0) - (b.urutan || 0));
+
+      const jType = (copy.jenis_soal || '').toLowerCase();
+      if (['menjodohkan', 'matching'].includes(jType)) {
+        copy.matching_pairs = this.resolveMatchingPairs(copy);
+        if (!copy.data_tambahan) copy.data_tambahan = {};
+        if (!copy.data_tambahan.pairs || Object.keys(copy.data_tambahan.pairs).length === 0) {
+          copy.data_tambahan.pairs = copy.matching_pairs;
+        }
       }
       return copy;
     });
@@ -1441,7 +1524,8 @@ class DataStore {
   shuffleOptionsForSesi(soalList) {
     const shuffled = {};
     soalList.forEach(soal => {
-      if (['pg', 'multiple'].includes(soal.jenis_soal) && Array.isArray(soal.opsi)) {
+      const jType = (soal.jenis_soal || '').toLowerCase();
+      if (['pg', 'multiple', 'pg_kompleks'].includes(jType) && Array.isArray(soal.opsi)) {
         const opsi = [...soal.opsi];
         const originalOrder = opsi.map(o => o.id);
         
@@ -1460,8 +1544,11 @@ class DataStore {
           order: newOrder,
           mapping
         };
-      } else if (soal.jenis_soal === 'matching' && soal.data_tambahan && soal.data_tambahan.pairs) {
-        const values = Object.values(soal.data_tambahan.pairs);
+      } else if (['matching', 'menjodohkan'].includes(jType)) {
+        const pairs = (soal.data_tambahan && soal.data_tambahan.pairs && Object.keys(soal.data_tambahan.pairs).length > 0)
+          ? soal.data_tambahan.pairs
+          : (this.resolveMatchingPairs ? this.resolveMatchingPairs(soal) : (soal.matching_pairs || {}));
+        const values = Object.values(pairs);
         for (let i = values.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [values[i], values[j]] = [values[j], values[i]];
@@ -1469,7 +1556,7 @@ class DataStore {
         shuffled[soal.id] = {
           shuffled_values: values
         };
-      } else if (soal.jenis_soal === 'ordering' && soal.data_tambahan && soal.data_tambahan.correct_order) {
+      } else if (jType === 'ordering' && soal.data_tambahan && soal.data_tambahan.correct_order) {
         const items = [...soal.data_tambahan.correct_order];
         for (let i = items.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -1494,7 +1581,8 @@ class DataStore {
       let isCorrect = false;
       let nilai = 0;
 
-      switch (soal.jenis_soal) {
+      const jType = (soal.jenis_soal || '').toLowerCase();
+      switch (jType) {
         case 'pg': {
           if (jawaban && soal.opsi) {
             const correctOpsi = soal.opsi.find(o => o.benar);
@@ -1518,7 +1606,8 @@ class DataStore {
           break;
         }
 
-        case 'short': {
+        case 'short':
+        case 'isian': {
           if (jawaban) {
             const keywords = (soal.data_tambahan && soal.data_tambahan.keywords ? soal.data_tambahan.keywords : '')
               .split(',')
@@ -1535,7 +1624,8 @@ class DataStore {
           break;
         }
 
-        case 'multiple': {
+        case 'multiple':
+        case 'pg_kompleks': {
           if (jawaban && soal.opsi) {
             const selectedIds = Array.isArray(jawaban)
               ? jawaban.map(Number)
@@ -1562,15 +1652,23 @@ class DataStore {
           break;
         }
 
-        case 'matching': {
+        case 'matching':
+        case 'menjodohkan': {
           if (jawaban) {
-            const userMatches = typeof jawaban === 'string' ? JSON.parse(jawaban || '{}') : jawaban;
-            const correctPairs = (soal.data_tambahan && soal.data_tambahan.pairs) || {};
+            let userMatches = {};
+            try {
+              userMatches = typeof jawaban === 'string' ? JSON.parse(jawaban || '{}') : (jawaban || {});
+            } catch (e) {
+              userMatches = {};
+            }
+            const correctPairs = (soal.data_tambahan && soal.data_tambahan.pairs && Object.keys(soal.data_tambahan.pairs).length > 0)
+              ? soal.data_tambahan.pairs
+              : (this.resolveMatchingPairs ? this.resolveMatchingPairs(soal) : (soal.matching_pairs || {}));
             const totalPairs = Object.keys(correctPairs).length;
             let correctCount = 0;
 
             for (const [key, val] of Object.entries(userMatches || {})) {
-              if (correctPairs[key] === val) {
+              if (correctPairs[key] && String(correctPairs[key]).trim() === String(val).trim()) {
                 correctCount++;
               }
             }

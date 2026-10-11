@@ -761,7 +761,38 @@
                         </div>
                     <% } %>
 
-                    <% if (s.opsi && s.opsi.length > 0) { %>
+                    <% if (['menjodohkan', 'matching'].includes((s.jenis_soal || '').toLowerCase())) { 
+                        const pairs = (s.data_tambahan && s.data_tambahan.pairs) || s.matching_pairs || {};
+                        const pKeys = Object.keys(pairs);
+                        const pVals = Object.values(pairs);
+                    %>
+                        <div style="margin-left: 28px; margin-top: 10px; margin-bottom: 12px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                                <thead>
+                                    <tr style="background: #f1f5f9;">
+                                        <th style="border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; width: 45%;">Kolom A (Pernyataan / Premis)</th>
+                                        <th style="border: 1px solid #cbd5e1; padding: 6px 10px; text-align: center; width: 10%;">Pilihan</th>
+                                        <th style="border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; width: 45%;">Kolom B (Pilihan Pasangan / Definisi)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% pKeys.forEach(function(k, pIdx) { %>
+                                        <tr>
+                                            <td style="border: 1px solid #cbd5e1; padding: 6px 10px;">
+                                                <strong><%= pIdx + 1 %>.</strong> <%= k %>
+                                            </td>
+                                            <td style="border: 1px solid #cbd5e1; padding: 6px 10px; text-align: center; font-weight: bold; color: #64748b;">
+                                                [ &nbsp;&nbsp;&nbsp; ]
+                                            </td>
+                                            <td style="border: 1px solid #cbd5e1; padding: 6px 10px;">
+                                                <strong><%= String.fromCharCode(65 + pIdx) %>.</strong> <%= pVals[pIdx] || '' %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else if (s.opsi && s.opsi.length > 0) { %>
                         <ul class="opsi-list">
                             <% const letters = ['a', 'b', 'c', 'd', 'e']; %>
                             <% s.opsi.forEach(function(o, oIdx) { %>
