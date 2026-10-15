@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
 import { GoogleGenAI } from '@google/genai';
 import { generateExamDocx, generateMatrixDocx } from './utils/docxGenerator.js';
 import { getUjianFormatCetak } from './utils/formatCetakHelper.js';
+import { generateAcademicDiagramSvg } from './utils/diagramGenerator.js';
 import multer from 'multer';
 import * as XLSX from 'xlsx';
 import { db } from './data/store.js';
@@ -41,6 +42,39 @@ const uploadLogo = multer({
   storage: logoStorage,
   limits: { fileSize: 10 * 1024 * 1024 }
 });
+
+// Configure multer for Bank Soal Question Images
+const soalImageDir = path.join(__dirname, 'admin/uploads/soal');
+if (!fs.existsSync(soalImageDir)) fs.mkdirSync(soalImageDir, { recursive: true });
+
+const soalImageStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, soalImageDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase() || '.png';
+    const cleanName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+    cb(null, `soal_${Date.now()}_${cleanName}${ext}`);
+  }
+});
+const uploadSoalImage = multer({
+  storage: soalImageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+const uploadSoalMiddleware = (req, res, next) => {
+  const contentType = req.headers['content-type'] || '';
+  if (contentType.includes('multipart/form-data')) {
+    uploadSoalImage.single('gambar_file')(req, res, (err) => {
+      if (err) {
+        console.error('Soal image upload warning:', err.message);
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+};
 
 // Enable trust proxy for Cloud Run iframe environment
 app.set('trust proxy', 1);
@@ -167,6 +201,7 @@ app.use((req, res, next) => {
 // Static files
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/admin/uploads', express.static(path.join(__dirname, 'admin/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'admin/uploads')));
 
 // Middleware to clean up expired sessions periodically
 app.use((req, res, next) => {
@@ -227,12 +262,13 @@ const requireAdminOnly = (req, res, next) => {
 // ROLE-BASED ACCESS CONTROL & DATA ISOLATION HELPERS (DOSEN vs ADMIN)
 // ==========================================================================
 function getCurrentUser(req) {
-  if (!req.session || !req.session.admin_id) return null;
-  return db.users.find(u => u.id === req.session.admin_id) || {
-    id: req.session.admin_id,
-    username: req.session.admin_username,
-    nama_lengkap: req.session.admin_nama,
-    role: req.session.admin_role
+  const adminId = (req.session && req.session.admin_id) || (lastActiveAdminSession && lastActiveAdminSession.admin_id);
+  if (!adminId) return null;
+  return db.users.find(u => u.id === adminId) || {
+    id: adminId,
+    username: req.session?.admin_username || lastActiveAdminSession?.admin_username || 'admin',
+    nama_lengkap: req.session?.admin_nama || lastActiveAdminSession?.admin_nama || 'Administrator',
+    role: req.session?.admin_role || lastActiveAdminSession?.admin_role || 'admin'
   };
 }
 
@@ -1011,7 +1047,7 @@ app.get(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
   });
 });
 
-app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
+app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware, (req, res) => {
   const action = req.body.action;
   const targetUjianId = parseInt(req.body.id_ujian, 10);
   const currentUser = getCurrentUser(req);
@@ -1029,6 +1065,11 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
     const tingkat = req.body.tingkat_kesulitan || 'sedang';
     const kognitif = req.body.level_kognitif || 'C1';
     const cpmk = (req.body.cpmk || '').trim();
+
+    let gambar = (req.body.gambar || '').trim() || null;
+    if (req.file) {
+      gambar = `/admin/uploads/soal/${req.file.filename}`;
+    }
 
     if (pertanyaan && targetUjianId) {
       const newSoalId = db.soal.length ? Math.max(...db.soal.map(s => s.id)) + 1 : 1;
@@ -1060,6 +1101,7 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
         id_ujian: targetUjianId,
         jenis_soal: jenis,
         pertanyaan,
+        gambar,
         pembahasan,
         poin,
         urutan: db.soal.filter(s => s.id_ujian === targetUjianId).length + 1,
@@ -1112,6 +1154,12 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
       s.poin = parseInt(req.body.poin, 10) || s.poin;
       s.tingkat_kesulitan = req.body.tingkat_kesulitan || s.tingkat_kesulitan;
       s.level_kognitif = req.body.level_kognitif || s.level_kognitif;
+
+      if (req.file) {
+        s.gambar = `/admin/uploads/soal/${req.file.filename}`;
+      } else if (req.body.gambar !== undefined) {
+        s.gambar = req.body.gambar.trim() || null;
+      }
 
       if (['pg', 'multiple', 'pg_kompleks'].includes(s.jenis_soal) && req.body.opsi_teks) {
         db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
@@ -1175,6 +1223,120 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, (req, res) => {
   }
 
   res.redirect(`/admin/soal?ujian_id=${targetUjianId}`);
+});
+
+// Dedicated API: Upload Question Image (AJAX & direct multipart)
+app.post(['/admin/upload_soal_image', '/admin/upload_soal_image.php'], requireAdmin, (req, res) => {
+  uploadSoalImage.single('image')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ success: false, message: 'Gagal mengunggah gambar: ' + err.message });
+    }
+    if (req.file) {
+      const url = `/admin/uploads/soal/${req.file.filename}`;
+      return res.json({ success: true, url, filename: req.file.filename });
+    }
+    // Check if base64 data URL was provided
+    if (req.body && req.body.image_base64) {
+      try {
+        const matches = req.body.image_base64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        if (matches && matches.length === 3) {
+          const mime = matches[1];
+          let ext = '.png';
+          if (mime.includes('svg')) ext = '.svg';
+          else if (mime.includes('jpeg') || mime.includes('jpg')) ext = '.jpg';
+          else if (mime.includes('webp')) ext = '.webp';
+          const filename = `soal_${Date.now()}${ext}`;
+          const filePath = path.join(soalImageDir, filename);
+          fs.writeFileSync(filePath, Buffer.from(matches[2], 'base64'));
+          return res.json({ success: true, url: `/admin/uploads/soal/${filename}`, filename });
+        }
+      } catch (e) {
+        return res.status(400).json({ success: false, message: 'Gagal memproses data gambar base64' });
+      }
+    }
+    return res.status(400).json({ success: false, message: 'Tidak ada berkas gambar yang dipilih' });
+  });
+});
+
+// Dedicated API: Generate Question Image / Diagram with AI
+app.post(['/admin/generate_soal_image_ai', '/admin/generate_soal_image_ai.php'], requireAdmin, async (req, res) => {
+  const prompt = (req.body.prompt || '').trim();
+  const topik = (req.body.topik || '').trim();
+  const pertanyaan = (req.body.pertanyaan || '').trim();
+  const effectiveTopic = prompt || topik || 'Diagram Konseptual Akademik';
+
+  try {
+    let svgContent = null;
+
+    // Try generating custom vector SVG illustration via Gemini if API key is present
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const aiPrompt = `Anda adalah desainer visual materi instruksional dan instrumen ujian perguruan tinggi.
+Rancang diagram visual atau stimulus soal beresolusi tinggi dalam format SVG mandiri (Self-contained valid SVG) untuk topik: "${effectiveTopic}".
+Konteks Soal: "${pertanyaan || effectiveTopic}".
+
+Ketentuan Khusus Desain SVG:
+- Output WAJIB berupa tag <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; font-family: system-ui, sans-serif;">...</svg>
+- Berikan banner judul diagram di atas yang rapi dengan badge "STIMULUS AKADEMIK".
+- Buat bentuk diagram yang proporsional (kotak komponen bergradasi halus, panah arah proses, label teks yang tajam dan terbaca jelas, palet warna elegan modern: navy #1e3a8a, toska #0d9488, ungu #7e22ce).
+- Jangan ada teks yang saling bertumpuk atau terpotong.
+- WAJIB hanya membalas kode SVG murni diawali <svg dan diakhiri </svg>, tanpa teks pembuka, penutup, atau markdown backtick!`;
+
+        const geminiPromise = ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: aiPrompt,
+          config: { temperature: 0.2 }
+        });
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('AI image timeout')), 10000));
+        const aiRes = await Promise.race([geminiPromise, timeoutPromise]);
+        let rawText = (aiRes.text || '').trim();
+        rawText = rawText.replace(/^```[a-z]*\s*/i, '').replace(/```\s*$/i, '').trim();
+        const start = rawText.indexOf('<svg');
+        const end = rawText.lastIndexOf('</svg>');
+        if (start !== -1 && end > start) {
+          svgContent = rawText.substring(start, end + 6);
+        }
+      } catch (err) {
+        console.warn('Gemini SVG generation note:', err.message);
+      }
+    }
+
+    // High quality resilient fallback if AI times out or returns non-SVG
+    if (!svgContent) {
+      svgContent = generateAcademicDiagramSvg({
+        topic: effectiveTopic,
+        title: prompt || topik || 'Diagram Stimulus Soal',
+        context: pertanyaan
+      });
+    }
+
+    const filename = `ai_diagram_${Date.now()}.svg`;
+    const filePath = path.join(soalImageDir, filename);
+    fs.writeFileSync(filePath, svgContent, 'utf8');
+
+    return res.json({
+      success: true,
+      url: `/admin/uploads/soal/${filename}`,
+      filename,
+      message: 'Gambar diagram stimulus AI berhasil dibuat!'
+    });
+  } catch (e) {
+    console.error('Error generating AI image:', e);
+    const fallbackSvg = generateAcademicDiagramSvg({
+      topic: effectiveTopic,
+      title: prompt || 'Diagram Stimulus Soal',
+      context: pertanyaan
+    });
+    const filename = `ai_diagram_${Date.now()}.svg`;
+    fs.writeFileSync(path.join(soalImageDir, filename), fallbackSvg, 'utf8');
+    return res.json({
+      success: true,
+      url: `/admin/uploads/soal/${filename}`,
+      filename,
+      message: 'Diagram stimulus berhasil dibuat!'
+    });
+  }
 });
 
 // Admin Hasil Penilaian
@@ -2138,6 +2300,7 @@ function sanitizeQuestions(questions, defaultTopic, defaultPoin = 4) {
 
     return {
       pertanyaan: stem || `Berdasarkan kajian analisis pada bidang ${defaultTopic}, analisislah butir studi kasus ke-${idx + 1} berikut ini:`,
+      gambar: q.gambar || q.gambar_soal || q.image_url || q.image || null,
       jenis_soal: jenis,
       cpmk: q.cpmk || `Menguasai analisis teoritis dan terapan materi ${defaultTopic}`,
       materi_pokok: q.materi_pokok || defaultTopic,
@@ -4166,6 +4329,7 @@ app.post(['/admin/ai_generate_api', '/admin/ai_generate_api.php'], requireAdmin,
   const kesulitan = req.body.kesulitan || 'sedang';
   const poin = parseInt(req.body.poin, 10) || 4;
   const apply = req.body.apply !== false;
+  const generateGambar = req.body.generate_gambar === true || req.body.generate_gambar === 'true' || req.body.sertakan_gambar === true || req.body.sertakan_gambar === 'true';
 
   // Parse multi-select question types and cognitive levels
   let selectedTypes = ['pg'];
@@ -4197,6 +4361,11 @@ PILIHAN BENTUK/JENIS SOAL: [${typesReadable}].
 PENTING: Anda WAJIB menyusun ${count} butir soal dengan mendistribusikan bentuk soal di antara jenis-jenis yang dipilih di atas secara seimbang.
 LEVEL KOGNITIF BLOOM YANG DIPILIH: [${cognitivesReadable}].
 PENTING: Setiap butir soal WAJIB menggunakan salah satu level kognitif dari daftar yang ditentukan di atas!
+${generateGambar ? `
+PENGATURAN GAMBAR / DIAGRAM STIMULUS:
+Karena opsi sertakan stimulus gambar aktif, untuk butir-butir soal yang relevan (terutama yang menguji analisis kasus C3, C4, C5, atau penalaran visual seperti alur proses, diagram arsitektur, topologi jaringan, siklus, relasi konsep, atau skema kasus), Anda WAJIB menyertakan properti:
+"gambar_svg": "<svg viewBox=\\"0 0 600 340\\" xmlns=\\"http://www.w3.org/2000/svg\\">...desain diagram/bagan SVG mandiri yang rapi, modern, dan informatif...</svg>"
+Jika butir soal murni teoritis tanpa butuh diagram, berikan null pada "gambar_svg".` : ''}
 
 PERSYARATAN FORMAT SESUAI BENTUK SOAL:
 1. "pg" (Pilihan Ganda): teks pertanyaan tanpa huruf pilihan + 5 opsi (A-E) dengan TEPAT SATU kunci benar.
@@ -4211,6 +4380,7 @@ Format respon HANYA berupa JSON object:
   "soal": [
     {
       "pertanyaan": "teks narasi stimulus kasus dan pertanyaan inti tanpa opsi di dalamnya",
+      "gambar_svg": ${generateGambar ? '"<svg ...>...</svg> (atau null)"' : 'null'},
       "jenis_soal": "pg | pg_kompleks | tf | menjodohkan | short | esai",
       "poin": ${poin},
       "tingkat_kesulitan": "${kesulitan}",
@@ -4252,6 +4422,47 @@ Format respon HANYA berupa JSON object:
     });
   }
 
+  // Handle AI generated images / diagrams if requested
+  generated = generated.map((q, idx) => {
+    let imgUrl = q.gambar || q.gambar_soal || null;
+
+    if (q.gambar_svg && typeof q.gambar_svg === 'string' && q.gambar_svg.includes('<svg')) {
+      try {
+        let svgStr = q.gambar_svg.trim();
+        const start = svgStr.indexOf('<svg');
+        const end = svgStr.lastIndexOf('</svg>');
+        if (start !== -1 && end > start) {
+          svgStr = svgStr.substring(start, end + 6);
+          const filename = `soal_ai_${Date.now()}_${idx + 1}.svg`;
+          fs.writeFileSync(path.join(soalImageDir, filename), svgStr, 'utf8');
+          imgUrl = `/admin/uploads/soal/${filename}`;
+        }
+      } catch (err) {
+        console.warn('Gagal menyimpan SVG AI:', err.message);
+      }
+    }
+
+    if (generateGambar && !imgUrl) {
+      try {
+        const diagramSvg = generateAcademicDiagramSvg({
+          topic,
+          title: `Diagram Stimulus: ${q.materi_pokok || topic}`,
+          context: q.pertanyaan || subTopic
+        });
+        const filename = `soal_ai_${Date.now()}_${idx + 1}.svg`;
+        fs.writeFileSync(path.join(soalImageDir, filename), diagramSvg, 'utf8');
+        imgUrl = `/admin/uploads/soal/${filename}`;
+      } catch (err) {
+        console.warn('Gagal membuat diagram stimulus fallback:', err.message);
+      }
+    }
+
+    return {
+      ...q,
+      gambar: imgUrl
+    };
+  });
+
   // Sanitize
   generated = sanitizeQuestions(generated, topic, poin);
 
@@ -4270,6 +4481,7 @@ Format respon HANYA berupa JSON object:
           id_ujian: targetUjian.id,
           jenis_soal: q.jenis_soal || selectedTypes[0] || 'pg',
           pertanyaan: q.pertanyaan,
+          gambar: q.gambar || null,
           pembahasan: q.pembahasan || 'Pembahasan kunci jawaban.',
           poin: q.poin || poin,
           urutan: currentCount + idx + 1,

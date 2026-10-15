@@ -141,6 +141,22 @@
                         <%- current.pertanyaan %>
                     </div>
 
+                    <% if (current.gambar || current.gambar_soal) { %>
+                        <div style="margin-bottom: 24px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 14px; max-width: 620px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="font-size: 0.85rem; font-weight: 600; color: #0369a1; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-image"></i> Stimulus Gambar / Diagram Soal
+                                </span>
+                                <button type="button" onclick="previewExamImage('<%= current.gambar || current.gambar_soal %>')" style="background: none; border: none; color: #2563eb; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-magnifying-glass-plus"></i> Perbesar Gambar
+                                </button>
+                            </div>
+                            <div style="text-align: center; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; padding: 6px;">
+                                <img src="<%= current.gambar || current.gambar_soal %>" alt="Stimulus Soal <%= currentSoalNo %>" style="max-width: 100%; max-height: 380px; object-fit: contain; cursor: pointer; transition: transform 0.2s;" onclick="previewExamImage('<%= current.gambar || current.gambar_soal %>')">
+                            </div>
+                        </div>
+                    <% } %>
+
                     <!-- Question Input Types -->
                     <form id="answer-form">
                         <input type="hidden" name="soal_id" id="soal_id" value="<%= current.id %>">
@@ -497,6 +513,32 @@
                 window.location.href = '/submit';
             }
         }
+
+        function previewExamImage(url) {
+            const modal = document.getElementById('modalExamImagePreview');
+            const img = document.getElementById('examModalImgTarget');
+            if (modal && img) {
+                img.src = url;
+                modal.style.display = 'flex';
+            }
+        }
+        function closeExamImagePreview() {
+            const modal = document.getElementById('modalExamImagePreview');
+            if (modal) modal.style.display = 'none';
+        }
     </script>
+
+    <!-- Modal Preview Gambar Ujian -->
+    <div id="modalExamImagePreview" style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px;" onclick="closeExamImagePreview()">
+        <div style="position: relative; max-width: 90vw; max-height: 90vh; background: #ffffff; border-radius: 12px; padding: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column;" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                <span style="font-weight: 700; color: #0f172a; font-size: 0.95rem;"><i class="fas fa-image" style="color: #0284c7; margin-right: 6px;"></i> Pratinjau Gambar Stimulus Soal</span>
+                <button type="button" onclick="closeExamImagePreview()" style="background: none; border: none; font-size: 1.5rem; color: #64748b; cursor: pointer; line-height: 1;">&times;</button>
+            </div>
+            <div style="overflow: auto; text-align: center; max-height: calc(85vh - 60px);">
+                <img id="examModalImgTarget" src="" alt="Perbesar Gambar" style="max-width: 100%; max-height: 78vh; object-fit: contain; border-radius: 8px;">
+            </div>
+        </div>
+    </div>
 </body>
 </html>

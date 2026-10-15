@@ -755,9 +755,9 @@
                         <div class="soal-text"><%- s.pertanyaan %></div>
                     </div>
 
-                    <% if (s.gambar_soal) { %>
+                    <% if (s.gambar || s.gambar_soal) { %>
                         <div class="soal-image-box">
-                            <img src="<%= s.gambar_soal %>" alt="Ilustrasi Soal <%= idx + 1 %>">
+                            <img src="<%= s.gambar || s.gambar_soal %>" alt="Ilustrasi Soal <%= idx + 1 %>">
                         </div>
                     <% } %>
 

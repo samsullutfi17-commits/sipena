@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
-  "exported_at": "2026-10-11T08:15:24.355Z",
+  "exported_at": "2026-10-15T08:44:31.198Z",
   "users": [
     {
       "id": 5,
       "username": "admin",
-      "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
+      "password": "$2a$10$PhbrjQ7t.OD99jqP7oYml.1.sc4iCjHtHPwON1otdPDj4S3OL90su",
       "nama_lengkap": "Administrator Utama",
       "role": "admin",
       "nim": null,
@@ -46,7 +46,7 @@
     },
     {
       "id": 6,
-      "username": "samsullutfi",
+      "username": "0810079102",
       "password": "$2a$10$mzjfXvqwKeE50ZHXetKHGuJhp1abI0eWWJPYRYp6k/Cu5jHCYMtjC",
       "nama_lengkap": "Samsul Lutfi, S.Pd., M.Pd.",
       "role": "admin",
@@ -3181,6 +3181,18 @@
       "created_by_dosen": 5,
       "created_at": "2026-10-09T00:27:42.238Z",
       "nidn": ""
+    },
+    {
+      "id": 263,
+      "username": "samsullutfi",
+      "password": "$2a$10$e0XRnQTO4dpBrnvo4JbKs.Sw38UjFEGLJ0Uq2WuJWU8Dz2GMASO/O",
+      "nama_lengkap": "Samsul Lutfi",
+      "role": "pengawas",
+      "nim": null,
+      "nidn": "0821098902",
+      "id_kelas": null,
+      "created_by_dosen": 5,
+      "created_at": "2026-10-14T13:25:30.541Z"
     }
   ],
   "mahasiswa": [
@@ -5495,6 +5507,20 @@
       "cpmk": "Menganalisis proses indexing pada search engine",
       "materi_pokok": "Search Engine",
       "indikator": "Mampu menjodohkan tahapan proses pencarian dengan aktivitas spesifiknya"
+    },
+    {
+      "id": 9,
+      "id_ujian": 4,
+      "jenis_soal": "pg",
+      "pertanyaan": "Perhatikan diagram alur media pembelajaran berikut. Tahapan manakah yang berfokus pada validasi ahli?",
+      "gambar": "/admin/uploads/soal/ai_diagram_1792053690223.svg",
+      "pembahasan": "Tahap evaluasi formatif melibatkan validasi ahli materi dan media.",
+      "poin": 4,
+      "urutan": 1,
+      "data_tambahan": null,
+      "tingkat_kesulitan": "sedang",
+      "level_kognitif": "C3",
+      "cpmk": ""
     }
   ],
   "opsi_jawaban": [
@@ -5693,6 +5719,13 @@
       "teks_opsi": "3 - Mengurutkan hasil pencarian berdasarkan relevansi dan faktor SEO",
       "benar": true,
       "urutan": 3
+    },
+    {
+      "id": 29,
+      "id_soal": 9,
+      "teks_opsi": "Tahap Analisis Kebutuhan,Tahap Validasi Ahli & Uji Coba,Tahap Desain Grafis,Tahap Pengemasan Akhir,Tahap Distribusi",
+      "benar": false,
+      "urutan": 1
     }
   ],
   "sesi_ujian": [],

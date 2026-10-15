@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 640 340" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; border-radius: 8px;">
+  <defs>
+    <filter id="drop-shadow" x="-5%" y="-5%" width="115%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Frame Background with Soft Grid -->
+  <rect x="0" y="0" width="640" height="340" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" rx="8"/>
+  
+  <!-- Header Banner -->
+  <rect x="0" y="0" width="640" height="58" fill="#ffffff" rx="8 8 0 0"/>
+  <line x1="0" y1="58" x2="640" y2="58" stroke="#e2e8f0" stroke-width="1.2"/>
+
+  <!-- Badge Stimulus -->
+  <rect x="24" y="14" width="140" height="22" rx="11" fill="#e0f2fe"/>
+  <text x="94" y="29" font-size="9" font-weight="bold" fill="#0369a1" text-anchor="middle" font-family="system-ui, sans-serif">STIMULUS AKADEMIK</text>
+
+  <!-- Title & Context -->
+  <text x="176" y="29" font-size="13" font-weight="bold" fill="#0f172a" font-family="system-ui, sans-serif">Diagram Arsitektur MVC</text>
+  <text x="26" y="48" font-size="10" fill="#64748b" font-family="system-ui, sans-serif">Fokus Stimulus: Diagram Arsitektur MVC</text>
+
+  <!-- Main Diagram Body -->
+  
+      <g>
+        <!-- Tier 1: Presentation / Input -->
+        <g>
+          <rect x="40" y="105" width="160" height="120" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8" filter="url(#drop-shadow)"/>
+          <rect x="40" y="105" width="160" height="28" rx="8" fill="#e0f2fe"/>
+          <text x="120" y="124" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="middle" font-family="system-ui, sans-serif">1. Lapisan Presentasi</text>
+          <text x="120" y="155" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle" font-family="system-ui, sans-serif">Antarmuka Pengguna</text>
+          <text x="120" y="175" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Penerimaan Input</text>
+          <text x="120" y="195" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Validasi Form Awal</text>
+        </g>
+
+        <!-- Connector 1 -->
+        <g transform="translate(202, 160)">
+          <line x1="0" y1="0" x2="34" y2="0" stroke="#0284c7" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <line x1="34" y1="10" x2="0" y2="10" stroke="#0284c7" stroke-width="2" marker-end="url(#arrowhead)"/>
+        </g>
+
+        <!-- Tier 2: Business Logic / Engine -->
+        <g>
+          <rect x="240" y="95" width="160" height="140" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" filter="url(#drop-shadow)"/>
+          <rect x="240" y="95" width="160" height="28" rx="8" fill="#dcfce7"/>
+          <text x="320" y="114" font-size="11" font-weight="bold" fill="#15803d" text-anchor="middle" font-family="system-ui, sans-serif">2. Logika Komputasi</text>
+          <text x="320" y="145" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle" font-family="system-ui, sans-serif">Controller & Domain</text>
+          <text x="320" y="165" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Aturan Bisnis Pokok</text>
+          <text x="320" y="185" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Pemrosesan Algoritma</text>
+          <text x="320" y="205" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Enkripsi & Integritas</text>
+        </g>
+
+        <!-- Connector 2 -->
+        <g transform="translate(402, 160)">
+          <line x1="0" y1="0" x2="34" y2="0" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <line x1="34" y1="10" x2="0" y2="10" stroke="#16a34a" stroke-width="2" marker-end="url(#arrowhead)"/>
+        </g>
+
+        <!-- Tier 3: Persistence / Data -->
+        <g>
+          <rect x="440" y="105" width="160" height="120" rx="10" fill="#faf5ff" stroke="#7e22ce" stroke-width="1.8" filter="url(#drop-shadow)"/>
+          <rect x="440" y="105" width="160" height="28" rx="8" fill="#f3e8ff"/>
+          <text x="520" y="124" font-size="11" font-weight="bold" fill="#6b21a8" text-anchor="middle" font-family="system-ui, sans-serif">3. Lapisan Data</text>
+          <text x="520" y="155" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle" font-family="system-ui, sans-serif">Database & Penyimpanan</text>
+          <text x="520" y="175" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Relasi Tabel & Schema</text>
+          <text x="520" y="195" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">• Backup & Transaksi ACID</text>
+        </g>
+      </g>
+    
+
+  <!-- Footer / Caption Bar -->
+  <line x1="20" y1="298" x2="620" y2="298" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="318" font-size="9" fill="#64748b" font-family="system-ui, sans-serif">
+    <tspan font-weight="bold" fill="#334155">Petunjuk Analisis:</tspan> Evaluasilah struktur hubungan dan tahapan komponen pada diagram di atas untuk merumuskan jawaban yang tepat.
+  </text>
+  <text x="616" y="318" font-size="9" fill="#94a3b8" text-anchor="end" font-family="system-ui, sans-serif">Instrumen SIPENA</text>
+</svg>

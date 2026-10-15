@@ -1026,8 +1026,9 @@
             document.getElementById('modalSoalTitle').innerText = 'Butir Soal #' + (soalListDb.indexOf(s) + 1) + ' (' + (s.poin || 4) + ' Poin)';
             let html = '<div style="margin-bottom: 12px; font-weight: 500;">' + s.pertanyaan + '</div>';
 
-            if (s.gambar_soal) {
-                html += '<div style="margin-bottom: 12px;"><img src="' + s.gambar_soal + '" style="max-width: 100%; border: 1px solid #cbd5e1; border-radius: 4px;"></div>';
+            const imgUrl = s.gambar || s.gambar_soal;
+            if (imgUrl) {
+                html += '<div style="margin-bottom: 12px; text-align: center;"><img src="' + imgUrl + '" style="max-width: 100%; max-height: 280px; border: 1px solid #cbd5e1; border-radius: 6px;"></div>';
             }
 
             if (s.opsi && s.opsi.length > 0) {
