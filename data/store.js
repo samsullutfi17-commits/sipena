@@ -17,12 +17,21 @@ class DataStore {
     this.masterPath = MASTER_FILE;
     this.firestore = null;
     this.firebaseConnected = false;
+    this.isInitialSyncDone = false;
+    this.isSyncing = false;
+    this.needsSync = false;
+    this.lastCloudSyncTime = null;
+    this.firestoreSyncTimer = null;
+    this.firestoreQuotaExceeded = false;
+    this.lastSyncPayloadHash = null;
+    this.lastWrittenPayload = null;
+
     this.reset();
     this.load();
     if (!fs.existsSync(this.masterPath)) {
       this.saveAsDefaultMaster();
     }
-    this.initFirebase();
+    this.initPromise = this.initFirebase();
   }
 
   load() {
@@ -85,7 +94,7 @@ class DataStore {
           }
         }
       } else {
-        this.save();
+        this.saveLocal();
       }
     } catch (err) {
       console.error('Error loading db_persistence.json:', err);
@@ -106,24 +115,54 @@ class DataStore {
     }
   }
 
-  save() {
+  // Instant local save + immediate background cloud sync
+  save(immediate = true) {
     this.saveLocal();
     if (this.firestore && !this.firestoreQuotaExceeded) {
-      this.scheduleSyncToFirebase();
+      if (!this.isInitialSyncDone) {
+        // Queue sync once initial sync completes
+        this.needsSync = true;
+        return;
+      }
+
+      if (immediate) {
+        if (this.firestoreSyncTimer) {
+          clearTimeout(this.firestoreSyncTimer);
+          this.firestoreSyncTimer = null;
+        }
+        this.syncToFirebase().catch(err => {
+          console.warn('[SIPENA] Cloud save notice:', err.message);
+        });
+      } else {
+        this.scheduleSyncToFirebase(500);
+      }
     }
   }
 
-  scheduleSyncToFirebase() {
-    if (this.firestoreSyncTimer) return;
+  async saveAsync() {
+    this.saveLocal();
+    if (this.firestore && !this.firestoreQuotaExceeded) {
+      if (this.firestoreSyncTimer) {
+        clearTimeout(this.firestoreSyncTimer);
+        this.firestoreSyncTimer = null;
+      }
+      await this.syncToFirebase().catch(err => {
+        console.warn('[SIPENA] Async cloud save notice:', err.message);
+      });
+    }
+  }
+
+  scheduleSyncToFirebase(delay = 500) {
+    if (this.firestoreSyncTimer) clearTimeout(this.firestoreSyncTimer);
     this.firestoreSyncTimer = setTimeout(() => {
       this.firestoreSyncTimer = null;
       this.syncToFirebase().catch(err => {
         console.warn('[SIPENA] Cloud save notice:', err.message);
       });
-    }, 15000); // Debounce cloud writes to 15 seconds to stay safely within free quotas
+    }, delay);
   }
 
-  initFirebase() {
+  async initFirebase() {
     try {
       this.firestoreSyncTimer = null;
       this.firestoreQuotaExceeded = false;
@@ -137,30 +176,133 @@ class DataStore {
         this.firestore = getFirestore(app, cfg.firestoreDatabaseId || undefined);
         this.firebaseConnected = true;
         console.log('[SIPENA] Firebase Cloud Firestore terhubung (Database: ' + (cfg.firestoreDatabaseId || 'default') + ')');
-        this.syncFromFirebase();
+        await this.syncFromFirebase();
       }
     } catch (err) {
       console.warn('[SIPENA] Firebase init warning:', err.message);
       this.firebaseConnected = false;
+    } finally {
+      this.isInitialSyncDone = true;
     }
   }
 
+  async ensureFirebaseReady(timeoutMs = 6000) {
+    if (this.isInitialSyncDone) return true;
+    if (this.initPromise) {
+      try {
+        const timeout = new Promise(resolve => setTimeout(() => resolve(false), timeoutMs));
+        await Promise.race([this.initPromise, timeout]);
+      } catch (e) {
+        console.warn('[SIPENA] Firebase ready check note:', e.message);
+      }
+    }
+    this.isInitialSyncDone = true;
+    return true;
+  }
+
   async syncFromFirebase() {
-    if (!this.firestore || this.firestoreQuotaExceeded) return;
+    if (!this.firestore || this.firestoreQuotaExceeded) {
+      this.isInitialSyncDone = true;
+      return;
+    }
     try {
       const ref = doc(this.firestore, 'system_state', 'current_db');
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        const cloudData = snap.data();
+      const metaRef = doc(this.firestore, 'system_partitions', 'meta');
+
+      const [currentDbSnap, metaSnap] = await Promise.all([
+        getDoc(ref).catch(() => null),
+        getDoc(metaRef).catch(() => null)
+      ]);
+
+      let loaded = false;
+
+      // Check partitioned collections if meta exists
+      if (metaSnap && metaSnap.exists()) {
+        const metaData = metaSnap.data();
+        const currentData = currentDbSnap && currentDbSnap.exists() ? currentDbSnap.data() : null;
+        const isPartitionNewer = !currentData || !currentData.updated_at || (metaData.updated_at && metaData.updated_at >= currentData.updated_at);
+
+        if (isPartitionNewer) {
+          try {
+            const [usersSnap, soalSnap, akademikSnap, ujianSnap, pengaturanSnap] = await Promise.all([
+              getDoc(doc(this.firestore, 'system_partitions', 'users')),
+              getDoc(doc(this.firestore, 'system_partitions', 'soal')),
+              getDoc(doc(this.firestore, 'system_partitions', 'akademik')),
+              getDoc(doc(this.firestore, 'system_partitions', 'ujian')),
+              getDoc(doc(this.firestore, 'system_partitions', 'pengaturan'))
+            ]);
+
+            const merged = {};
+            if (usersSnap && usersSnap.exists()) {
+              const d = usersSnap.data();
+              if (Array.isArray(d.users)) merged.users = d.users;
+              if (Array.isArray(d.mahasiswa)) merged.mahasiswa = d.mahasiswa;
+            }
+            if (soalSnap && soalSnap.exists()) {
+              const d = soalSnap.data();
+              if (Array.isArray(d.soal)) merged.soal = d.soal;
+              if (Array.isArray(d.opsi_jawaban)) merged.opsi_jawaban = d.opsi_jawaban;
+            }
+            if (akademikSnap && akademikSnap.exists()) {
+              const d = akademikSnap.data();
+              if (Array.isArray(d.fakultas)) merged.fakultas = d.fakultas;
+              if (Array.isArray(d.program_studi)) merged.program_studi = d.program_studi;
+              if (Array.isArray(d.kelas)) merged.kelas = d.kelas;
+              if (Array.isArray(d.mata_kuliah)) merged.mata_kuliah = d.mata_kuliah;
+              if (Array.isArray(d.mata_kuliah_kelas)) merged.mata_kuliah_kelas = d.mata_kuliah_kelas;
+            }
+            if (ujianSnap && ujianSnap.exists()) {
+              const d = ujianSnap.data();
+              if (Array.isArray(d.ujian)) merged.ujian = d.ujian;
+              if (Array.isArray(d.ujian_kelas)) merged.ujian_kelas = d.ujian_kelas;
+              if (Array.isArray(d.sesi_ujian)) merged.sesi_ujian = d.sesi_ujian;
+              if (Array.isArray(d.jawaban_peserta)) merged.jawaban_peserta = d.jawaban_peserta;
+              if (Array.isArray(d.riwayat_sesi_ujian)) merged.riwayat_sesi_ujian = d.riwayat_sesi_ujian;
+            }
+            if (pengaturanSnap && pengaturanSnap.exists()) {
+              const d = pengaturanSnap.data();
+              if (d.pengaturan) merged.pengaturan = d.pengaturan;
+            }
+
+            if (Object.keys(merged).length > 0) {
+              this.applyData(merged);
+              this.saveLocal();
+              try {
+                fs.writeFileSync(this.masterPath, JSON.stringify(this.getSnapshot(), null, 2), 'utf-8');
+              } catch (e) {}
+              this.restoreImagesFromSnapshot();
+              this.lastWrittenPayload = JSON.stringify(this.getSnapshot());
+              this.lastCloudSyncTime = metaData.updated_at || new Date().toISOString();
+              console.log('[SIPENA] Sinkronisasi partisi awan berhasil (Firestore: ' + this.lastCloudSyncTime + ')');
+              loaded = true;
+            }
+          } catch (partErr) {
+            console.warn('[SIPENA] Partition read note, falling back to current_db:', partErr.message);
+          }
+        }
+      }
+
+      // Fallback: load from single current_db if partitions not loaded
+      if (!loaded && currentDbSnap && currentDbSnap.exists()) {
+        const cloudData = currentDbSnap.data();
         if (cloudData && cloudData.payload) {
           const parsed = JSON.parse(cloudData.payload);
           this.applyData(parsed);
           this.saveLocal();
-          this.lastSyncPayloadHash = cloudData.updated_at || 'synced';
+          try {
+            fs.writeFileSync(this.masterPath, JSON.stringify(this.getSnapshot(), null, 2), 'utf-8');
+          } catch (e) {}
+          this.restoreImagesFromSnapshot();
+          this.lastWrittenPayload = cloudData.payload;
+          this.lastCloudSyncTime = cloudData.updated_at || new Date().toISOString();
           console.log('[SIPENA] Sinkronisasi data awan berhasil (Firestore updated: ' + (cloudData.updated_at || '-') + ')');
+          loaded = true;
         }
-      } else {
-        await this.syncToFirebase();
+      }
+
+      if (!loaded && (!currentDbSnap || !currentDbSnap.exists())) {
+        // First time initialization in Cloud Firestore
+        await this.syncToFirebase(true);
       }
     } catch (err) {
       if (err.code === 'resource-exhausted' || (err.message && err.message.includes('RESOURCE_EXHAUSTED'))) {
@@ -169,34 +311,104 @@ class DataStore {
       } else {
         console.warn('[SIPENA] Sync from Firebase note:', err.message);
       }
+    } finally {
+      this.isInitialSyncDone = true;
     }
   }
 
-  async syncToFirebase() {
-    if (!this.firestore || this.firestoreQuotaExceeded || this.isSyncing) return;
+  async syncToFirebase(force = false) {
+    if (!this.firestore || this.firestoreQuotaExceeded) return;
+    if (!this.isInitialSyncDone && !force) {
+      this.needsSync = true;
+      return;
+    }
+    if (this.isSyncing) {
+      this.needsSync = true;
+      return;
+    }
+
     try {
       this.isSyncing = true;
       const payload = this.getSnapshot();
       const payloadString = JSON.stringify(payload);
-      
-      // Avoid writing if content hasn't changed
-      if (this.lastWrittenPayload === payloadString) {
+
+      // Avoid redundant identical write
+      if (!force && this.lastWrittenPayload === payloadString) {
         this.isSyncing = false;
         return;
       }
 
-      const ref = doc(this.firestore, 'system_state', 'current_db');
       const now = new Date().toISOString();
-      await setDoc(ref, {
-        payload: payloadString,
-        updated_at: now
-      });
+
+      // 1. Primary write to current_db document (if under 850 KB)
+      if (payloadString.length < 850000) {
+        const ref = doc(this.firestore, 'system_state', 'current_db');
+        await setDoc(ref, {
+          payload: payloadString,
+          updated_at: now
+        });
+      }
+
+      // 2. Partitioned documents to eliminate single-document 1MB quota bottleneck
+      const metaRef = doc(this.firestore, 'system_partitions', 'meta');
+      const usersRef = doc(this.firestore, 'system_partitions', 'users');
+      const soalRef = doc(this.firestore, 'system_partitions', 'soal');
+      const akademikRef = doc(this.firestore, 'system_partitions', 'akademik');
+      const ujianRef = doc(this.firestore, 'system_partitions', 'ujian');
+      const pengaturanRef = doc(this.firestore, 'system_partitions', 'pengaturan');
+
+      await Promise.allSettled([
+        setDoc(metaRef, {
+          updated_at: now,
+          version: payload.version,
+          soal_count: payload.soal?.length || 0,
+          ujian_count: payload.ujian?.length || 0,
+          users_count: payload.users?.length || 0
+        }),
+        setDoc(usersRef, {
+          users: payload.users || [],
+          mahasiswa: payload.mahasiswa || [],
+          updated_at: now
+        }),
+        setDoc(soalRef, {
+          soal: payload.soal || [],
+          opsi_jawaban: payload.opsi_jawaban || [],
+          updated_at: now
+        }),
+        setDoc(akademikRef, {
+          fakultas: payload.fakultas || [],
+          program_studi: payload.program_studi || [],
+          kelas: payload.kelas || [],
+          mata_kuliah: payload.mata_kuliah || [],
+          mata_kuliah_kelas: payload.mata_kuliah_kelas || [],
+          updated_at: now
+        }),
+        setDoc(ujianRef, {
+          ujian: payload.ujian || [],
+          ujian_kelas: payload.ujian_kelas || [],
+          sesi_ujian: payload.sesi_ujian || [],
+          jawaban_peserta: payload.jawaban_peserta || [],
+          riwayat_sesi_ujian: payload.riwayat_sesi_ujian || [],
+          updated_at: now
+        }),
+        setDoc(pengaturanRef, {
+          pengaturan: payload.pengaturan || {},
+          updated_at: now
+        })
+      ]);
+
       this.lastWrittenPayload = payloadString;
+      this.lastCloudSyncTime = now;
+
+      // Also refresh master_default.json
+      try {
+        fs.writeFileSync(this.masterPath, JSON.stringify(payload, null, 2), 'utf-8');
+      } catch (e) {}
+      console.log('[SIPENA] Data tersimpan permanen ke Cloud Firestore (' + now + ')');
     } catch (err) {
       if (err.code === 'resource-exhausted' || (err.message && err.message.includes('RESOURCE_EXHAUSTED'))) {
         this.firestoreQuotaExceeded = true;
         console.warn('[SIPENA] Firestore free daily write limit reached. Local disk persistence is active and intact.');
-        // Retry quota check after 1 hour
         setTimeout(() => {
           this.firestoreQuotaExceeded = false;
         }, 60 * 60 * 1000);
@@ -205,6 +417,56 @@ class DataStore {
       }
     } finally {
       this.isSyncing = false;
+      if (this.needsSync) {
+        this.needsSync = false;
+        this.syncToFirebase().catch(() => {});
+      }
+    }
+  }
+
+  // Restore question images/diagrams and logo from snapshot onto local container disk
+  restoreImagesFromSnapshot() {
+    try {
+      const soalDir = path.join(__dirname, '..', 'admin/uploads/soal');
+      if (!fs.existsSync(soalDir)) {
+        fs.mkdirSync(soalDir, { recursive: true });
+      }
+      if (Array.isArray(this.soal)) {
+        this.soal.forEach(s => {
+          if (s.gambar && s.gambar.startsWith('/admin/uploads/soal/')) {
+            const filename = path.basename(s.gambar);
+            const filePath = path.join(soalDir, filename);
+            if (!fs.existsSync(filePath)) {
+              if (s.gambar_svg && typeof s.gambar_svg === 'string') {
+                try {
+                  fs.writeFileSync(filePath, s.gambar_svg, 'utf8');
+                } catch (e) {}
+              } else if (s.gambar_base64 && typeof s.gambar_base64 === 'string') {
+                try {
+                  const b64 = s.gambar_base64.replace(/^data:image\/\w+;base64,/, '');
+                  fs.writeFileSync(filePath, Buffer.from(b64, 'base64'));
+                } catch (e) {}
+              }
+            }
+          }
+        });
+      }
+
+      // Restore institution logo if saved
+      if (this.pengaturan && this.pengaturan.logo_data && this.pengaturan.logo_path && this.pengaturan.logo_path.startsWith('/admin/uploads/')) {
+        const uploadDir = path.join(__dirname, '..', 'admin/uploads');
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+        const logoFilename = path.basename(this.pengaturan.logo_path);
+        const logoPath = path.join(uploadDir, logoFilename);
+        if (!fs.existsSync(logoPath)) {
+          try {
+            const b64 = this.pengaturan.logo_data.replace(/^data:image\/\w+;base64,/, '');
+            fs.writeFileSync(logoPath, Buffer.from(b64, 'base64'));
+          } catch (e) {}
+        }
+      }
+    } catch (e) {
+      console.warn('[SIPENA] Image restoration note:', e.message);
     }
   }
 
@@ -1586,7 +1848,7 @@ class DataStore {
         case 'pg': {
           if (jawaban && soal.opsi) {
             const correctOpsi = soal.opsi.find(o => o.benar);
-            if (correctOpsi && Number(jawaban) === Number(correctOpsi.id)) {
+            if (correctOpsi && (Number(jawaban) === Number(correctOpsi.id) || String(jawaban).trim().toLowerCase() === (correctOpsi.teks_opsi || '').trim().toLowerCase())) {
               isCorrect = true;
               nilai = soal.poin || 4;
             }
@@ -1596,7 +1858,17 @@ class DataStore {
 
         case 'tf': {
           if (jawaban !== '' && jawaban !== null && jawaban !== undefined) {
-            const correctAnswer = soal.data_tambahan && soal.data_tambahan.jawaban_benar;
+            let correctAnswer = (soal.data_tambahan && typeof soal.data_tambahan.jawaban_benar === 'boolean')
+              ? soal.data_tambahan.jawaban_benar
+              : null;
+            if (correctAnswer === null && Array.isArray(soal.opsi) && soal.opsi.length > 0) {
+              const trueOpt = soal.opsi.find(o => o.benar);
+              if (trueOpt) {
+                const optText = (trueOpt.teks_opsi || trueOpt.teks || '').toLowerCase();
+                correctAnswer = !optText.includes('salah');
+              }
+            }
+            if (correctAnswer === null) correctAnswer = true; // default true if unspecified
             const userAnswer = jawaban === 'true' || jawaban === true || jawaban === '1' || jawaban === 1;
             if (userAnswer === correctAnswer) {
               isCorrect = true;
@@ -1609,12 +1881,18 @@ class DataStore {
         case 'short':
         case 'isian': {
           if (jawaban) {
-            const keywords = (soal.data_tambahan && soal.data_tambahan.keywords ? soal.data_tambahan.keywords : '')
+            let keywords = (soal.data_tambahan && soal.data_tambahan.keywords ? soal.data_tambahan.keywords : '')
               .split(',')
-              .map(k => k.trim().toLowerCase());
+              .map(k => k.trim().toLowerCase())
+              .filter(Boolean);
+            if (keywords.length === 0 && Array.isArray(soal.opsi)) {
+              soal.opsi.forEach(o => {
+                if (o.benar) keywords.push((o.teks_opsi || o.teks || '').trim().toLowerCase());
+              });
+            }
             const userStr = String(jawaban).trim().toLowerCase();
             for (const kw of keywords) {
-              if (kw && (userStr === kw || userStr.includes(kw))) {
+              if (kw && (userStr === kw || userStr.includes(kw) || kw.includes(userStr))) {
                 isCorrect = true;
                 nilai = soal.poin || 4;
                 break;

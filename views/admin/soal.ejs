@@ -566,6 +566,10 @@
                                         <% }); %>
                                     </div>
                                 </div>
+                            <% } else if (s.data_tambahan && typeof s.data_tambahan.jawaban_benar === 'boolean') { %>
+                                <div style="margin-left: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-size: 0.92rem;">
+                                    <strong><i class="fas fa-check-double"></i> Kunci Jawaban:</strong> <%= s.data_tambahan.jawaban_benar ? 'BENAR (True)' : 'SALAH (False)' %>
+                                </div>
                             <% } else if (s.opsi && s.opsi.length > 0) { %>
                                 <div style="margin-left: 10px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 6px;">
                                     <% s.opsi.forEach(function(o, oIdx) { %>
@@ -573,6 +577,10 @@
                                             <strong><%= String.fromCharCode(65 + oIdx) %>.</strong> <%= o.teks || o.teks_opsi %> <%= o.benar ? '✔ (Kunci Jawaban)' : '' %>
                                         </div>
                                     <% }); %>
+                                </div>
+                            <% } else if (s.data_tambahan && s.data_tambahan.keywords) { %>
+                                <div style="margin-left: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-size: 0.92rem;">
+                                    <strong><i class="fas fa-key"></i> Kata Kunci Penilaian Otomatis:</strong> <%= s.data_tambahan.keywords %>
                                 </div>
                             <% } else if (s.kunci_jawaban) { %>
                                 <div style="margin-left: 10px; margin-bottom: 14px; padding: 10px 14px; border-radius: 6px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; font-size: 0.92rem;">
@@ -608,11 +616,12 @@
                     <div class="form-group">
                         <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Jenis Soal</label>
                         <select name="jenis_soal" id="jenis_soal_select" class="form-select" onchange="switchSoalType(this.value, 'create')" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                            <option value="pg">Pilihan Ganda (PG)</option>
+                            <option value="pg" selected>Pilihan Ganda (PG 5 Opsi)</option>
+                            <option value="pg_kompleks">PG Kompleks (Multi Kunci)</option>
+                            <option value="tf">Benar / Salah (True/False)</option>
                             <option value="menjodohkan">Menjodohkan (Matching)</option>
-                            <option value="tf">Benar / Salah (TF)</option>
-                            <option value="short">Jawaban Singkat</option>
-                            <option value="esai">Esai Uraian</option>
+                            <option value="short">Isian Singkat (Short Answer)</option>
+                            <option value="esai">Uraian / Esai (Essay Kasus)</option>
                         </select>
                     </div>
 
@@ -655,12 +664,13 @@
                         <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: flex; align-items: center; gap: 6px; margin: 0;">
                             <i class="fas fa-image" style="color: #0284c7;"></i> Sisipkan Gambar / Stimulus Soal <span style="font-size: 0.78rem; font-weight: normal; color: #64748b;">(Opsional)</span>
                         </label>
-                        <button type="button" class="btn btn-sm" id="btn_ai_img_create" onclick="triggerAiGenerateImage('create')" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 6px; padding: 4px 12px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <button type="button" class="btn btn-sm" id="btn_ai_img_create" onclick="openAiImageGeneratorModal('create')" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 2px rgba(79,70,229,0.2);">
                             <i class="fas fa-wand-magic-sparkles"></i> Generate AI
                         </button>
                     </div>
+                    <div id="create_gambar_status_msg" style="display: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-bottom: 10px;"></div>
                     <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">
-                        Unggah berkas gambar dari komputer (JPG/PNG/SVG), masukkan URL gambar, atau buat otomatis menggunakan AI.
+                        Unggah berkas gambar (JPG/PNG/SVG), tempel tautan URL, atau rancang diagram otomatis dengan AI.
                     </p>
                     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
                         <input type="file" id="create_gambar_file" name="gambar_file" accept="image/*" class="form-control" style="flex: 1; padding: 6px 10px; font-size: 0.84rem; border: 1.5px solid #cbd5e1; border-radius: 6px;" onchange="handleImageFileSelected(this, 'create')">
@@ -669,11 +679,16 @@
                     </div>
                     <!-- Preview Box Create -->
                     <div id="create_gambar_preview_box" style="display: none; margin-top: 10px; padding: 10px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
                             <span style="font-size: 0.82rem; font-weight: 600; color: #166534;"><i class="fas fa-check-circle"></i> Pratinjau Gambar Terpasang</span>
-                            <button type="button" onclick="removeQuestionImage('create')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
-                                <i class="fas fa-trash"></i> Hapus Gambar
-                            </button>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" onclick="openAiImageGeneratorModal('create')" style="background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 4px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-arrows-rotate"></i> Ganti / Generate AI
+                                </button>
+                                <button type="button" onclick="removeQuestionImage('create')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 4px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
+                                    <i class="fas fa-trash"></i> Hapus Gambar
+                                </button>
+                            </div>
                         </div>
                         <div style="text-align: center; background: #f8fafc; padding: 6px; border-radius: 6px;">
                             <img id="create_gambar_preview_img" src="" alt="Pratinjau Gambar" style="max-height: 220px; max-width: 100%; object-fit: contain; border-radius: 4px;">
@@ -681,9 +696,9 @@
                     </div>
                 </div>
 
-                <!-- Type: PG -->
+                <!-- Type 1: PG (Pilihan Ganda 5 Opsi, 1 Kunci) -->
                 <div id="create_type_pg_container" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 8px;">Opsi Jawaban (Pilih Kunci yang Benar):</label>
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 8px;">Opsi Jawaban (Pilih Satu Kunci yang Benar):</label>
                     <% ['A', 'B', 'C', 'D', 'E'].forEach(function(letter, idx) { %>
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                             <input type="radio" name="opsi_benar" value="<%= idx %>" <%= idx === 0 ? 'checked' : '' %> style="transform: scale(1.2);">
@@ -693,7 +708,39 @@
                     <% }); %>
                 </div>
 
-                <!-- Type: Menjodohkan -->
+                <!-- Type 2: PG Kompleks (Multi Kunci Benar) -->
+                <div id="create_type_pg_kompleks_container" style="display: none; margin-bottom: 14px; background: #fffbeb; border: 1.5px solid #fef3c7; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #92400e; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-list-check"></i> Pilihan Ganda Kompleks (Centang Semua Pilihan yang Benar):
+                    </label>
+                    <p style="font-size: 0.82rem; color: #78350f; margin-bottom: 10px;">
+                        Centang kotak pada opsi yang bernilai benar. Peserta dapat memilih lebih dari satu jawaban.
+                    </p>
+                    <% ['A', 'B', 'C', 'D', 'E'].forEach(function(letter, idx) { %>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <input type="checkbox" name="pgk_opsi_benar" value="<%= idx %>" <%= (idx === 0 || idx === 1) ? 'checked' : '' %> style="transform: scale(1.2);">
+                            <span style="font-weight: 700; width: 20px; color: #92400e;"><%= letter %>.</span>
+                            <input type="text" name="pgk_opsi_teks[]" placeholder="Pernyataan opsi <%= letter %>" class="form-control" style="flex: 1; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Type 3: TF (Benar / Salah) -->
+                <div id="create_type_tf_container" style="display: none; margin-bottom: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 8px;">
+                        <i class="fas fa-check-double"></i> Kunci Jawaban Benar / Salah:
+                    </label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #16a34a; cursor: pointer; padding: 6px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;">
+                            <input type="radio" name="jawaban_tf" value="true" checked style="transform: scale(1.15);"> BENAR
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #dc2626; cursor: pointer; padding: 6px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;">
+                            <input type="radio" name="jawaban_tf" value="false" style="transform: scale(1.15);"> SALAH
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Type 4: Menjodohkan (Matching) -->
                 <div id="create_type_menjodohkan_container" style="display: none; margin-bottom: 14px; background: #faf5ff; border: 1.5px solid #e9d5ff; border-radius: 8px; padding: 14px;">
                     <label style="font-weight: 700; font-size: 0.88rem; color: #7e22ce; display: block; margin-bottom: 6px;">
                         <i class="fas fa-link"></i> Pasangan Soal Menjodohkan (Premis <=> Pasangan Jawaban):
@@ -716,17 +763,26 @@
                     </button>
                 </div>
 
-                <!-- Type: TF -->
-                <div id="create_type_tf_container" style="display: none; margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 8px;">Kunci Jawaban Benar / Salah:</label>
-                    <div style="display: flex; gap: 20px;">
-                        <label style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: #16a34a; cursor: pointer;">
-                            <input type="radio" name="jawaban_tf" value="true" checked> BENAR
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: #dc2626; cursor: pointer;">
-                            <input type="radio" name="jawaban_tf" value="false"> SALAH
-                        </label>
-                    </div>
+                <!-- Type 5: Short / Isian Singkat -->
+                <div id="create_type_short_container" style="display: none; margin-bottom: 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #166534; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-pen-nib"></i> Kunci Jawaban Isian Singkat:
+                    </label>
+                    <p style="font-size: 0.82rem; color: #15803d; margin-bottom: 8px;">
+                        Tuliskan jawaban yang diterima. Pisahkan dengan tanda koma (,) bila terdapat variasi penulisan/sinonim.
+                    </p>
+                    <input type="text" name="keywords" placeholder="Contoh: Enkripsi, Kriptografi, Enkripsi Data" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                </div>
+
+                <!-- Type 6: Esai / Uraian Kasus -->
+                <div id="create_type_esai_container" style="display: none; margin-bottom: 14px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #1e40af; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-file-lines"></i> Kata Kunci Penilaian Otomatis Esai:
+                    </label>
+                    <p style="font-size: 0.82rem; color: #1d4ed8; margin-bottom: 8px;">
+                        Tuliskan kata kunci materi penting yang harus ada dalam uraian peserta. Skor otomatis akan dihitung dari persentase kata kunci yang ditemukan.
+                    </p>
+                    <textarea name="keywords" rows="3" placeholder="Contoh: integritas, kerahasiaan, ketersediaan, otentikasi (pisahkan dengan koma)" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit;"></textarea>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 16px;">
@@ -757,10 +813,24 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                     <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Jenis Soal</label>
+                        <select name="jenis_soal" id="edit_soal_jenis" class="form-select" onchange="switchSoalType(this.value, 'edit')" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                            <option value="pg">Pilihan Ganda (PG 5 Opsi)</option>
+                            <option value="pg_kompleks">PG Kompleks (Multi Kunci)</option>
+                            <option value="tf">Benar / Salah (True/False)</option>
+                            <option value="menjodohkan">Menjodohkan (Matching)</option>
+                            <option value="short">Isian Singkat (Short Answer)</option>
+                            <option value="esai">Uraian / Esai (Essay Kasus)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Bobot Poin <span style="color:#dc2626;">*</span></label>
                         <input type="number" name="poin" id="edit_soal_poin" required class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
                     </div>
+                </div>
 
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
                     <div class="form-group">
                         <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Tingkat Kesulitan</label>
                         <select name="tingkat_kesulitan" id="edit_soal_kesulitan" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
@@ -769,17 +839,17 @@
                             <option value="sulit">Sulit</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="form-group" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Level Kognitif</label>
-                    <select name="level_kognitif" id="edit_soal_kognitif" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                        <option value="C1">C1 - Mengingat</option>
-                        <option value="C2">C2 - Memahami</option>
-                        <option value="C3">C3 - Menerapkan</option>
-                        <option value="C4">C4 - Menganalisis</option>
-                        <option value="C5">C5 - Mengevaluasi</option>
-                    </select>
+                    <div class="form-group">
+                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Level Kognitif</label>
+                        <select name="level_kognitif" id="edit_soal_kognitif" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
+                            <option value="C1">C1 - Mengingat</option>
+                            <option value="C2">C2 - Memahami</option>
+                            <option value="C3">C3 - Menerapkan</option>
+                            <option value="C4">C4 - Menganalisis</option>
+                            <option value="C5">C5 - Mengevaluasi</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group" style="margin-bottom: 14px;">
@@ -793,12 +863,13 @@
                         <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: flex; align-items: center; gap: 6px; margin: 0;">
                             <i class="fas fa-image" style="color: #0284c7;"></i> Gambar / Stimulus Soal
                         </label>
-                        <button type="button" class="btn btn-sm" id="btn_ai_img_edit" onclick="triggerAiGenerateImage('edit')" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 6px; padding: 4px 12px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <button type="button" class="btn btn-sm" id="btn_ai_img_edit" onclick="openAiImageGeneratorModal('edit')" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 1px 2px rgba(79,70,229,0.2);">
                             <i class="fas fa-wand-magic-sparkles"></i> Generate AI
                         </button>
                     </div>
+                    <div id="edit_gambar_status_msg" style="display: none; padding: 8px 12px; border-radius: 6px; font-size: 0.82rem; margin-bottom: 10px;"></div>
                     <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">
-                        Ganti gambar dengan berkas baru, ubah URL gambar, atau generate ulang dengan AI.
+                        Ganti gambar dengan berkas baru, ubah URL gambar, atau generate/ganti ulang kapan pun dengan AI.
                     </p>
                     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
                         <input type="file" id="edit_gambar_file" name="gambar_file" accept="image/*" class="form-control" style="flex: 1; padding: 6px 10px; font-size: 0.84rem; border: 1.5px solid #cbd5e1; border-radius: 6px;" onchange="handleImageFileSelected(this, 'edit')">
@@ -807,11 +878,16 @@
                     </div>
                     <!-- Preview Box Edit -->
                     <div id="edit_gambar_preview_box" style="display: none; margin-top: 10px; padding: 10px; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
                             <span style="font-size: 0.82rem; font-weight: 600; color: #166534;"><i class="fas fa-check-circle"></i> Pratinjau Gambar Terpasang</span>
-                            <button type="button" onclick="removeQuestionImage('edit')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
-                                <i class="fas fa-trash"></i> Hapus Gambar
-                            </button>
+                            <div style="display: flex; gap: 6px;">
+                                <button type="button" onclick="openAiImageGeneratorModal('edit')" style="background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; border-radius: 4px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-arrows-rotate"></i> Ganti / Generate AI
+                                </button>
+                                <button type="button" onclick="removeQuestionImage('edit')" style="background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 4px; padding: 3px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
+                                    <i class="fas fa-trash"></i> Hapus Gambar
+                                </button>
+                            </div>
                         </div>
                         <div style="text-align: center; background: #f8fafc; padding: 6px; border-radius: 6px;">
                             <img id="edit_gambar_preview_img" src="" alt="Pratinjau Gambar" style="max-height: 220px; max-width: 100%; object-fit: contain; border-radius: 4px;">
@@ -819,9 +895,9 @@
                     </div>
                 </div>
 
-                <!-- Opsi Jawaban untuk PG -->
+                <!-- Type 1: PG (Pilihan Ganda 5 Opsi, 1 Kunci Benar) -->
                 <div id="edit_type_pg_container" style="margin-bottom: 14px;">
-                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 8px;">Opsi Jawaban & Kunci Benar:</label>
+                    <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 8px;">Opsi Jawaban & Kunci Benar (Pilih Satu):</label>
                     <% ['A', 'B', 'C', 'D', 'E'].forEach(function(letter, idx) { %>
                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
                             <input type="radio" name="opsi_benar" value="<%= idx %>" id="edit_opsi_benar_<%= idx %>" style="transform: scale(1.2);">
@@ -831,7 +907,39 @@
                     <% }); %>
                 </div>
 
-                <!-- Type: Menjodohkan Edit -->
+                <!-- Type 2: PG Kompleks (Multi Kunci Benar) -->
+                <div id="edit_type_pg_kompleks_container" style="display: none; margin-bottom: 14px; background: #fffbeb; border: 1.5px solid #fef3c7; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #92400e; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-list-check"></i> Pilihan Ganda Kompleks (Centang Semua Pilihan yang Benar):
+                    </label>
+                    <p style="font-size: 0.82rem; color: #78350f; margin-bottom: 10px;">
+                        Centang kotak pada opsi yang bernilai benar. Peserta dapat memilih lebih dari satu jawaban.
+                    </p>
+                    <% ['A', 'B', 'C', 'D', 'E'].forEach(function(letter, idx) { %>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <input type="checkbox" name="pgk_opsi_benar" value="<%= idx %>" id="edit_pgk_opsi_benar_<%= idx %>" style="transform: scale(1.2);">
+                            <span style="font-weight: 700; width: 20px; color: #92400e;"><%= letter %>.</span>
+                            <input type="text" name="pgk_opsi_teks[]" id="edit_pgk_opsi_teks_<%= idx %>" placeholder="Pernyataan opsi <%= letter %>" class="form-control" style="flex: 1; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Type 3: TF (Benar / Salah) -->
+                <div id="edit_type_tf_container" style="display: none; margin-bottom: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; display: block; margin-bottom: 8px;">
+                        <i class="fas fa-check-double"></i> Kunci Jawaban Benar / Salah:
+                    </label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #16a34a; cursor: pointer; padding: 6px 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;">
+                            <input type="radio" name="jawaban_tf" value="true" id="edit_tf_true" style="transform: scale(1.15);"> BENAR
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: #dc2626; cursor: pointer; padding: 6px 14px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;">
+                            <input type="radio" name="jawaban_tf" value="false" id="edit_tf_false" style="transform: scale(1.15);"> SALAH
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Type 4: Menjodohkan Edit -->
                 <div id="edit_type_menjodohkan_container" style="display: none; margin-bottom: 14px; background: #faf5ff; border: 1.5px solid #e9d5ff; border-radius: 8px; padding: 14px;">
                     <label style="font-weight: 700; font-size: 0.88rem; color: #7e22ce; display: block; margin-bottom: 6px;">
                         <i class="fas fa-link"></i> Pasangan Kunci Menjodohkan (Premis <=> Pasangan Jawaban):
@@ -844,6 +952,28 @@
                     </button>
                 </div>
 
+                <!-- Type 5: Short / Isian Singkat -->
+                <div id="edit_type_short_container" style="display: none; margin-bottom: 14px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #166534; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-pen-nib"></i> Kunci Jawaban Isian Singkat:
+                    </label>
+                    <p style="font-size: 0.82rem; color: #15803d; margin-bottom: 8px;">
+                        Tuliskan jawaban yang diterima. Pisahkan dengan tanda koma (,) bila terdapat variasi penulisan/sinonim.
+                    </p>
+                    <input type="text" name="keywords" id="edit_soal_keywords_short" placeholder="Contoh: Enkripsi, Kriptografi, Enkripsi Data" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                </div>
+
+                <!-- Type 6: Esai / Uraian Kasus -->
+                <div id="edit_type_esai_container" style="display: none; margin-bottom: 14px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 14px;">
+                    <label style="font-weight: 700; font-size: 0.88rem; color: #1e40af; display: block; margin-bottom: 6px;">
+                        <i class="fas fa-file-lines"></i> Kata Kunci Penilaian Otomatis Esai:
+                    </label>
+                    <p style="font-size: 0.82rem; color: #1d4ed8; margin-bottom: 8px;">
+                        Tuliskan kata kunci materi penting yang harus ada dalam uraian peserta. Skor otomatis akan dihitung dari persentase kata kunci yang ditemukan.
+                    </p>
+                    <textarea name="keywords" id="edit_soal_keywords_esai" rows="3" placeholder="Contoh: integritas, kerahasiaan, ketersediaan, otentikasi (pisahkan dengan koma)" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit;"></textarea>
+                </div>
+
                 <div class="form-group" style="margin-bottom: 16px;">
                     <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Penjelasan / Pembahasan</label>
                     <textarea name="pembahasan" id="edit_soal_pembahasan" rows="2" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit;"></textarea>
@@ -854,6 +984,55 @@
                     <button type="submit" class="btn btn-primary" style="background: #1b4d3e; border: none; padding: 10px 22px; border-radius: 8px; font-weight: 600;"><i class="fas fa-check"></i> Simpan Perubahan</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: RANCANG / UBAH STIMULUS GAMBAR DENGAN AI (UNTUK TAMBAH & EDIT SOAL) -->
+    <div id="ai-single-img-modal" class="custom-modal-overlay" style="z-index: 1060;">
+        <div class="custom-modal-card" style="max-width: 520px;">
+            <div class="custom-modal-header">
+                <h3><i class="fas fa-wand-magic-sparkles" style="color: #6366f1;"></i> Rancang / Ubah Stimulus Gambar (AI)</h3>
+                <button type="button" class="close-modal-btn" onclick="closeModal('ai-single-img-modal')" title="Tutup">&times;</button>
+            </div>
+
+            <div class="custom-modal-body">
+                <input type="hidden" id="single_ai_img_target_prefix" value="edit">
+
+                <div id="single_ai_img_banner" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.84rem; color: #1e40af;">
+                    <i class="fas fa-info-circle"></i> Rancang visual diagram baru atau timpa gambar yang ada kapan saja sesuai materi naskah soal.
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">
+                        Deskripsi Diagram / Topik Visual <span style="color: #dc2626;">*</span>
+                    </label>
+                    <textarea id="single_ai_img_prompt" rows="2" class="form-control" placeholder="Contoh: Skema Alur SDLC Waterfall, Arsitektur 3-Tier Client Server, Topologi Star Jaringan..." style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem; font-family: inherit;"></textarea>
+                    <small style="color: #64748b; font-size: 0.76rem;">Bisa berupa nama materi, skema diagram, atau alur kasus yang ingin divisualisasikan.</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">
+                        Gaya / Format Diagram
+                    </label>
+                    <select id="single_ai_img_style" class="form-select" style="width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.86rem;">
+                        <option value="auto" selected>🤖 Otomatis Sesuai Materi</option>
+                        <option value="process">🔄 Alur Proses / Flowchart</option>
+                        <option value="architecture">🏗️ Arsitektur / Blok Sistem</option>
+                        <option value="network">🌐 Topologi Jaringan & Node</option>
+                        <option value="hierarchy">🌲 Hirarki / Pohon Konsep</option>
+                        <option value="venn">⭕ Diagram Relasi / Venn</option>
+                    </select>
+                </div>
+
+                <div id="single_ai_img_status" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 0.84rem; margin-bottom: 14px;"></div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #f1f5f9; padding-top: 14px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('ai-single-img-modal')" style="padding: 8px 16px; border-radius: 6px;">Batal</button>
+                    <button type="button" class="btn btn-primary" id="btn_execute_single_ai_img" onclick="executeSingleAiImageGenerate()" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none; padding: 8px 18px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-sparkles"></i> Rancang & Terapkan Gambar
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -872,130 +1051,243 @@
                 </div>
 
                 <form id="ai-generate-form" onsubmit="handleAiGenerate(event)">
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Topik / Materi Ujian <span style="color: #dc2626;">*</span></label>
-                        <input type="text" id="ai-topic" required class="form-control" value="<%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Etika Profesi Komputer' %>" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                    </div>
+                    <!-- SECTION 1: KONFIGURASI TEKNIS NASKAH SOAL (TEKS UTAMA) -->
+                    <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                            <div style="font-weight: 700; font-size: 0.9rem; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                                <span style="background: #1b4d3e; color: #ffffff; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem;">1</span>
+                                <span>Konfigurasi Teknis Naskah Soal <span style="font-weight: 500; font-size: 0.8rem; color: #64748b;">(Teks Mandiri)</span></span>
+                            </div>
+                            <span class="pill-badge pill-badge-success" style="font-size: 0.75rem;">Standar Akademik</span>
+                        </div>
 
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label style="font-weight: 600; font-size: 0.88rem; display: flex; justify-content: space-between; margin-bottom: 6px;">
-                            <span>Sub-Topik / Batasan Pembahasan</span>
-                            <span style="font-size: 0.8rem; color: #0284c7; font-weight: 500;"><i class="fas fa-bullseye"></i> Menjaga Fokus Materi</span>
-                        </label>
-                        <textarea id="ai-subtopic" class="form-control" rows="2" placeholder="Contoh: Kode Etik ACM/IEEE, Hak Cipta Perangkat Lunak, Studi Kasus Pelanggaran Privasi Data" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"></textarea>
-                        <small style="color: #64748b; font-size: 0.78rem;">Batasan spesifik agar naskah soal akurat dan tidak melenceng ke materi di luar silabus.</small>
-                    </div>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">Topik / Materi Ujian <span style="color: #dc2626;">*</span></label>
+                            <input type="text" id="ai-topic" required class="form-control" value="<%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Etika Profesi Komputer' %>" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.88rem;">
+                        </div>
 
-                    <!-- Pilihan Bentuk / Jenis Soal (Multi-select) -->
-                    <div style="margin-bottom: 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 12px 14px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                            <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; margin: 0;">
-                                <i class="fas fa-list-check" style="color: #1b4d3e; margin-right: 4px;"></i> Pilihan Bentuk / Jenis Soal <span style="font-weight: 500; font-size: 0.8rem; color: #64748b;">(Bisa pilih lebih dari satu)</span>
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label style="font-weight: 600; font-size: 0.86rem; display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span>Sub-Topik / Batasan Pembahasan</span>
+                                <span style="font-size: 0.78rem; color: #0284c7; font-weight: 500;"><i class="fas fa-bullseye"></i> Fokus Ruang Lingkup</span>
                             </label>
-                            <div style="display: flex; gap: 4px;">
-                                <button type="button" class="quick-chip" onclick="setAllCheckboxes('cb-soal-jenis', true)">Semua</button>
-                                <button type="button" class="quick-chip" onclick="setOnlyCheckbox('cb-soal-jenis', 'pg')">Hanya PG</button>
-                                <button type="button" class="quick-chip" onclick="setPresetJenisSoal()">Campuran</button>
+                            <textarea id="ai-subtopic" class="form-control" rows="2" placeholder="Contoh: Kode Etik ACM/IEEE, Hak Cipta Perangkat Lunak, Studi Kasus Pelanggaran Privasi Data" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 0.86rem;"></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px; margin-bottom: 12px;">
+                            <div class="form-group">
+                                <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">
+                                    <i class="fas fa-feather-pointed" style="color: #1b4d3e;"></i> Gaya Narasi Naskah Soal
+                                </label>
+                                <select id="ai-gaya-naskah" class="form-select" style="width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+                                    <option value="kasus" selected>🏢 Kasus Kontekstual & Kasus Nyata</option>
+                                    <option value="problem_solving">⚙️ Problem Solving & Algoritmik</option>
+                                    <option value="konseptual">📚 Konseptual & Teori Terapan</option>
+                                    <option value="standar">📝 Standar Evaluasi Akademik</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">Tingkat Kesulitan</label>
+                                <select id="ai-kesulitan" class="form-select" style="width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+                                    <option value="proporsional" selected>Proporsional (30:50:20)</option>
+                                    <option value="sedang">Sedang</option>
+                                    <option value="sulit">HOTS (Sulit)</option>
+                                    <option value="mudah">Mudah</option>
+                                </select>
                             </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-jenis" value="pg" checked style="transform: scale(1.15);">
-                                <span>Pilihan Ganda (5 Opsi A-E)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-jenis" value="pg_kompleks" checked style="transform: scale(1.15);">
-                                <span>Pilihan Ganda Kompleks</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-jenis" value="tf" style="transform: scale(1.15);">
-                                <span>Benar / Salah (True/False)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-jenis" value="menjodohkan" style="transform: scale(1.15);">
-                                <span>Menjodohkan (Matching)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-jenis" value="short" style="transform: scale(1.15);">
-                                <span>Isian Singkat (Short Answer)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-jenis" value="esai" style="transform: scale(1.15);">
-                                <span>Uraian / Esai (Essay)</span>
-                            </label>
-                        </div>
-                    </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-                        <div class="form-group">
-                            <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Jumlah Soal</label>
-                            <input type="number" id="ai-count" min="1" max="25" value="5" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Poin per Soal</label>
-                            <input type="number" id="ai-poin" min="1" max="50" value="4" class="form-control" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                        </div>
-                        <div class="form-group">
-                            <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Tingkat Kesulitan</label>
-                            <select id="ai-kesulitan" class="form-select" style="width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
-                                <option value="proporsional" selected>Proporsional</option>
-                                <option value="sedang">Sedang</option>
-                                <option value="sulit">HOTS (Sulit)</option>
-                                <option value="mudah">Mudah</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Level Kognitif Taksonomi Bloom (Multi-select) -->
-                    <div style="margin-bottom: 14px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 12px 14px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
-                            <label style="font-weight: 700; font-size: 0.88rem; color: #1e293b; margin: 0;">
-                                <i class="fas fa-layer-group" style="color: #0284c7; margin-right: 4px;"></i> Level Kognitif Bloom <span style="font-weight: 500; font-size: 0.8rem; color: #64748b;">(Bisa pilih lebih dari satu)</span>
-                            </label>
-                            <div style="display: flex; gap: 4px;">
-                                <button type="button" class="quick-chip" onclick="setAllCheckboxes('cb-soal-kognitif', true)">Semua</button>
-                                <button type="button" class="quick-chip" onclick="setHotsOnly('cb-soal-kognitif')">Hanya HOTS</button>
-                                <button type="button" class="quick-chip" onclick="setBasicApplied('cb-soal-kognitif')">C1-C3</button>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                            <div class="form-group">
+                                <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">Jumlah Butir Soal</label>
+                                <input type="number" id="ai-count" min="1" max="25" value="5" oninput="updateAiGambarSummary()" class="form-control" style="width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.86rem;">
+                            </div>
+                            <div class="form-group">
+                                <label style="font-weight: 600; font-size: 0.86rem; display: block; margin-bottom: 5px;">Poin per Butir Soal</label>
+                                <input type="number" id="ai-poin" min="1" max="50" value="4" class="form-control" style="width: 100%; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 0.86rem;">
                             </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px;">
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-kognitif" value="C1" style="transform: scale(1.15);">
-                                <span><strong>C1</strong> - Mengingat (Remembering)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-kognitif" value="C2" checked style="transform: scale(1.15);">
-                                <span><strong>C2</strong> - Memahami (Understanding)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-kognitif" value="C3" checked style="transform: scale(1.15);">
-                                <span><strong>C3</strong> - Menerapkan (Applying)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-kognitif" value="C4" checked style="transform: scale(1.15);">
-                                <span><strong>C4</strong> - Menganalisis (HOTS)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-kognitif" value="C5" style="transform: scale(1.15);">
-                                <span><strong>C5</strong> - Mengevaluasi (HOTS)</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.86rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" class="cb-soal-kognitif" value="C6" style="transform: scale(1.15);">
-                                <span><strong>C6</strong> - Mencipta / Kreasi (HOTS)</span>
-                            </label>
-                        </div>
-                    </div>
 
-                    <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px;">
-                        <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer; font-size: 0.88rem; color: #1e40af; margin: 0;">
-                            <input type="checkbox" id="ai-generate-gambar" checked style="margin-top: 3px; transform: scale(1.15);">
+                        <!-- Pilihan Bentuk / Jenis Soal (Multi-select) -->
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <label style="font-weight: 700; font-size: 0.82rem; color: #1e293b; margin: 0;">
+                                    <i class="fas fa-list-check" style="color: #1b4d3e; margin-right: 4px;"></i> Bentuk Soal <span style="font-weight: 500; font-size: 0.78rem; color: #64748b;">(Bisa multi-pilih)</span>
+                                </label>
+                                <div style="display: flex; gap: 4px;">
+                                    <button type="button" class="quick-chip" onclick="setAllCheckboxes('cb-soal-jenis', true)">Semua</button>
+                                    <button type="button" class="quick-chip" onclick="setOnlyCheckbox('cb-soal-jenis', 'pg')">Hanya PG</button>
+                                    <button type="button" class="quick-chip" onclick="setPresetJenisSoal()">Campuran</button>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;">
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-jenis" value="pg" checked style="transform: scale(1.1);">
+                                    <span>Pilihan Ganda (PG 5 Opsi)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-jenis" value="pg_kompleks" checked style="transform: scale(1.1);">
+                                    <span>PG Kompleks (Multi Kunci)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-jenis" value="tf" style="transform: scale(1.1);">
+                                    <span>Benar / Salah (True/False)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-jenis" value="menjodohkan" style="transform: scale(1.1);">
+                                    <span>Menjodohkan (Matching)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-jenis" value="short" style="transform: scale(1.1);">
+                                    <span>Isian Singkat (Short Answer)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-jenis" value="esai" style="transform: scale(1.1);">
+                                    <span>Uraian / Esai (Essay Kasus)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Level Kognitif Taksonomi Bloom (Multi-select) -->
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">
+                                <label style="font-weight: 700; font-size: 0.82rem; color: #1e293b; margin: 0;">
+                                    <i class="fas fa-layer-group" style="color: #0284c7; margin-right: 4px;"></i> Level Kognitif Bloom
+                                </label>
+                                <div style="display: flex; gap: 4px;">
+                                    <button type="button" class="quick-chip" onclick="setAllCheckboxes('cb-soal-kognitif', true)">Semua</button>
+                                    <button type="button" class="quick-chip" onclick="setHotsOnly('cb-soal-kognitif')">Hanya HOTS</button>
+                                    <button type="button" class="quick-chip" onclick="setBasicApplied('cb-soal-kognitif')">C1-C3</button>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;">
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-kognitif" value="C1" style="transform: scale(1.1);">
+                                    <span><strong>C1</strong> - Mengingat</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-kognitif" value="C2" checked style="transform: scale(1.1);">
+                                    <span><strong>C2</strong> - Memahami</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-kognitif" value="C3" checked style="transform: scale(1.1);">
+                                    <span><strong>C3</strong> - Menerapkan</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-kognitif" value="C4" checked style="transform: scale(1.1);">
+                                    <span><strong>C4</strong> - Menganalisis (HOTS)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-kognitif" value="C5" style="transform: scale(1.1);">
+                                    <span><strong>C5</strong> - Mengevaluasi (HOTS)</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                    <input type="checkbox" class="cb-soal-kognitif" value="C6" style="transform: scale(1.1);">
+                                    <span><strong>C6</strong> - Mencipta (HOTS)</span>
+                                </label>
+                            </div>
+                        </div>
+                    <!-- SECTION 2: KONFIGURASI TEKNIS STIMULUS GAMBAR / DIAGRAM VISUAL (TERARAH, TIDAK ACAK) -->
+                    <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 14px; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #dbeafe; padding-bottom: 8px;">
+                            <div style="font-weight: 700; font-size: 0.9rem; color: #1e3a8a; display: flex; align-items: center; gap: 6px;">
+                                <span style="background: #2563eb; color: #ffffff; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem;">2</span>
+                                <span>Konfigurasi Stimulus Gambar / Diagram <span style="font-weight: 500; font-size: 0.8rem; color: #3b82f6;">(Opsional / Terarah)</span></span>
+                            </div>
+                            <span class="pill-badge" style="background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.75rem;">Vektor SVG Tajam</span>
+                        </div>
+
+                        <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.88rem; color: #1e40af; margin: 0;">
+                            <input type="checkbox" id="ai-generate-gambar" checked onchange="toggleAiGambarConfig(this.checked)" style="margin-top: 3px; transform: scale(1.2);">
                             <div>
-                                <strong><i class="fas fa-image"></i> Sisipkan / Generate Gambar Stimulus Otomatis dengan AI:</strong>
+                                <strong style="font-size: 0.92rem;"><i class="fas fa-image"></i> Sisipkan Gambar / Diagram Stimulus dengan AI</strong>
                                 <div style="font-size: 0.8rem; color: #2563eb; margin-top: 2px;">
-                                    AI akan otomatis merancang dan menyisipkan diagram visual, alur proses, arsitektur, atau stimulus visual yang relevan untuk butir soal yang di-generate.
+                                    Diagram dibuat berbasis format vektor SVG beresolusi tinggi, diintegrasikan langsung sebagai acuan analisis naskah soal.
                                 </div>
                             </div>
                         </label>
+
+                        <!-- Panel Konfigurasi Kriteria Spesifik -->
+                        <div id="ai-gambar-config-panel" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #93c5fd;">
+                            <!-- 1. Kriteria Target Soal yang Mendapat Gambar -->
+                            <div style="margin-bottom: 12px;">
+                                <label style="font-weight: 700; font-size: 0.82rem; color: #1e3a8a; display: block; margin-bottom: 4px;">
+                                    <i class="fas fa-crosshairs" style="color: #2563eb;"></i> Kriteria Target Butir Soal Bergambar:
+                                </label>
+                                <select id="ai-gambar-target-mode" class="form-select" onchange="handleAiGambarTargetModeChange(this.value)" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #93c5fd; border-radius: 6px; background: #ffffff;">
+                                    <option value="hots_only" selected>⭐ Hanya Soal Studi Kasus / HOTS (C4 - C6) [Standar Akademik]</option>
+                                    <option value="specific_types">🎯 Hanya Bentuk Soal Tertentu Saja (Tentukan di bawah)</option>
+                                    <option value="custom_count">🔢 Batasi Berdasarkan Nomor (Hanya N butir kasus pertama)</option>
+                                    <option value="all">🌐 Seluruh Butir Soal yang Di-generate</option>
+                                </select>
+                                <small style="display: block; font-size: 0.75rem; color: #1d4ed8; margin-top: 3px;">
+                                    <i class="fas fa-circle-info"></i> Memastikan stimulus gambar hanya dipasangkan pada soal penalaran analisis, bukan soal hafalan/teori dasar.
+                                </small>
+                            </div>
+
+                            <!-- Pilihan Bentuk Soal Spesifik (jika specific_types dipilih) -->
+                            <div id="ai-gambar-specific-types-wrap" style="display: none; margin-bottom: 12px; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 12px;">
+                                <label style="font-weight: 600; font-size: 0.8rem; color: #1e40af; display: block; margin-bottom: 6px;">
+                                    Pilih Bentuk Soal yang Diizinkan Mendapat Stimulus Gambar:
+                                </label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px;">
+                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                        <input type="checkbox" class="cb-gambar-type" value="pg" checked onchange="updateAiGambarSummary()"> Pilihan Ganda (PG)
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                        <input type="checkbox" class="cb-gambar-type" value="pg_kompleks" checked onchange="updateAiGambarSummary()"> PG Kompleks
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                        <input type="checkbox" class="cb-gambar-type" value="esai" checked onchange="updateAiGambarSummary()"> Uraian / Esai Kasus
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #334155; cursor: pointer;">
+                                        <input type="checkbox" class="cb-gambar-type" value="menjodohkan" onchange="updateAiGambarSummary()"> Menjodohkan
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 2. Kuota Maksimal & Gaya Diagram -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                                <div>
+                                    <label style="font-weight: 700; font-size: 0.82rem; color: #1e3a8a; display: block; margin-bottom: 4px;">
+                                        <i class="fas fa-calculator" style="color: #2563eb;"></i> Batas Kuota Gambar:
+                                    </label>
+                                    <select id="ai-gambar-max-count" class="form-select" onchange="updateAiGambarSummary()" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #93c5fd; border-radius: 6px; background: #ffffff;">
+                                        <option value="1">Maksimal 1 Butir Soal (Fokus 1 Kasus)</option>
+                                        <option value="2" selected>Maksimal 2 Butir Soal (Proporsional)</option>
+                                        <option value="3">Maksimal 3 Butir Soal</option>
+                                        <option value="999">Semua yang Memenuhi Kriteria</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-weight: 700; font-size: 0.82rem; color: #1e3a8a; display: block; margin-bottom: 4px;">
+                                        <i class="fas fa-shapes" style="color: #2563eb;"></i> Gaya / Format Visual:
+                                    </label>
+                                    <select id="ai-gambar-style" class="form-select" onchange="updateAiGambarSummary()" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #93c5fd; border-radius: 6px; background: #ffffff;">
+                                        <option value="auto" selected>🤖 Otomatis Sesuai Materi</option>
+                                        <option value="process">🔄 Alur Proses / Flowchart</option>
+                                        <option value="architecture">🏗️ Arsitektur / Blok Sistem</option>
+                                        <option value="network">🌐 Topologi Jaringan & Node</option>
+                                        <option value="hierarchy">🌲 Hirarki / Pohon Konsep</option>
+                                        <option value="venn">⭕ Diagram Relasi / Venn</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- 3. Instruksi Khusus Visual (Opsional) -->
+                            <div style="margin-bottom: 10px;">
+                                <label style="font-weight: 700; font-size: 0.82rem; color: #1e3a8a; display: block; margin-bottom: 4px;">
+                                    <i class="fas fa-pen-nib" style="color: #2563eb;"></i> Instruksi Khusus Visual / Diagram (Opsional):
+                                </label>
+                                <input type="text" id="ai-gambar-custom-prompt" placeholder="Contoh: Skema topologi client-server mikrotik, alur SDLC, siklus audit..." class="form-control" oninput="updateAiGambarSummary()" style="width: 100%; padding: 8px 10px; font-size: 0.85rem; border: 1.5px solid #93c5fd; border-radius: 6px; background: #ffffff;">
+                            </div>
+
+                            <!-- Live Summary Chip -->
+                            <div id="ai-gambar-summary-box" style="background: #dbeafe; border-radius: 6px; padding: 7px 12px; font-size: 0.78rem; color: #1e40af; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-bullseye" style="font-size: 0.95rem; color: #2563eb;"></i>
+                                <span id="ai-gambar-summary-text">Stimulus gambar hanya akan dipasangkan ke butir soal HOTS (C4-C6), maksimal 2 butir soal, tanpa penempatan acak.</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
@@ -1085,11 +1377,18 @@
 
         function switchSoalType(type, prefix) {
             const pgContainer = document.getElementById(prefix + '_type_pg_container');
+            const pgkContainer = document.getElementById(prefix + '_type_pg_kompleks_container');
             const tfContainer = document.getElementById(prefix + '_type_tf_container');
             const matchContainer = document.getElementById(prefix + '_type_menjodohkan_container');
-            if (pgContainer) pgContainer.style.display = (type === 'pg' || type === 'pg_kompleks') ? 'block' : 'none';
+            const shortContainer = document.getElementById(prefix + '_type_short_container');
+            const esaiContainer = document.getElementById(prefix + '_type_esai_container');
+
+            if (pgContainer) pgContainer.style.display = (type === 'pg') ? 'block' : 'none';
+            if (pgkContainer) pgkContainer.style.display = (type === 'pg_kompleks' || type === 'multiple') ? 'block' : 'none';
             if (tfContainer) tfContainer.style.display = (type === 'tf') ? 'block' : 'none';
             if (matchContainer) matchContainer.style.display = (type === 'menjodohkan' || type === 'matching') ? 'block' : 'none';
+            if (shortContainer) shortContainer.style.display = (type === 'short' || type === 'isian') ? 'block' : 'none';
+            if (esaiContainer) esaiContainer.style.display = (type === 'esai' || type === 'essay') ? 'block' : 'none';
         }
 
         function addMatchingRow(wrapId) {
@@ -1122,7 +1421,9 @@
             const editPreviewBox = document.getElementById('edit_gambar_preview_box');
             const editPreviewImg = document.getElementById('edit_gambar_preview_img');
             const editFileInput = document.getElementById('edit_gambar_file');
+            const editStatusMsg = document.getElementById('edit_gambar_status_msg');
             if (editFileInput) editFileInput.value = '';
+            if (editStatusMsg) editStatusMsg.style.display = 'none';
 
             if (gUrl) {
                 if (editUrlInput) editUrlInput.value = gUrl;
@@ -1134,46 +1435,97 @@
                 if (editPreviewBox) editPreviewBox.style.display = 'none';
             }
 
-            const jType = (soal.jenis_soal || 'pg').toLowerCase();
-            const pgContainer = document.getElementById('edit_type_pg_container');
-            const matchContainer = document.getElementById('edit_type_menjodohkan_container');
+            let jType = (soal.jenis_soal || 'pg').toLowerCase();
+            if (jType === 'multiple') jType = 'pg_kompleks';
+            if (jType === 'matching') jType = 'menjodohkan';
+            if (jType === 'isian') jType = 'short';
+            if (jType === 'essay') jType = 'esai';
 
-            if (jType === 'menjodohkan' || jType === 'matching') {
-                if (pgContainer) pgContainer.style.display = 'none';
-                if (matchContainer) {
-                    matchContainer.style.display = 'block';
-                    const wrap = document.getElementById('edit_matching_rows_wrap');
+            const editSelect = document.getElementById('edit_soal_jenis');
+            if (editSelect) editSelect.value = jType;
+            switchSoalType(jType, 'edit');
+
+            // Populate PG
+            if (jType === 'pg') {
+                const opsi = soal.opsi || [];
+                for (let idx = 0; idx < 5; idx++) {
+                    const textInput = document.getElementById('edit_opsi_teks_' + idx);
+                    const radioInput = document.getElementById('edit_opsi_benar_' + idx);
+                    const o = opsi[idx];
+                    if (textInput) textInput.value = o ? (o.teks_opsi || o.teks || '') : '';
+                    if (radioInput) radioInput.checked = Boolean(o && o.benar);
+                }
+            }
+
+            // Populate PG Kompleks
+            if (jType === 'pg_kompleks') {
+                const opsi = soal.opsi || [];
+                for (let idx = 0; idx < 5; idx++) {
+                    const textInput = document.getElementById('edit_pgk_opsi_teks_' + idx);
+                    const cbInput = document.getElementById('edit_pgk_opsi_benar_' + idx);
+                    const o = opsi[idx];
+                    if (textInput) textInput.value = o ? (o.teks_opsi || o.teks || '') : '';
+                    if (cbInput) cbInput.checked = Boolean(o && o.benar);
+                }
+            }
+
+            // Populate TF (Benar / Salah)
+            if (jType === 'tf') {
+                let isTrue = true;
+                if (soal.data_tambahan && typeof soal.data_tambahan.jawaban_benar === 'boolean') {
+                    isTrue = soal.data_tambahan.jawaban_benar;
+                } else if (soal.opsi && Array.isArray(soal.opsi)) {
+                    const falseOpt = soal.opsi.find(o => o.benar && (o.teks || o.teks_opsi || '').toLowerCase().includes('salah'));
+                    if (falseOpt) isTrue = false;
+                }
+                const radioTrue = document.getElementById('edit_tf_true');
+                const radioFalse = document.getElementById('edit_tf_false');
+                if (radioTrue && radioFalse) {
+                    radioTrue.checked = (isTrue === true);
+                    radioFalse.checked = (isTrue === false);
+                }
+            }
+
+            // Populate Menjodohkan
+            if (jType === 'menjodohkan') {
+                const wrap = document.getElementById('edit_matching_rows_wrap');
+                if (wrap) {
                     wrap.innerHTML = '';
                     const pairs = (soal.data_tambahan && soal.data_tambahan.pairs) || soal.matching_pairs || {};
                     let entries = Object.entries(pairs);
-                    if (entries.length === 0) {
-                        entries = [['', ''], ['', ''], ['', '']];
-                    }
+                    if (entries.length === 0) entries = [['', ''], ['', ''], ['', '']];
                     entries.forEach(([k, v], idx) => {
                         const row = document.createElement('div');
                         row.className = 'matching-pair-row';
                         row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
                         row.innerHTML = `
                             <span style="font-weight: 700; color: #9333ea; width: 20px;">${idx + 1}.</span>
-                            <input type="text" name="matching_keys[]" value="${k.replace(/"/g, '&quot;')}" placeholder="Premis (Kiri)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                            <input type="text" name="matching_keys[]" value="${(k || '').replace(/"/g, '&quot;')}" placeholder="Premis (Kiri)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                             <span style="color: #a855f7;"><i class="fas fa-arrow-right"></i></span>
-                            <input type="text" name="matching_values[]" value="${v.replace(/"/g, '&quot;')}" placeholder="Kunci Pasangan (Kanan)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
+                            <input type="text" name="matching_values[]" value="${(v || '').replace(/"/g, '&quot;')}" placeholder="Kunci Pasangan (Kanan)" class="form-control" style="flex: 1; padding: 8px 10px; border: 1.5px solid #cbd5e1; border-radius: 6px;">
                         `;
                         wrap.appendChild(row);
                     });
                 }
-            } else {
-                if (matchContainer) matchContainer.style.display = 'none';
-                if (soal.opsi && Array.isArray(soal.opsi)) {
-                    if (pgContainer) pgContainer.style.display = 'block';
-                    soal.opsi.forEach((o, idx) => {
-                        const textInput = document.getElementById('edit_opsi_teks_' + idx);
-                        const radioInput = document.getElementById('edit_opsi_benar_' + idx);
-                        if (textInput) textInput.value = o.teks_opsi || o.teks || '';
-                        if (radioInput && o.benar) radioInput.checked = true;
-                    });
-                } else {
-                    if (pgContainer) pgContainer.style.display = 'none';
+            }
+
+            // Populate Short / Isian Singkat
+            if (jType === 'short') {
+                const kwInput = document.getElementById('edit_soal_keywords_short');
+                if (kwInput) {
+                    let kw = (soal.data_tambahan && soal.data_tambahan.keywords) || '';
+                    if (!kw && soal.opsi && Array.isArray(soal.opsi)) {
+                        kw = soal.opsi.filter(o => o.benar).map(o => o.teks_opsi || o.teks || '').join(', ');
+                    }
+                    kwInput.value = kw;
+                }
+            }
+
+            // Populate Esai / Uraian
+            if (jType === 'esai') {
+                const kwTextarea = document.getElementById('edit_soal_keywords_esai');
+                if (kwTextarea) {
+                    kwTextarea.value = (soal.data_tambahan && soal.data_tambahan.keywords) || '';
                 }
             }
 
@@ -1233,30 +1585,110 @@
             const urlInput = document.getElementById(prefix + '_gambar_url');
             const previewBox = document.getElementById(prefix + '_gambar_preview_box');
             const previewImg = document.getElementById(prefix + '_gambar_preview_img');
+            const statusMsg = document.getElementById(prefix + '_gambar_status_msg');
+
             if (fileInput) fileInput.value = '';
             if (urlInput) urlInput.value = '';
             if (previewImg) previewImg.src = '';
             if (previewBox) previewBox.style.display = 'none';
+
+            if (statusMsg) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.background = '#fef2f2';
+                statusMsg.style.border = '1px solid #fecaca';
+                statusMsg.style.color = '#b91c1c';
+                statusMsg.innerHTML = '<i class="fas fa-trash"></i> Gambar stimulus telah dilepas. Klik Simpan untuk memperbarui.';
+            }
         }
 
-        async function triggerAiGenerateImage(prefix) {
-            const btn = document.getElementById('btn_ai_img_' + prefix);
+        // Open Dedicated In-Page Modal for AI Image Generation (iFrame safe, zero window.prompt)
+        function openAiImageGeneratorModal(prefix) {
+            const targetPrefixInput = document.getElementById('single_ai_img_target_prefix');
+            if (targetPrefixInput) targetPrefixInput.value = prefix;
+
             const pertInput = prefix === 'edit'
                 ? document.getElementById('edit_soal_pertanyaan')
                 : document.querySelector('#create-soal-modal textarea[name="pertanyaan"]');
             const currentText = pertInput ? pertInput.value.trim() : '';
             const defaultTopic = "<%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Diagram Konseptual Akademik' %>";
 
-            const userPrompt = prompt(
-                "Rancang Gambar / Diagram Stimulus dengan AI:\nTuliskan deskripsi diagram atau topik yang diinginkan (contoh: Diagram Alur Proses, Topologi Jaringan, Arsitektur Sistem, Bagan Siklus):",
-                currentText.substring(0, 70) || defaultTopic
-            );
-            if (userPrompt === null) return; // user cancelled
+            const promptInput = document.getElementById('single_ai_img_prompt');
+            if (promptInput) {
+                promptInput.value = currentText.substring(0, 90) || defaultTopic;
+            }
 
-            const originalHtml = btn ? btn.innerHTML : '';
+            const banner = document.getElementById('single_ai_img_banner');
+            const existingUrl = document.getElementById(prefix + '_gambar_url') ? document.getElementById(prefix + '_gambar_url').value : '';
+            if (banner) {
+                if (existingUrl) {
+                    banner.innerHTML = '<i class="fas fa-arrows-rotate"></i> <strong>Mode Ganti / Regenerate:</strong> Butir soal ini sudah memiliki stimulus gambar. Diagram baru dari AI akan langsung menggantikan gambar saat ini.';
+                    banner.style.background = '#fef3c7';
+                    banner.style.borderColor = '#fde68a';
+                    banner.style.color = '#92400e';
+                } else {
+                    banner.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> <strong>Rancang Diagram Stimulus:</strong> Tuliskan topik atau konsep visual diagram yang ingin dibuat oleh AI.';
+                    banner.style.background = '#eff6ff';
+                    banner.style.borderColor = '#bfdbfe';
+                    banner.style.color = '#1e40af';
+                }
+            }
+
+            const statusBox = document.getElementById('single_ai_img_status');
+            if (statusBox) statusBox.style.display = 'none';
+
+            const btn = document.getElementById('btn_execute_single_ai_img');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sparkles"></i> Rancang & Terapkan Gambar';
+            }
+
+            openModal('ai-single-img-modal');
+        }
+
+        // Backward compatibility
+        function triggerAiGenerateImage(prefix) {
+            openAiImageGeneratorModal(prefix);
+        }
+
+        // Execute AI Image Generation with full resilience
+        async function executeSingleAiImageGenerate() {
+            const prefix = document.getElementById('single_ai_img_target_prefix').value || 'edit';
+            const promptInput = document.getElementById('single_ai_img_prompt');
+            const styleInput = document.getElementById('single_ai_img_style');
+            const statusBox = document.getElementById('single_ai_img_status');
+            const btn = document.getElementById('btn_execute_single_ai_img');
+
+            const promptVal = promptInput ? promptInput.value.trim() : '';
+            const styleVal = styleInput ? styleInput.value : 'auto';
+            const defaultTopic = "<%= currentUjian ? (currentUjian.nama_mk || currentUjian.judul_ujian) : 'Diagram Konseptual Akademik' %>";
+
+            const pertInput = prefix === 'edit'
+                ? document.getElementById('edit_soal_pertanyaan')
+                : document.querySelector('#create-soal-modal textarea[name="pertanyaan"]');
+            const currentText = pertInput ? pertInput.value.trim() : '';
+            const soalId = prefix === 'edit' ? (document.getElementById('edit_soal_id') ? document.getElementById('edit_soal_id').value : null) : null;
+
+            if (!promptVal) {
+                if (statusBox) {
+                    statusBox.style.display = 'block';
+                    statusBox.style.background = '#fee2e2';
+                    statusBox.style.border = '1px solid #fecaca';
+                    statusBox.style.color = '#dc2626';
+                    statusBox.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Masukkan deskripsi diagram terlebih dahulu.';
+                }
+                return;
+            }
+
             if (btn) {
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merancang Visual...';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Merancang Diagram SVG...';
+            }
+            if (statusBox) {
+                statusBox.style.display = 'block';
+                statusBox.style.background = '#eef6fc';
+                statusBox.style.border = '1px solid #bfdbfe';
+                statusBox.style.color = '#1e40af';
+                statusBox.innerHTML = '<i class="fas fa-brain fa-fade" style="margin-right: 6px;"></i> AI sedang merancang diagram vektor SVG presisi tinggi...';
             }
 
             try {
@@ -1264,9 +1696,11 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        prompt: userPrompt || defaultTopic,
+                        prompt: promptVal,
                         topik: defaultTopic,
-                        pertanyaan: currentText
+                        pertanyaan: currentText,
+                        style: styleVal,
+                        soal_id: soalId
                     })
                 });
                 const data = await res.json();
@@ -1274,18 +1708,44 @@
                     const urlInput = document.getElementById(prefix + '_gambar_url');
                     const previewBox = document.getElementById(prefix + '_gambar_preview_box');
                     const previewImg = document.getElementById(prefix + '_gambar_preview_img');
+                    const fileInput = document.getElementById(prefix + '_gambar_file');
+
                     if (urlInput) urlInput.value = data.url;
                     if (previewImg) previewImg.src = data.url;
                     if (previewBox) previewBox.style.display = 'block';
+                    if (fileInput) fileInput.value = '';
+
+                    const statusMsg = document.getElementById(prefix + '_gambar_status_msg');
+                    if (statusMsg) {
+                        statusMsg.style.display = 'block';
+                        statusMsg.style.background = '#dcfce7';
+                        statusMsg.style.border = '1px solid #bbf7d0';
+                        statusMsg.style.color = '#15803d';
+                        statusMsg.innerHTML = '<i class="fas fa-check-circle"></i> <strong>Berhasil!</strong> Diagram stimulus AI baru telah dipasang. Klik "Simpan Perubahan" untuk memfinalisasi.';
+                    }
+
+                    closeModal('ai-single-img-modal');
                 } else {
-                    alert('Gagal menghasilkan gambar AI: ' + (data.message || 'Terjadi kendala teknis'));
+                    if (statusBox) {
+                        statusBox.style.display = 'block';
+                        statusBox.style.background = '#fee2e2';
+                        statusBox.style.border = '1px solid #fecaca';
+                        statusBox.style.color = '#dc2626';
+                        statusBox.innerHTML = '<i class="fas fa-circle-xmark"></i> ' + (data.message || 'Gagal merancang gambar.');
+                    }
                 }
             } catch (err) {
-                alert('Gagal generate gambar: ' + err.message);
+                if (statusBox) {
+                    statusBox.style.display = 'block';
+                    statusBox.style.background = '#fee2e2';
+                    statusBox.style.border = '1px solid #fecaca';
+                    statusBox.style.color = '#dc2626';
+                    statusBox.innerHTML = '<i class="fas fa-circle-xmark"></i> Terjadi kendala teknis: ' + err.message;
+                }
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = originalHtml;
+                    btn.innerHTML = '<i class="fas fa-sparkles"></i> Rancang & Terapkan Gambar';
                 }
             }
         }
@@ -1326,6 +1786,78 @@
             });
         }
 
+        // Helpers for Targeted AI Question & Stimulus Image Generation
+        function toggleAiGambarConfig(checked) {
+            const panel = document.getElementById('ai-gambar-config-panel');
+            if (panel) panel.style.display = checked ? 'block' : 'none';
+            updateAiGambarSummary();
+        }
+
+        function handleAiGambarTargetModeChange(val) {
+            const typesWrap = document.getElementById('ai-gambar-specific-types-wrap');
+            if (typesWrap) {
+                typesWrap.style.display = (val === 'specific_types') ? 'block' : 'none';
+            }
+            updateAiGambarSummary();
+        }
+
+        function updateAiGambarSummary() {
+            const summaryText = document.getElementById('ai-gambar-summary-text');
+            const chk = document.getElementById('ai-generate-gambar');
+            const totalCount = parseInt(document.getElementById('ai-count') ? document.getElementById('ai-count').value : '5', 10) || 5;
+            if (!summaryText) return;
+
+            if (!chk || !chk.checked) {
+                summaryText.innerHTML = `<strong>Teks Murni (Tanpa Gambar):</strong> Seluruh ${totalCount} butir naskah soal akan disusun sebagai teks mandiri (self-contained) tanpa stimulus gambar.`;
+                return;
+            }
+
+            const targetMode = document.getElementById('ai-gambar-target-mode') ? document.getElementById('ai-gambar-target-mode').value : 'hots_only';
+            const rawMax = parseInt(document.getElementById('ai-gambar-max-count') ? document.getElementById('ai-gambar-max-count').value : '2', 10) || 2;
+            const maxGambar = Math.min(totalCount, rawMax);
+            const style = document.getElementById('ai-gambar-style') ? document.getElementById('ai-gambar-style').value : 'auto';
+            const customPrompt = document.getElementById('ai-gambar-custom-prompt') ? document.getElementById('ai-gambar-custom-prompt').value.trim() : '';
+
+            let targetDesc = '';
+            if (targetMode === 'hots_only') {
+                targetDesc = 'hanya butir soal <strong>HOTS (C4-C6)</strong>';
+            } else if (targetMode === 'specific_types') {
+                const types = getCheckedValues('cb-gambar-type', ['pg']);
+                const typeLabels = types.map(t => {
+                    if (t === 'pg') return 'PG';
+                    if (t === 'pg_kompleks') return 'PG Kompleks';
+                    if (t === 'esai') return 'Esai';
+                    if (t === 'menjodohkan') return 'Menjodohkan';
+                    return t;
+                }).join(', ');
+                targetDesc = `hanya bentuk <strong>[${typeLabels || 'PG'}]</strong>`;
+            } else if (targetMode === 'custom_count') {
+                targetDesc = `hanya untuk <strong>${maxGambar} butir pertama</strong>`;
+            } else {
+                targetDesc = 'seluruh butir soal yang di-generate';
+            }
+
+            let styleDesc = '';
+            if (style === 'process') styleDesc = 'Alur Proses / Flowchart';
+            else if (style === 'architecture') styleDesc = 'Arsitektur Sistem';
+            else if (style === 'network') styleDesc = 'Topologi Jaringan';
+            else if (style === 'hierarchy') styleDesc = 'Pohon Hirarki';
+            else if (style === 'venn') styleDesc = 'Diagram Venn';
+            else styleDesc = 'Otomatis Sesuai Materi';
+
+            const textOnlyCount = Math.max(0, totalCount - maxGambar);
+            let summary = `<strong>Distribusi:</strong> Maksimal <strong>${maxGambar} butir</strong> bergambar (${targetDesc}, format: <em>${styleDesc}</em>)`;
+            if (textOnlyCount > 0) {
+                summary += ` & <strong>${textOnlyCount} butir</strong> naskah teks mandiri (tanpa gambar).`;
+            } else {
+                summary += `.`;
+            }
+            if (customPrompt) {
+                summary += ` <em>(Fokus: "${customPrompt}")</em>`;
+            }
+            summaryText.innerHTML = summary;
+        }
+
         function getCheckedValues(className, defaultValues = []) {
             const checked = Array.from(document.querySelectorAll('.' + className + ':checked')).map(cb => cb.value);
             return checked.length > 0 ? checked : defaultValues;
@@ -1340,10 +1872,17 @@
             status.style.display = 'block';
             status.style.background = '#eef6fc';
             status.style.color = '#1e429f';
-            status.innerHTML = '<i class="fas fa-brain fa-fade" style="margin-right: 6px;"></i> AI sedang menyusun butir soal, stimulus diagram, dan kunci valid...';
+            status.innerHTML = '<i class="fas fa-brain fa-fade" style="margin-right: 6px;"></i> AI sedang menyusun butir soal terarah, stimulus diagram presisi, dan kunci valid...';
 
             const autoSave = document.getElementById('ai-auto-save') ? document.getElementById('ai-auto-save').checked : true;
             const generateGambar = document.getElementById('ai-generate-gambar') ? document.getElementById('ai-generate-gambar').checked : true;
+            const gambarTargetMode = document.getElementById('ai-gambar-target-mode') ? document.getElementById('ai-gambar-target-mode').value : 'hots_only';
+            const gambarTargetTypes = getCheckedValues('cb-gambar-type', ['pg', 'pg_kompleks', 'esai']);
+            const gambarMaxCount = parseInt(document.getElementById('ai-gambar-max-count') ? document.getElementById('ai-gambar-max-count').value : '2', 10) || 2;
+            const gambarStyle = document.getElementById('ai-gambar-style') ? document.getElementById('ai-gambar-style').value : 'auto';
+            const gambarCustomPrompt = document.getElementById('ai-gambar-custom-prompt') ? document.getElementById('ai-gambar-custom-prompt').value.trim() : '';
+            const gayaNaskah = document.getElementById('ai-gaya-naskah') ? document.getElementById('ai-gaya-naskah').value : 'kasus';
+
             const jenisSoalList = getCheckedValues('cb-soal-jenis', ['pg']);
             const kognitifList = getCheckedValues('cb-soal-kognitif', ['C2', 'C3', 'C4']);
 
@@ -1355,12 +1894,18 @@
                         ujian_id: '<%= selectedUjianId %>',
                         topik: document.getElementById('ai-topic').value,
                         sub_topik: document.getElementById('ai-subtopic') ? document.getElementById('ai-subtopic').value : '',
+                        gaya_naskah: gayaNaskah,
                         jenis_soal_list: jenisSoalList,
                         kognitif_list: kognitifList,
                         jumlah: parseInt(document.getElementById('ai-count').value, 10) || 5,
                         poin: parseInt(document.getElementById('ai-poin').value, 10) || 4,
                         kesulitan: document.getElementById('ai-kesulitan').value,
                         generate_gambar: generateGambar,
+                        gambar_target_mode: gambarTargetMode,
+                        gambar_target_types: gambarTargetTypes,
+                        gambar_max_count: gambarMaxCount,
+                        gambar_style: gambarStyle,
+                        gambar_custom_prompt: gambarCustomPrompt,
                         apply: autoSave
                     })
                 });

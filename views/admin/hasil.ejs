@@ -90,11 +90,8 @@
                         <button type="submit" class="btn-primary-action" style="padding: 9px 18px; border-radius: 8px; font-size: 0.9rem;">
                             <i class="fas fa-filter"></i> Filter
                         </button>
-                        <button type="button" onclick="triggerCetakBeritaAcara(event)" class="btn-primary-action" style="background: #1b4d3e; padding: 9px 16px; border-radius: 8px; font-size: 0.9rem;" title="Cetak Berita Acara & Rekap Nilai">
-                            <i class="fas fa-print"></i> Cetak Berita Acara
-                        </button>
-                        <a href="/admin/hasil" class="btn-action-secondary" style="padding: 9px 14px; border-radius: 8px; font-size: 0.9rem; text-decoration: none;" title="Reset Filter">
-                            <i class="fas fa-rotate-left"></i>
+                        <a href="/admin/hasil" class="btn-action-secondary" style="padding: 9px 14px; border-radius: 8px; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Reset Filter">
+                            <i class="fas fa-rotate-left"></i> Reset
                         </a>
                     </div>
                 </form>
@@ -222,7 +219,7 @@
             const uId = document.getElementById('filter_ujian_id') ? document.getElementById('filter_ujian_id').value : '';
             const kId = document.getElementById('filter_kelas_id') ? document.getElementById('filter_kelas_id').value : '';
             const url = `/admin/hasil/cetak?ujian_id=${encodeURIComponent(uId)}&kelas_id=${encodeURIComponent(kId)}`;
-            window.open(url, '_blank');
+            window.location.href = url;
         }
 
         function openEditNilaiModal(sesiId, nama, nilai) {

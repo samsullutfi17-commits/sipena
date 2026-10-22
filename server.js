@@ -19,6 +19,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
+// Instant health endpoints for container probes and dev server monitoring
+app.get(['/healthz', '/ping', '/health'], (req, res) => res.status(200).send('OK'));
+
 // Configure multer for file uploads (XLSX import)
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -87,15 +90,46 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 app.use(express.json({ limit: '20mb' }));
 app.use(cookieParser());
 
-// Auto-persist middleware for POST requests that alter state
-app.use((req, res, next) => {
-  if (req.method === 'POST') {
-    res.on('finish', () => {
-      if (res.statusCode >= 200 && res.statusCode < 400) {
-        try { db.save(); } catch (e) {}
-      }
-    });
+// Reliable dual-layer persistence middleware
+// Ensures Firestore cloud write finishes before HTTP response is terminated (vital for Cloud Run container lifecycle)
+app.use(async (req, res, next) => {
+  if (req.path === '/healthz' || req.path === '/ping') {
+    return res.status(200).send('OK');
   }
+
+  if (!db.isInitialSyncDone) {
+    try {
+      await db.ensureFirebaseReady(6000);
+    } catch (e) {}
+  }
+
+  if (req.method === 'POST' || req.method === 'PUT' || req.method === 'DELETE') {
+    const originalRedirect = res.redirect.bind(res);
+    const originalJson = res.json.bind(res);
+    const originalSend = res.send.bind(res);
+
+    let persisted = false;
+    const persistNow = async () => {
+      if (persisted) return;
+      persisted = true;
+      try {
+        await db.saveAsync();
+      } catch (err) {
+        console.warn('[SIPENA] Persist middleware note:', err.message);
+      }
+    };
+
+    res.redirect = function(...args) {
+      persistNow().finally(() => originalRedirect(...args));
+    };
+    res.json = function(...args) {
+      persistNow().finally(() => originalJson(...args));
+    };
+    res.send = function(...args) {
+      persistNow().finally(() => originalSend(...args));
+    };
+  }
+
   next();
 });
 
@@ -202,6 +236,58 @@ app.use((req, res, next) => {
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/admin/uploads', express.static(path.join(__dirname, 'admin/uploads')));
 app.use('/uploads', express.static(path.join(__dirname, 'admin/uploads')));
+
+// Fallback dynamic recovery for Bank Soal question images from Firestore database
+app.get(['/admin/uploads/soal/:filename', '/uploads/soal/:filename'], (req, res, next) => {
+  const filename = req.params.filename;
+  const filePath = path.join(soalImageDir, filename);
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  const soalItem = (db.soal || []).find(s => s.gambar && s.gambar.endsWith(filename));
+  if (soalItem) {
+    if (soalItem.gambar_svg) {
+      try {
+        if (!fs.existsSync(soalImageDir)) fs.mkdirSync(soalImageDir, { recursive: true });
+        fs.writeFileSync(filePath, soalItem.gambar_svg, 'utf8');
+      } catch (e) {}
+      res.setHeader('Content-Type', 'image/svg+xml');
+      return res.send(soalItem.gambar_svg);
+    }
+    if (soalItem.gambar_base64) {
+      try {
+        const cleanB64 = soalItem.gambar_base64.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(cleanB64, 'base64');
+        if (!fs.existsSync(soalImageDir)) fs.mkdirSync(soalImageDir, { recursive: true });
+        fs.writeFileSync(filePath, buffer);
+        res.setHeader('Content-Type', filename.endsWith('.svg') ? 'image/svg+xml' : 'image/png');
+        return res.send(buffer);
+      } catch (e) {}
+    }
+  }
+  next();
+});
+
+// Fallback dynamic recovery for Institution Logo from Firestore database
+app.get(['/admin/uploads/:filename', '/uploads/:filename'], (req, res, next) => {
+  const filename = req.params.filename;
+  const uploadDir = path.join(__dirname, 'admin/uploads');
+  const filePath = path.join(uploadDir, filename);
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  if (db.pengaturan && db.pengaturan.logo_data) {
+    try {
+      const cleanB64 = db.pengaturan.logo_data.replace(/^data:image\/\w+;base64,/, '');
+      const buffer = Buffer.from(cleanB64, 'base64');
+      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+      fs.writeFileSync(filePath, buffer);
+      res.setHeader('Content-Type', 'image/png');
+      return res.send(buffer);
+    } catch (e) {}
+  }
+  next();
+});
 
 // Middleware to clean up expired sessions periodically
 app.use((req, res, next) => {
@@ -1067,8 +1153,14 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
     const cpmk = (req.body.cpmk || '').trim();
 
     let gambar = (req.body.gambar || '').trim() || null;
+    let gambarBase64 = null;
     if (req.file) {
       gambar = `/admin/uploads/soal/${req.file.filename}`;
+      try {
+        const buf = fs.readFileSync(path.join(soalImageDir, req.file.filename));
+        const mime = req.file.mimetype || 'image/png';
+        gambarBase64 = `data:${mime};base64,` + buf.toString('base64');
+      } catch (e) {}
     }
 
     if (pertanyaan && targetUjianId) {
@@ -1076,9 +1168,10 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
       let dataTambahan = null;
 
       if (jenis === 'tf') {
-        dataTambahan = { jawaban_benar: req.body.jawaban_tf === 'true' };
+        const isTrue = req.body.jawaban_tf === 'true';
+        dataTambahan = { jawaban_benar: isTrue };
       } else if (jenis === 'short' || jenis === 'esai') {
-        dataTambahan = { keywords: req.body.keywords || '' };
+        dataTambahan = { keywords: (req.body.keywords || '').trim() };
       } else if (jenis === 'ordering') {
         const items = (req.body.ordering_items || '').split('\n').map(s => s.trim()).filter(Boolean);
         dataTambahan = { correct_order: items };
@@ -1102,6 +1195,7 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
         jenis_soal: jenis,
         pertanyaan,
         gambar,
+        gambar_base64: gambarBase64,
         pembahasan,
         poin,
         urutan: db.soal.filter(s => s.id_ujian === targetUjianId).length + 1,
@@ -1111,14 +1205,14 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
         cpmk
       });
 
-      if (['pg', 'multiple', 'pg_kompleks'].includes(jenis)) {
-        const teksOpsi = req.body.opsi_teks || [];
-        const benarOpsi = req.body.opsi_benar;
+      if (jenis === 'pg_kompleks' || jenis === 'multiple') {
+        const teksOpsi = req.body.pgk_opsi_teks || req.body.opsi_teks || [];
+        const benarOpsi = req.body.pgk_opsi_benar !== undefined ? req.body.pgk_opsi_benar : req.body.opsi_benar;
 
         teksOpsi.forEach((teks, idx) => {
           if (teks && teks.trim()) {
             const isBenar = Array.isArray(benarOpsi)
-              ? benarOpsi.includes(String(idx))
+              ? benarOpsi.map(String).includes(String(idx))
               : String(benarOpsi) === String(idx);
             db.opsi_jawaban.push({
               id: db.opsi_jawaban.length + 1,
@@ -1128,6 +1222,38 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
               urutan: idx + 1
             });
           }
+        });
+      } else if (jenis === 'pg') {
+        const teksOpsi = req.body.opsi_teks || [];
+        const benarOpsi = req.body.opsi_benar;
+
+        teksOpsi.forEach((teks, idx) => {
+          if (teks && teks.trim()) {
+            const isBenar = String(benarOpsi) === String(idx);
+            db.opsi_jawaban.push({
+              id: db.opsi_jawaban.length + 1,
+              id_soal: newSoalId,
+              teks_opsi: teks.trim(),
+              benar: isBenar,
+              urutan: idx + 1
+            });
+          }
+        });
+      } else if (jenis === 'tf') {
+        const isTrue = req.body.jawaban_tf === 'true';
+        db.opsi_jawaban.push({
+          id: db.opsi_jawaban.length + 1,
+          id_soal: newSoalId,
+          teks_opsi: 'Benar',
+          benar: isTrue,
+          urutan: 1
+        });
+        db.opsi_jawaban.push({
+          id: db.opsi_jawaban.length + 1,
+          id_soal: newSoalId,
+          teks_opsi: 'Salah',
+          benar: !isTrue,
+          urutan: 2
         });
       } else if (['matching', 'menjodohkan'].includes(jenis) && dataTambahan && dataTambahan.pairs) {
         let pIdx = 1;
@@ -1149,6 +1275,9 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
     const soalId = parseInt(req.body.soal_id, 10);
     const s = db.soal.find(x => x.id === soalId);
     if (s) {
+      if (req.body.jenis_soal) {
+        s.jenis_soal = req.body.jenis_soal;
+      }
       s.pertanyaan = (req.body.pertanyaan || '').trim() || s.pertanyaan;
       s.pembahasan = (req.body.pembahasan || '').trim();
       s.poin = parseInt(req.body.poin, 10) || s.poin;
@@ -1157,30 +1286,80 @@ app.post(['/admin/soal', '/admin/soal.php'], requireAdmin, uploadSoalMiddleware,
 
       if (req.file) {
         s.gambar = `/admin/uploads/soal/${req.file.filename}`;
+        try {
+          const buf = fs.readFileSync(path.join(soalImageDir, req.file.filename));
+          const mime = req.file.mimetype || 'image/png';
+          s.gambar_base64 = `data:${mime};base64,` + buf.toString('base64');
+          s.gambar_svg = null;
+        } catch (e) {}
       } else if (req.body.gambar !== undefined) {
         s.gambar = req.body.gambar.trim() || null;
+        if (!s.gambar) {
+          s.gambar_base64 = null;
+          s.gambar_svg = null;
+        }
       }
 
-      if (['pg', 'multiple', 'pg_kompleks'].includes(s.jenis_soal) && req.body.opsi_teks) {
+      const activeJenis = s.jenis_soal;
+      if (activeJenis === 'pg_kompleks' || activeJenis === 'multiple') {
         db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
-        const teksOpsi = req.body.opsi_teks || [];
-        const benarOpsi = req.body.opsi_benar;
+        const teksOpsi = req.body.pgk_opsi_teks || req.body.opsi_teks || [];
+        const benarOpsi = req.body.pgk_opsi_benar !== undefined ? req.body.pgk_opsi_benar : req.body.opsi_benar;
 
+        let oIdx = 1;
         teksOpsi.forEach((teks, idx) => {
           if (teks && teks.trim()) {
             const isBenar = Array.isArray(benarOpsi)
-              ? benarOpsi.includes(String(idx))
+              ? benarOpsi.map(String).includes(String(idx))
               : String(benarOpsi) === String(idx);
             db.opsi_jawaban.push({
               id: db.opsi_jawaban.length + 1,
               id_soal: soalId,
               teks_opsi: teks.trim(),
               benar: isBenar,
-              urutan: idx + 1
+              urutan: oIdx++
             });
           }
         });
-      } else if (['matching', 'menjodohkan'].includes(s.jenis_soal)) {
+      } else if (activeJenis === 'pg') {
+        db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
+        const teksOpsi = req.body.opsi_teks || [];
+        const benarOpsi = req.body.opsi_benar;
+
+        let oIdx = 1;
+        teksOpsi.forEach((teks, idx) => {
+          if (teks && teks.trim()) {
+            const isBenar = String(benarOpsi) === String(idx);
+            db.opsi_jawaban.push({
+              id: db.opsi_jawaban.length + 1,
+              id_soal: soalId,
+              teks_opsi: teks.trim(),
+              benar: isBenar,
+              urutan: oIdx++
+            });
+          }
+        });
+      } else if (activeJenis === 'tf') {
+        const isTrue = req.body.jawaban_tf === 'true';
+        s.data_tambahan = { ...(s.data_tambahan || {}), jawaban_benar: isTrue };
+        db.opsi_jawaban = db.opsi_jawaban.filter(o => o.id_soal !== soalId);
+        db.opsi_jawaban.push({
+          id: db.opsi_jawaban.length + 1,
+          id_soal: soalId,
+          teks_opsi: 'Benar',
+          benar: isTrue,
+          urutan: 1
+        });
+        db.opsi_jawaban.push({
+          id: db.opsi_jawaban.length + 1,
+          id_soal: soalId,
+          teks_opsi: 'Salah',
+          benar: !isTrue,
+          urutan: 2
+        });
+      } else if (activeJenis === 'short' || activeJenis === 'esai') {
+        s.data_tambahan = { ...(s.data_tambahan || {}), keywords: (req.body.keywords || '').trim() };
+      } else if (['matching', 'menjodohkan'].includes(activeJenis)) {
         const keys = Array.isArray(req.body.matching_keys)
           ? req.body.matching_keys
           : (req.body.matching_keys || '').split('\n').map(x => x.trim()).filter(Boolean);
@@ -1263,6 +1442,8 @@ app.post(['/admin/generate_soal_image_ai', '/admin/generate_soal_image_ai.php'],
   const prompt = (req.body.prompt || '').trim();
   const topik = (req.body.topik || '').trim();
   const pertanyaan = (req.body.pertanyaan || '').trim();
+  const style = (req.body.style || req.body.gambar_style || 'auto').trim();
+  const soalId = req.body.soal_id ? parseInt(req.body.soal_id, 10) : null;
   const effectiveTopic = prompt || topik || 'Diagram Konseptual Akademik';
 
   try {
@@ -1274,10 +1455,11 @@ app.post(['/admin/generate_soal_image_ai', '/admin/generate_soal_image_ai.php'],
         const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const aiPrompt = `Anda adalah desainer visual materi instruksional dan instrumen ujian perguruan tinggi.
 Rancang diagram visual atau stimulus soal beresolusi tinggi dalam format SVG mandiri (Self-contained valid SVG) untuk topik: "${effectiveTopic}".
-Konteks Soal: "${pertanyaan || effectiveTopic}".
+Konteks Butir Soal: "${pertanyaan || effectiveTopic}".
+Pilihan Gaya Diagram: "${style}".
 
 Ketentuan Khusus Desain SVG:
-- Output WAJIB berupa tag <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; font-family: system-ui, sans-serif;">...</svg>
+- Output WAJIB berupa tag <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" style="background: #f8fafc; font-family: system-ui, sans-serif;">...</svg>
 - Berikan banner judul diagram di atas yang rapi dengan badge "STIMULUS AKADEMIK".
 - Buat bentuk diagram yang proporsional (kotak komponen bergradasi halus, panah arah proses, label teks yang tajam dan terbaca jelas, palet warna elegan modern: navy #1e3a8a, toska #0d9488, ungu #7e22ce).
 - Jangan ada teks yang saling bertumpuk atau terpotong.
@@ -1307,32 +1489,58 @@ Ketentuan Khusus Desain SVG:
       svgContent = generateAcademicDiagramSvg({
         topic: effectiveTopic,
         title: prompt || topik || 'Diagram Stimulus Soal',
-        context: pertanyaan
+        context: pertanyaan,
+        type: style
       });
+    }
+
+    if (!fs.existsSync(soalImageDir)) {
+      fs.mkdirSync(soalImageDir, { recursive: true });
     }
 
     const filename = `ai_diagram_${Date.now()}.svg`;
     const filePath = path.join(soalImageDir, filename);
     fs.writeFileSync(filePath, svgContent, 'utf8');
+    const imgUrl = `/admin/uploads/soal/${filename}`;
+
+    // If soal_id is provided, also persist immediately into database
+    if (soalId) {
+      const targetSoal = db.soal.find(s => s.id === soalId);
+      if (targetSoal) {
+        targetSoal.gambar = imgUrl;
+        db.save();
+      }
+    }
 
     return res.json({
       success: true,
-      url: `/admin/uploads/soal/${filename}`,
+      url: imgUrl,
       filename,
-      message: 'Gambar diagram stimulus AI berhasil dibuat!'
+      message: 'Gambar diagram stimulus AI berhasil dirancang dan diperbarui!'
     });
   } catch (e) {
     console.error('Error generating AI image:', e);
     const fallbackSvg = generateAcademicDiagramSvg({
       topic: effectiveTopic,
       title: prompt || 'Diagram Stimulus Soal',
-      context: pertanyaan
+      context: pertanyaan,
+      type: style
     });
     const filename = `ai_diagram_${Date.now()}.svg`;
     fs.writeFileSync(path.join(soalImageDir, filename), fallbackSvg, 'utf8');
+    const imgUrl = `/admin/uploads/soal/${filename}`;
+
+    if (soalId) {
+      const targetSoal = db.soal.find(s => s.id === soalId);
+      if (targetSoal) {
+        targetSoal.gambar = imgUrl;
+        db.save();
+      }
+    }
+
     return res.json({
       success: true,
-      url: `/admin/uploads/soal/${filename}`,
+      url: imgUrl,
       filename,
       message: 'Diagram stimulus berhasil dibuat!'
     });
@@ -1930,9 +2138,18 @@ app.post('/admin/api/upload_logo', requireAdmin, (req, res) => {
       // 1. Jika diunggah via multipart file input
       if (req.file) {
         const fileUrl = `/admin/uploads/${req.file.filename}`;
+        const filePath = path.join(__dirname, 'admin/uploads', req.file.filename);
+        try {
+          const buf = fs.readFileSync(filePath);
+          const ext = path.extname(req.file.filename).toLowerCase();
+          const mime = ext === '.svg' ? 'image/svg+xml' : (ext === '.png' ? 'image/png' : 'image/jpeg');
+          db.pengaturan.logo_data = `data:${mime};base64,` + buf.toString('base64');
+          db.pengaturan.logo_path = fileUrl;
+          db.save();
+        } catch (e) {}
         return res.json({
           success: true,
-          message: 'Logo berhasil diunggah!',
+          message: 'Logo institusi berhasil diunggah dan disimpan permanen!',
           url: fileUrl
         });
       }
@@ -1949,9 +2166,12 @@ app.post('/admin/api/upload_logo', requireAdmin, (req, res) => {
         fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
         const fileUrl = `/admin/uploads/${filename}`;
+        db.pengaturan.logo_data = req.body.logo_base64;
+        db.pengaturan.logo_path = fileUrl;
+        db.save();
         return res.json({
           success: true,
-          message: 'Logo berhasil disimpan!',
+          message: 'Logo institusi berhasil disimpan permanen!',
           url: fileUrl
         });
       }
@@ -4104,6 +4324,14 @@ app.get(['/admin/pengaturan', '/admin/pengaturan.php'], requireAdmin, (req, res)
     adminRole: req.session.admin_role,
     settings: db.pengaturan,
     firebaseConnected: !!db.firestore,
+    lastCloudSyncTime: db.lastCloudSyncTime,
+    dbStats: {
+      ujian: db.ujian ? db.ujian.length : 0,
+      soal: db.soal ? db.soal.length : 0,
+      users: db.users ? db.users.length : 0,
+      mahasiswa: db.mahasiswa ? db.mahasiswa.length : 0,
+      kelas: db.kelas ? db.kelas.length : 0
+    },
     message: req.query.msg || '',
     error: req.query.err || ''
   });
@@ -4261,17 +4489,36 @@ app.post(['/admin/pengaturan/set_default_master', '/admin/pengaturan/set_default
   }
 });
 
-// Sync to Cloud Firestore Manual Trigger
-app.post(['/admin/pengaturan/sync_cloud', '/admin/pengaturan/sync_cloud.php'], requireAdmin, async (req, res) => {
+// Sync to Cloud Firestore Manual Trigger (Supports both form redirect & AJAX JSON)
+app.post(['/admin/pengaturan/sync_cloud', '/admin/pengaturan/sync_cloud.php', '/admin/api/sync_cloud'], requireAdmin, async (req, res) => {
+  const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('application/json')) || req.path.startsWith('/admin/api/') || req.body?.is_ajax === '1';
   try {
     if (db.firestore) {
-      await db.syncToFirebase();
-      return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent('Data berhasil disinkronkan ke Google Firebase Firestore secara permanen!'));
+      await db.syncToFirebase(true);
+      const msg = 'Data berhasil disinkronkan ke Google Firebase Firestore secara permanen!';
+      if (isAjax) {
+        return res.json({
+          success: true,
+          message: msg,
+          updated_at: db.lastCloudSyncTime,
+          stats: {
+            soal: db.soal?.length || 0,
+            ujian: db.ujian?.length || 0,
+            users: db.users?.length || 0,
+            mahasiswa: db.mahasiswa?.length || 0
+          }
+        });
+      }
+      return res.redirect('/admin/pengaturan?msg=' + encodeURIComponent(msg));
     } else {
-      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Layanan Firebase belum terhubung atau sedang offline.'));
+      const errMsg = 'Layanan Firebase belum terhubung atau sedang offline.';
+      if (isAjax) return res.status(503).json({ success: false, message: errMsg });
+      return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
     }
   } catch (err) {
-    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent('Sinkronisasi Firebase gagal: ' + err.message));
+    const errMsg = 'Sinkronisasi Firebase gagal: ' + err.message;
+    if (isAjax) return res.status(500).json({ success: false, message: errMsg });
+    return res.redirect('/admin/pengaturan?err=' + encodeURIComponent(errMsg));
   }
 });
 
@@ -4330,6 +4577,18 @@ app.post(['/admin/ai_generate_api', '/admin/ai_generate_api.php'], requireAdmin,
   const poin = parseInt(req.body.poin, 10) || 4;
   const apply = req.body.apply !== false;
   const generateGambar = req.body.generate_gambar === true || req.body.generate_gambar === 'true' || req.body.sertakan_gambar === true || req.body.sertakan_gambar === 'true';
+  const gambarTargetMode = req.body.gambar_target_mode || 'hots_only'; // 'hots_only', 'specific_types', 'custom_count', 'all'
+  let gambarTargetTypes = ['pg', 'pg_kompleks', 'esai'];
+  if (Array.isArray(req.body.gambar_target_types) && req.body.gambar_target_types.length > 0) {
+    gambarTargetTypes = req.body.gambar_target_types;
+  } else if (typeof req.body.gambar_target_types === 'string' && req.body.gambar_target_types.trim()) {
+    gambarTargetTypes = req.body.gambar_target_types.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  const rawMaxCount = parseInt(req.body.gambar_max_count, 10);
+  const gambarMaxCount = !isNaN(rawMaxCount) && rawMaxCount > 0 ? Math.min(count, rawMaxCount) : (gambarTargetMode === 'all' ? count : Math.min(2, count));
+  const gambarStyle = req.body.gambar_style || 'auto'; // 'auto', 'process', 'architecture', 'network', 'hierarchy', 'venn'
+  const gambarCustomPrompt = (req.body.gambar_custom_prompt || '').trim();
+  const gayaNaskah = req.body.gaya_naskah || 'kasus'; // 'kasus', 'konseptual', 'problem_solving', 'standar'
 
   // Parse multi-select question types and cognitive levels
   let selectedTypes = ['pg'];
@@ -4353,19 +4612,45 @@ app.post(['/admin/ai_generate_api', '/admin/ai_generate_api.php'], requireAdmin,
   const typesReadable = selectedTypes.map(t => getJenisSoalLabel(t)).join(', ');
   const cognitivesReadable = selectedCognitives.join(', ');
 
+  const gayaNaskahDesc =
+    gayaNaskah === 'kasus' ? 'Studi Kasus Kontekstual & Skenario Nyata Industri (disertai narasi latar belakang masalah konkret).' :
+    gayaNaskah === 'problem_solving' ? 'Pemecahan Masalah / Troubleshooting & Prosedural Teknis Komputasi/Logika.' :
+    gayaNaskah === 'konseptual' ? 'Uji Konseptual Akademik & Teori Terapan Mendalam.' :
+    'Standar Evaluasi Akademik Nasional Perguruan Tinggi.';
+
   const prompt = `Anda adalah dosen pakar penyusun instrumen ujian akademik perguruan tinggi di Indonesia.
 Buatkan ${count} butir naskah soal ujian akademik berkualitas tinggi dan SIAP DIUJIKAN LANGSUNG KEPADA PESERTA tentang mata kuliah / topik "${topic}".
 Fokus Ruang Lingkup Materi: "${subTopic || topic}".
 Tingkat Kesulitan: "${kesulitan}".
+Gaya Naskah Soal: ${gayaNaskahDesc}
 PILIHAN BENTUK/JENIS SOAL: [${typesReadable}].
 PENTING: Anda WAJIB menyusun ${count} butir soal dengan mendistribusikan bentuk soal di antara jenis-jenis yang dipilih di atas secara seimbang.
 LEVEL KOGNITIF BLOOM YANG DIPILIH: [${cognitivesReadable}].
 PENTING: Setiap butir soal WAJIB menggunakan salah satu level kognitif dari daftar yang ditentukan di atas!
-${generateGambar ? `
-PENGATURAN GAMBAR / DIAGRAM STIMULUS:
-Karena opsi sertakan stimulus gambar aktif, untuk butir-butir soal yang relevan (terutama yang menguji analisis kasus C3, C4, C5, atau penalaran visual seperti alur proses, diagram arsitektur, topologi jaringan, siklus, relasi konsep, atau skema kasus), Anda WAJIB menyertakan properti:
-"gambar_svg": "<svg viewBox=\\"0 0 600 340\\" xmlns=\\"http://www.w3.org/2000/svg\\">...desain diagram/bagan SVG mandiri yang rapi, modern, dan informatif...</svg>"
-Jika butir soal murni teoritis tanpa butuh diagram, berikan null pada "gambar_svg".` : ''}
+
+ATURAN KONFIGURASI TEKNIS NASKAH SOAL:
+1. SOAL TANPA GAMBAR (Teks Mandiri / Self-Contained):
+   - Jika butir soal TIDAK memiliki gambar (gambar_svg: null), naskah pertanyaan HARUS mandiri, lugas, dan kaya konteks tertulis.
+   - DILARANG KERAS menyertakan frasa "perhatikan gambar di atas", "pada diagram berikut", atau rujukan visual fiktif jika properti gambar_svg bernilai null.
+2. SOAL DENGAN GAMBAR (Stimulus Visual Vektor):
+${generateGambar ? `   - Stimulus gambar aktif dengan kriteria target: ${
+  gambarTargetMode === 'hots_only' ? 'HANYA butir soal studi kasus dengan Level Kognitif HOTS (C4, C5, atau C6). DILARANG menyisipkan gambar pada soal hafalan/definisi C1/C2.' :
+  gambarTargetMode === 'specific_types' ? `HANYA butir soal dengan bentuk: [${gambarTargetTypes.map(t => getJenisSoalLabel(t)).join(', ')}].` :
+  gambarTargetMode === 'custom_count' ? `Hanya untuk ${gambarMaxCount} butir soal pertama.` :
+  'Seluruh butir soal yang di-generate.'
+}
+   - Kuota Gambar: Tepat maksimal ${gambarMaxCount} butir soal yang menyertakan diagram stimulus visual! Sisanya WAJIB memiliki "gambar_svg": null.
+   - Gaya Visual: ${
+     gambarStyle === 'process' ? 'Bagan Alur Proses / Tahapan Kerja / Flowchart terstruktur' :
+     gambarStyle === 'architecture' ? 'Skema Arsitektur Sistem / 3-Tier / Blok Komponen Fungsional' :
+     gambarStyle === 'network' ? 'Topologi Jaringan / Relasi Hubungan Node & Entitas Terdistribusi' :
+     gambarStyle === 'hierarchy' ? 'Struktur Hirarki Pohon Klasifikasi / Organisasi' :
+     gambarStyle === 'venn' ? 'Diagram Venn / Relasi Irisan dan Perbandingan Konsep' :
+     'Otomatis disesuaikan dengan topik materi'
+   }.
+   ${gambarCustomPrompt ? `- Catatan Dosen untuk Diagram: "${gambarCustomPrompt}".` : ''}
+   - Keterikatan Naskah Soal & Visual: Untuk butir yang diberi gambar, teks pertanyaan WAJIB menyertakan kalimat pengantar stimulus (contoh: "Perhatikan diagram alur/skema berikut ini...", "Berdasarkan arsitektur di bawah, analisislah...") dan pertanyaan menguji analisis kritis terhadap diagram tersebut.
+   - Format SVG: Sertakan kode SVG valid mandiri pada "gambar_svg": "<svg viewBox=\\"0 0 640 340\\" xmlns=\\"http://www.w3.org/2000/svg\\">...</svg>".` : '   - Mode stimulus gambar dimatikan. Semua butir soal WAJIB berproperti "gambar_svg": null dan naskah berbentuk teks mandiri.'}
 
 PERSYARATAN FORMAT SESUAI BENTUK SOAL:
 1. "pg" (Pilihan Ganda): teks pertanyaan tanpa huruf pilihan + 5 opsi (A-E) dengan TEPAT SATU kunci benar.
@@ -4422,10 +4707,39 @@ Format respon HANYA berupa JSON object:
     });
   }
 
-  // Handle AI generated images / diagrams if requested
+  // Handle AI generated images / diagrams with strict target criteria & quota
+  let attachedImageCount = 0;
+
   generated = generated.map((q, idx) => {
     let imgUrl = q.gambar || q.gambar_soal || null;
 
+    if (!generateGambar) {
+      return { ...q, gambar: imgUrl };
+    }
+
+    // Periksa apakah butir soal ini memenuhi kriteria target spesifik
+    let isEligible = false;
+    if (attachedImageCount < gambarMaxCount) {
+      if (gambarTargetMode === 'all') {
+        isEligible = true;
+      } else if (gambarTargetMode === 'hots_only') {
+        const kognitif = (q.level_kognitif || '').toUpperCase();
+        isEligible = ['C4', 'C5', 'C6'].includes(kognitif) || (idx === 0 && count === 1);
+      } else if (gambarTargetMode === 'specific_types') {
+        isEligible = gambarTargetTypes.includes(q.jenis_soal);
+      } else if (gambarTargetMode === 'custom_count') {
+        isEligible = idx < gambarMaxCount;
+      } else {
+        isEligible = idx < gambarMaxCount;
+      }
+    }
+
+    // Jika tidak eligible atau sudah mencapai kuota batas maksimal gambar, jangan pasang gambar!
+    if (!isEligible) {
+      return { ...q, gambar: null };
+    }
+
+    // Jika ada SVG dari AI dan memenuhi kriteria
     if (q.gambar_svg && typeof q.gambar_svg === 'string' && q.gambar_svg.includes('<svg')) {
       try {
         let svgStr = q.gambar_svg.trim();
@@ -4436,24 +4750,28 @@ Format respon HANYA berupa JSON object:
           const filename = `soal_ai_${Date.now()}_${idx + 1}.svg`;
           fs.writeFileSync(path.join(soalImageDir, filename), svgStr, 'utf8');
           imgUrl = `/admin/uploads/soal/${filename}`;
+          attachedImageCount++;
         }
       } catch (err) {
         console.warn('Gagal menyimpan SVG AI:', err.message);
       }
     }
 
-    if (generateGambar && !imgUrl) {
+    // Fallback terarah jika AI tidak menyertakan SVG tapi soal ini memenuhi kriteria target
+    if (!imgUrl && attachedImageCount < gambarMaxCount) {
       try {
         const diagramSvg = generateAcademicDiagramSvg({
           topic,
-          title: `Diagram Stimulus: ${q.materi_pokok || topic}`,
-          context: q.pertanyaan || subTopic
+          title: gambarCustomPrompt || `Diagram Stimulus: ${q.materi_pokok || topic}`,
+          context: q.pertanyaan || subTopic,
+          type: gambarStyle
         });
         const filename = `soal_ai_${Date.now()}_${idx + 1}.svg`;
         fs.writeFileSync(path.join(soalImageDir, filename), diagramSvg, 'utf8');
         imgUrl = `/admin/uploads/soal/${filename}`;
+        attachedImageCount++;
       } catch (err) {
-        console.warn('Gagal membuat diagram stimulus fallback:', err.message);
+        console.warn('Gagal membuat diagram stimulus terarah fallback:', err.message);
       }
     }
 
@@ -4568,6 +4886,12 @@ app.post(['/api.php', '/api'], (req, res) => {
   res.json({ success: false, message: 'Aksi API tidak valid' });
 });
 
+// Immediate port binding for dev server monitor, followed by background Cloud Firestore sync
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`SIPENA application server listening on http://0.0.0.0:${PORT}`);
+  db.ensureFirebaseReady(15000).then(() => {
+    console.log('[SIPENA] Sinkronisasi awan awal berhasil diselesaikan.');
+  }).catch(err => {
+    console.warn('[SIPENA] Catatan sinkronisasi awan awal:', err.message);
+  });
 });

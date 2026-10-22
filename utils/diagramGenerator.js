@@ -25,15 +25,22 @@ export function generateAcademicDiagramSvg({ topic = 'Sistem Informasi', title =
     textMuted: '#64748b'
   };
 
-  // Tentukan variasi diagram berdasarkan kata kunci
-  const lower = (topic + ' ' + title + ' ' + context).toLowerCase();
-  let diagramType = 'architecture';
-  if (lower.includes('alur') || lower.includes('proses') || lower.includes('flow') || lower.includes('siklus') || lower.includes('tahap')) {
-    diagramType = 'process';
-  } else if (lower.includes('jaringan') || lower.includes('topologi') || lower.includes('server') || lower.includes('komunikasi')) {
-    diagramType = 'network';
-  } else if (lower.includes('hirarki') || lower.includes('organisasi') || lower.includes('struktur') || lower.includes('klasifikasi')) {
-    diagramType = 'hierarchy';
+  // Tentukan variasi diagram berdasarkan parameter eksplisit atau kata kunci
+  let diagramType = (type || 'auto').toLowerCase();
+  if (diagramType === 'flowchart') diagramType = 'process';
+  
+  if (diagramType === 'auto' || !['process', 'network', 'hierarchy', 'architecture', 'venn'].includes(diagramType)) {
+    const lower = (topic + ' ' + title + ' ' + context).toLowerCase();
+    diagramType = 'architecture';
+    if (lower.includes('alur') || lower.includes('proses') || lower.includes('flow') || lower.includes('siklus') || lower.includes('tahap') || lower.includes('langkah')) {
+      diagramType = 'process';
+    } else if (lower.includes('jaringan') || lower.includes('topologi') || lower.includes('server') || lower.includes('komunikasi') || lower.includes('node')) {
+      diagramType = 'network';
+    } else if (lower.includes('hirarki') || lower.includes('organisasi') || lower.includes('struktur') || lower.includes('pohon') || lower.includes('klasifikasi')) {
+      diagramType = 'hierarchy';
+    } else if (lower.includes('venn') || lower.includes('irisan') || lower.includes('relasi') || lower.includes('perbandingan') || lower.includes('himpunan')) {
+      diagramType = 'venn';
+    }
   }
 
   let bodySvg = '';
@@ -41,10 +48,10 @@ export function generateAcademicDiagramSvg({ topic = 'Sistem Informasi', title =
   if (diagramType === 'process') {
     // 4-Stage Horizontal Process Flow
     const steps = [
-      { num: '01', title: 'Identifikasi & Masukan', sub: 'Pengumpulan data / parameter awal', col: colors.primary, bg: colors.primaryLight },
-      { num: '02', title: 'Pemrosesan Inti', sub: 'Eksekusi algoritma & validasi kaidah', col: colors.accent, bg: colors.accentLight },
-      { num: '03', title: 'Analisis Verifikasi', sub: 'Pengujian integritas & rubrik mutu', col: colors.purple, bg: colors.purpleLight },
-      { num: '04', title: 'Keluaran & Evaluasi', sub: 'Luaran capaian & umpan balik', col: colors.amber, bg: colors.amberLight }
+      { num: '01', title: 'Identifikasi Masukan', sub: 'Spesifikasi & parameter awal', col: colors.primary, bg: colors.primaryLight },
+      { num: '02', title: 'Pemrosesan Inti', sub: 'Eksekusi aturan & validasi', col: colors.accent, bg: colors.accentLight },
+      { num: '03', title: 'Analisis & Verifikasi', sub: 'Pengujian integritas mutu', col: colors.purple, bg: colors.purpleLight },
+      { num: '04', title: 'Luaran & Evaluasi', sub: 'Capaian & tindak lanjut', col: colors.amber, bg: colors.amberLight }
     ];
 
     bodySvg = steps.map((s, idx) => {
@@ -106,6 +113,76 @@ export function generateAcademicDiagramSvg({ topic = 'Sistem Informasi', title =
         <rect x="380" y="225" width="130" height="55" rx="8" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.8" filter="url(#drop-shadow)"/>
         <text x="445" y="250" font-size="11" font-weight="bold" fill="#15803d" text-anchor="middle" font-family="system-ui, sans-serif">Antarmuka / Client</text>
         <text x="445" y="266" font-size="9" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">Visualisasi & Interaksi</text>
+      </g>
+    `;
+  } else if (diagramType === 'hierarchy') {
+    // Struktur Hirarki / Tree
+    bodySvg = `
+      <g>
+        <!-- Connector Lines -->
+        <line x1="320" y1="135" x2="320" y2="160" stroke="#94a3b8" stroke-width="2"/>
+        <line x1="160" y1="160" x2="480" y2="160" stroke="#94a3b8" stroke-width="2"/>
+        <line x1="160" y1="160" x2="160" y2="185" stroke="#94a3b8" stroke-width="2"/>
+        <line x1="320" y1="160" x2="320" y2="185" stroke="#94a3b8" stroke-width="2"/>
+        <line x1="480" y1="160" x2="480" y2="185" stroke="#94a3b8" stroke-width="2"/>
+
+        <!-- Root Node -->
+        <rect x="220" y="85" width="200" height="50" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="2" filter="url(#drop-shadow)"/>
+        <text x="320" y="108" font-size="12" font-weight="bold" fill="#1e3a8a" text-anchor="middle" font-family="system-ui, sans-serif">ENTITAS UTAMA (INDUK)</text>
+        <text x="320" y="125" font-size="9.5" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">Standar Kebijakan & Prinsip</text>
+
+        <!-- Branch 1 -->
+        <rect x="70" y="185" width="180" height="85" rx="8" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.8" filter="url(#drop-shadow)"/>
+        <rect x="70" y="185" width="180" height="24" rx="8" fill="#ccfbf1"/>
+        <text x="160" y="201" font-size="10.5" font-weight="bold" fill="#0f766e" text-anchor="middle" font-family="system-ui, sans-serif">Cabang A: Manajerial</text>
+        <text x="80" y="225" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Tata kelola operasional</text>
+        <text x="80" y="242" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Kepatuhan regulasi</text>
+        <text x="80" y="259" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Pengawasan akuntabilitas</text>
+
+        <!-- Branch 2 -->
+        <rect x="260" y="185" width="180" height="85" rx="8" fill="#faf5ff" stroke="#7e22ce" stroke-width="1.8" filter="url(#drop-shadow)"/>
+        <rect x="260" y="185" width="180" height="24" rx="8" fill="#f3e8ff"/>
+        <text x="350" y="201" font-size="10.5" font-weight="bold" fill="#6b21a8" text-anchor="middle" font-family="system-ui, sans-serif">Cabang B: Fungsional</text>
+        <text x="270" y="225" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Penerapan metode teknis</text>
+        <text x="270" y="242" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Pemeliharaan sistem</text>
+        <text x="270" y="259" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Dokumentasi kode etik</text>
+
+        <!-- Branch 3 -->
+        <rect x="450" y="185" width="150" height="85" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="1.8" filter="url(#drop-shadow)"/>
+        <rect x="450" y="185" width="150" height="24" rx="8" fill="#fef3c7"/>
+        <text x="525" y="201" font-size="10.5" font-weight="bold" fill="#92400e" text-anchor="middle" font-family="system-ui, sans-serif">Cabang C: Audit</text>
+        <text x="460" y="225" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Penilaian risiko</text>
+        <text x="460" y="242" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Pengujian integritas</text>
+        <text x="460" y="259" font-size="9" fill="#334155" font-family="system-ui, sans-serif">• Pelaporan hasil</text>
+      </g>
+    `;
+  } else if (diagramType === 'venn') {
+    // Diagram Venn / Relasi Irisan Konseptual
+    bodySvg = `
+      <g>
+        <!-- Circle Left -->
+        <circle cx="250" cy="180" r="95" fill="#3b82f6" fill-opacity="0.22" stroke="#2563eb" stroke-width="2.5"/>
+        <!-- Circle Right -->
+        <circle cx="390" cy="180" r="95" fill="#10b981" fill-opacity="0.22" stroke="#059669" stroke-width="2.5"/>
+        
+        <!-- Label Domain A -->
+        <text x="200" y="145" font-size="12" font-weight="bold" fill="#1e3a8a" text-anchor="middle" font-family="system-ui, sans-serif">Domain Teori / Konsep</text>
+        <text x="200" y="170" font-size="9.5" fill="#334155" text-anchor="middle" font-family="system-ui, sans-serif">• Landasan Ilmiah</text>
+        <text x="200" y="188" font-size="9.5" fill="#334155" text-anchor="middle" font-family="system-ui, sans-serif">• Kerangka Teoretis</text>
+        <text x="200" y="206" font-size="9.5" fill="#334155" text-anchor="middle" font-family="system-ui, sans-serif">• Asas Fundamental</text>
+
+        <!-- Label Domain B -->
+        <text x="440" y="145" font-size="12" font-weight="bold" fill="#065f46" text-anchor="middle" font-family="system-ui, sans-serif">Domain Terapan / Kasus</text>
+        <text x="440" y="170" font-size="9.5" fill="#334155" text-anchor="middle" font-family="system-ui, sans-serif">• Praktik di Lapangan</text>
+        <text x="440" y="188" font-size="9.5" fill="#334155" text-anchor="middle" font-family="system-ui, sans-serif">• Solusi Kontekstual</text>
+        <text x="440" y="206" font-size="9.5" fill="#334155" text-anchor="middle" font-family="system-ui, sans-serif">• Bukti Empiris</text>
+
+        <!-- Intersection Area -->
+        <rect x="290" y="145" width="60" height="70" rx="6" fill="#ffffff" fill-opacity="0.9" stroke="#7e22ce" stroke-width="1.5" filter="url(#drop-shadow)"/>
+        <text x="320" y="165" font-size="10" font-weight="bold" fill="#7e22ce" text-anchor="middle" font-family="system-ui, sans-serif">IRISAN</text>
+        <text x="320" y="182" font-size="8.5" font-weight="600" fill="#0f172a" text-anchor="middle" font-family="system-ui, sans-serif">Sintesis</text>
+        <text x="320" y="196" font-size="8" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">Kompetensi</text>
+        <text x="320" y="208" font-size="8" fill="#64748b" text-anchor="middle" font-family="system-ui, sans-serif">Optimal</text>
       </g>
     `;
   } else {

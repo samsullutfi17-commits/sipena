@@ -155,14 +155,44 @@
                     </div>
                     <div>
                         <% if (typeof firebaseConnected !== 'undefined' && firebaseConnected) { %>
-                            <span style="background: #dcfce7; color: #15803d; font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #86efac;">
-                                <i class="fas fa-cloud" style="color: #16a34a;"></i> Cloud Firebase Aktif & Tersinkron
+                            <span id="badgeCloudStatus" style="background: #dcfce7; color: #15803d; font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #86efac; box-shadow: 0 1px 3px rgba(22, 163, 74, 0.15);">
+                                <i class="fas fa-cloud" style="color: #16a34a;"></i> Cloud Firestore Aktif & Permanen
                             </span>
                         <% } else { %>
-                            <span style="background: #f1f5f9; color: #475569; font-size: 0.82rem; font-weight: 600; padding: 6px 14px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1;">
+                            <span id="badgeCloudStatus" style="background: #f1f5f9; color: #475569; font-size: 0.82rem; font-weight: 600; padding: 6px 14px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1;">
                                 <i class="fas fa-hard-drive"></i> Penyimpanan Lokal JSON
                             </span>
                         <% } %>
+                    </div>
+                </div>
+
+                <!-- KOTAK UTAMA: SINKRONISASI CLOUD FIRESTORE & KETAHANAN DATA -->
+                <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 10px; padding: 16px; margin-bottom: 18px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                        <div style="flex: 1; min-width: 280px;">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span style="width: 10px; height: 10px; border-radius: 50%; background: #16a34a; display: inline-block; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);"></span>
+                                <strong style="color: #166534; font-size: 0.98rem;">Perlindungan Data Ganda (Dual-Layer Cloud Persistence)</strong>
+                            </div>
+                            <p style="font-size: 0.82rem; color: #15803d; margin: 0 0 8px; line-height: 1.5;">
+                                Setiap penambahan butir soal, pembuatan ujian, akun mahasiswa, dan pengaturan otomatis disimpan permanen ke <strong>Google Cloud Firestore</strong>. Data Anda aman dari restart server, container cold start, maupun publikasi ulang.
+                            </p>
+                            <div style="font-size: 0.76rem; color: #166534; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <span style="background: #ffffff; padding: 3px 8px; border-radius: 5px; border: 1px solid #86efac; font-weight: 600;">
+                                    <i class="fas fa-clock-rotate-left"></i> Terakhir Disinkronkan: <span id="textLastSyncTime"><%= (typeof lastCloudSyncTime !== 'undefined' && lastCloudSyncTime) ? lastCloudSyncTime : 'Tersinkronisasi otomatis' %></span>
+                                </span>
+                                <% if (typeof dbStats !== 'undefined' && dbStats) { %>
+                                    <span style="background: #ffffff; padding: 3px 8px; border-radius: 5px; border: 1px solid #86efac;">
+                                        <%= dbStats.ujian || 0 %> Ujian &bull; <%= dbStats.soal || 0 %> Soal &bull; <%= dbStats.users || 0 %> Pengguna
+                                    </span>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div>
+                            <button type="button" id="btnSyncCloudNow" onclick="executeCloudSync()" class="btn" style="background: #16a34a; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 0.86rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25); transition: all 0.15s ease;">
+                                <i class="fas fa-arrows-rotate" id="iconSyncCloud"></i> Sinkronkan ke Cloud Sekarang
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -719,6 +749,42 @@
                         form.submit();
                     } catch (err) {
                         showRestoreStatusError('Gagal menetapkan master: ' + err.message);
+                    }
+                }
+
+                async function executeCloudSync() {
+                    const btn = document.getElementById('btnSyncCloudNow');
+                    const icon = document.getElementById('iconSyncCloud');
+                    const textTime = document.getElementById('textLastSyncTime');
+                    if (btn) btn.disabled = true;
+                    if (icon) icon.className = 'fas fa-spinner fa-spin';
+
+                    showRestoreStatusLoading('Menyinkronkan seluruh basis data ke Google Cloud Firestore secara permanen...');
+
+                    try {
+                        const res = await fetch('/admin/api/sync_cloud', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ is_ajax: '1' })
+                        });
+                        const data = await res.json().catch(() => null);
+                        if (res.ok && data && data.success) {
+                            if (textTime && data.updated_at) {
+                                textTime.textContent = data.updated_at;
+                            }
+                            showRestoreStatusSuccess('Data berhasil diamankan dan disinkronkan ke Google Cloud Firestore!', data.stats);
+                        } else {
+                            const errMessage = (data && data.message) ? data.message : ('Sinkronisasi gagal: Status ' + res.status);
+                            showRestoreStatusError(errMessage);
+                        }
+                    } catch (err) {
+                        showRestoreStatusError('Kesalahan jaringan saat sinkronisasi cloud: ' + err.message);
+                    } finally {
+                        if (btn) btn.disabled = false;
+                        if (icon) icon.className = 'fas fa-arrows-rotate';
                     }
                 }
 
